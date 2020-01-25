@@ -1,13 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EcosystemGenerator : MonoBehaviour
 {
-    public Biome[] m_Biomes;
-
-
-
-
-
+    public Biome[] m_biomes;
+    public int m_averageAnnualTemperature;
+    public int m_averageAnnualRainfall;
 }

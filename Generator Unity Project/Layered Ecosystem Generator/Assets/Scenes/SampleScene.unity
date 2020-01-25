@@ -325,8 +325,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 150400aac36d83147a2a4fcf01dc5047, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Biomes:
+  m_biomes:
+  - {fileID: 11400000, guid: 26d8ca6bc80ce6c4cbb69e1f33bbb589, type: 2}
   - {fileID: 11400000, guid: fdb71cec7aac16c459281c3e77912258, type: 2}
+  m_averageAnnualTemperature: 5
+  m_averageAnnualRainfall: 5
 --- !u!4 &1987639355
 Transform:
   m_ObjectHideFlags: 0

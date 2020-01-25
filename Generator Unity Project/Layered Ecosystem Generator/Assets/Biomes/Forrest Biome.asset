@@ -10,19 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4afc4fd2db86014e8bd5f4b82d6a9d5, type: 3}
-  m_Name: Biome
+  m_Name: Forrest Biome
   m_EditorClassIdentifier: 
-  m_BiomeName: Desert
-  m_TemperatureAndRainfallSamplePoints:
-  - m_Temperature: 5
-    m_Rainfall: 5
-  - m_Temperature: 10
-    m_Rainfall: 5
-  - m_Temperature: 15
-    m_Rainfall: 15
-  - m_Temperature: 10
-    m_Rainfall: 15
-  - m_Temperature: 5
-    m_Rainfall: 10
-  m_ColorOnGraph: {r: 1, g: 0, b: 0, a: 1}
-  m_Layers: []
+  m_biomeName: Forrest
+  m_temperatureAndRainfallSamplePoints:
+  - {x: 15, y: 0}
+  - {x: 30, y: 0}
+  - {x: 30, y: 15}
+  - {x: 27, y: 11}
+  - {x: 21, y: 8}
+  - {x: 15, y: 7}
+  m_colorOnGraph: {r: 0.3902304, g: 0.8867924, b: 0.32208967, a: 1}
+  m_layers: []
