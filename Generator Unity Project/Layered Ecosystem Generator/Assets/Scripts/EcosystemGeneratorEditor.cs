@@ -58,15 +58,9 @@ public class EcosystemGeneratorEditor : Editor
         m_BiomesRepresentationTexture.filterMode = FilterMode.Point;
 
         DrawBox(0, 0, m_BiomesRepresentationTexture.width, m_BiomesRepresentationTexture.height, m_BiomesRepresentationTexture, Color.white);
-        
         foreach (Biome biome in m_TargetComponent.m_Biomes)
         {
-            DrawBox(biome.m_TemperatureRange.x + textureDimensions.TemperatureOffset,
-                biome.m_RainfallRange.x,
-                (biome.m_TemperatureRange.y - biome.m_TemperatureRange.x) * m_textureScale,
-                (biome.m_RainfallRange.y - biome.m_RainfallRange.x) * m_textureScale,
-                m_BiomesRepresentationTexture,
-                biome.m_ColorOnGraph);
+            DrawBiome(biome);
         }
 
         m_BiomesRepresentationTexture.Apply();
@@ -83,16 +77,79 @@ public class EcosystemGeneratorEditor : Editor
         }
     }
 
+    private void DrawBiome(Biome biome)
+    {
+        //float[] ycoords = new float[5];
+        //float[] xcoords = new float[5];
+        //for (int i = 0; i < biome.m_TemperatureAndRainfallSamplePoints.Length; ++i)
+        //{
+        //    xcoords[i] = (float)biome.m_TemperatureAndRainfallSamplePoints[i].m_Temperature;
+        //    ycoords[i] = (float)biome.m_TemperatureAndRainfallSamplePoints[i].m_Rainfall;
+        //}
+
+        for (int x = 0; x < m_BiomesRepresentationTexture.width; ++x)
+        {
+            for(int y = 0; y < m_BiomesRepresentationTexture.height; ++y)
+            {
+                //if(IsInPolygon(biome.m_TemperatureAndRainfallSamplePoints.Length,xcoords, ycoords, (float)x, (float)y))
+                
+                if (IsInPolygon(x, y, biome.m_TemperatureAndRainfallSamplePoints))
+                {
+                    m_BiomesRepresentationTexture.SetPixel(x, y, biome.m_ColorOnGraph);
+                }
+            }
+        }
+    }
+
+    bool IsInPolygon(int x, int y, TemperatureRainfallSamplePoints[] vertices)
+    {
+        int i, j = 0;
+        bool result = false;
+        for(i = 0, j = vertices.Length - 1; i < vertices.Length; j = i++)
+        {
+            int curRainfall = vertices[i].m_Rainfall * m_textureScale;
+            int compRainfall = vertices[j].m_Rainfall * m_textureScale;
+            if ((((vertices[i].m_Rainfall <= y) && ( y < vertices[j].m_Rainfall)) ||
+                ((vertices[j].m_Rainfall <= y) && (y < vertices[i].m_Rainfall))) &&
+                (x < (vertices[j].m_Temperature - vertices[i].m_Temperature) * (y - vertices[i].m_Rainfall) / (vertices[j].m_Rainfall - vertices[i].m_Rainfall) + vertices[i].m_Temperature))
+            {
+                result = !result;
+            }
+        }
+        return result;
+    }
+
+    //bool IsInPolygon(int npol, float[] xp, float[] yp, float x, float y)
+    //{
+    //    int i, j = 0;
+    //    bool c = false;
+    //    for (i = 0, j = npol - 1; i < npol; j = i++)
+    //    {
+    //        if ((((yp[i] <= y) && (y < yp[j])) ||
+    //             ((yp[j] <= y) && (y < yp[i]))) &&
+    //            (x < (xp[j] - xp[i]) * (y - yp[i]) / (yp[j] - yp[i]) + xp[i]))
+    //            c = !c;
+    //    }
+    //    return c;
+    //}
+
     private BiomeTextureDimensions GetTextureDimensions()
     {
         BiomeTextureDimensions textureDimensions = BiomeTextureDimensions.Empty();
         if(m_TargetComponent == null || m_TargetComponent.m_Biomes.Length == 0) { return textureDimensions; }
-        foreach (Biome biome in m_TargetComponent.m_Biomes)
+        for(int currentBiome = 0; currentBiome < m_TargetComponent.m_Biomes.Length; ++currentBiome)
         {
-            if(biome.m_TemperatureRange.x < textureDimensions.m_NegativeX) { textureDimensions.m_NegativeX = biome.m_TemperatureRange.x; }
-            if(biome.m_TemperatureRange.y > textureDimensions.m_PositiveX) { textureDimensions.m_PositiveX = biome.m_TemperatureRange.y; }
-            if(biome.m_RainfallRange.x < textureDimensions.m_NegativeY) { textureDimensions.m_NegativeY = biome.m_RainfallRange.x; }
-            if(biome.m_RainfallRange.y > textureDimensions.m_PositiveY) { textureDimensions.m_PositiveY = biome.m_RainfallRange.y; }
+            Biome biome = m_TargetComponent.m_Biomes[currentBiome];
+            for (int currentSamplePoint = 0; currentSamplePoint < biome.m_TemperatureAndRainfallSamplePoints.Length; ++currentSamplePoint)
+            {
+                int temperatureValue = biome.m_TemperatureAndRainfallSamplePoints[currentSamplePoint].m_Temperature;
+                if(temperatureValue < textureDimensions.m_NegativeX) { textureDimensions.m_NegativeX = temperatureValue; }
+                else if(temperatureValue > textureDimensions.m_PositiveX) { textureDimensions.m_PositiveX = temperatureValue; }
+
+                int rainfallValue = biome.m_TemperatureAndRainfallSamplePoints[currentSamplePoint].m_Rainfall;
+                if(rainfallValue < textureDimensions.m_NegativeY) { textureDimensions.m_NegativeY = rainfallValue; }
+                else if(rainfallValue > textureDimensions.m_PositiveY) { textureDimensions.m_PositiveY = rainfallValue; }
+            }
         }
         return textureDimensions;
     }

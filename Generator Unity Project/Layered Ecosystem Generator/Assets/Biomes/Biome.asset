@@ -13,7 +13,16 @@ MonoBehaviour:
   m_Name: Biome
   m_EditorClassIdentifier: 
   m_BiomeName: Desert
-  m_TemperatureRange: {x: -10, y: 10}
-  m_RainfallRange: {x: 0, y: 10}
+  m_TemperatureAndRainfallSamplePoints:
+  - m_Temperature: 5
+    m_Rainfall: 5
+  - m_Temperature: 10
+    m_Rainfall: 5
+  - m_Temperature: 15
+    m_Rainfall: 15
+  - m_Temperature: 10
+    m_Rainfall: 15
+  - m_Temperature: 5
+    m_Rainfall: 10
   m_ColorOnGraph: {r: 1, g: 0, b: 0, a: 1}
   m_Layers: []
