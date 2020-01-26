@@ -3,51 +3,67 @@
 
 public class Graph
 {
-    private Texture2D m_GraphTexture;
-    private int m_XAxisOffset;
-    private int m_YAxisOffset;
-    private int m_GraphScale;
+    private Texture2D m_graphTexture;
+    private int m_xAxisOffset;
+    private int m_yAxisOffset;
+    private int m_xAxisScale;
 
-    public Graph(int graphWidth, int graphHeight, int xAxisOffset, int yAxisOffset, int graphScale)
+    public Graph(int graphWidth, int graphHeight, int xAxisOffset, int yAxisOffset, int xScale = 10)
     {
-        m_XAxisOffset = xAxisOffset;
-        m_YAxisOffset = yAxisOffset;
-        m_GraphScale = graphScale;
-        m_GraphTexture = new Texture2D(graphWidth * m_GraphScale, graphHeight * m_GraphScale, TextureFormat.RGBA32, false);
-        m_GraphTexture.wrapMode = TextureWrapMode.Clamp;
-        m_GraphTexture.filterMode = FilterMode.Point;
+        m_xAxisOffset = xAxisOffset;
+        m_yAxisOffset = yAxisOffset;
+        m_xAxisScale = xScale;
+        m_graphTexture = new Texture2D(graphWidth, graphHeight, TextureFormat.RGBA32, false);
+        m_graphTexture.wrapMode = TextureWrapMode.Clamp;
+        m_graphTexture.filterMode = FilterMode.Point;
     }
 
-    public Texture2D GetGraph() => m_GraphTexture;
+    public Texture2D GetGraph() => m_graphTexture;
+
+    public void Fill(Color color)
+    {
+        for (int x = 0; x < m_graphTexture.width; ++x)
+        {
+            for (int y = 0; y < m_graphTexture.height; ++y)
+            {
+                m_graphTexture.SetPixel(x, y, color);
+            }
+        }
+        m_graphTexture.Apply();
+    }
 
     public void DrawBox(int startX, int startY, int width, int height, Color color)
     {
-        for (int x = startX; x < GetCorrectedXValue(startX + width); ++x)
+        int correctedX = GetCorrectedXValue(startX);
+        int correctedY = GetCorrectedXValue(startY);
+        for (int x = correctedX; x < GetCorrectedXValue(startX + width); ++x)
         {
-            for (int y = startY; y < GetCorrectedYValue(startY + height); ++y)
+            for (int y = correctedY; y < GetCorrectedYValue(startY + height); ++y)
             {
-                m_GraphTexture.SetPixel(x, y, color);
+                m_graphTexture.SetPixel(x, y, color);
             }
         }
-        m_GraphTexture.Apply();
+        m_graphTexture.Apply();
     }
 
-    public void DrawBox(Vector2Int centre, int radius, Color color)
+    public void DrawBoxUnscaled(int startX, int startY, int width, int height, Color color)
+    {
+        for (int x = startX + m_xAxisOffset; x < (startX + width) + m_xAxisOffset; ++x)
+        {
+            for (int y = startY + m_yAxisOffset; y < (startY + height) + m_yAxisOffset; ++y)
+            {
+                m_graphTexture.SetPixel(x, y, color);
+            }
+        }
+        m_graphTexture.Apply();
+    }
+
+    public void DrawCross(Vector2Int centre, int size, int width, Color color)
     {
         int correctedX = GetCorrectedXValue(centre.x);
         int correctedY = GetCorrectedXValue(centre.y);
-        for(int x = -radius; x < radius; ++x)
-        {
-            for(int y = -radius; y < radius; ++y)
-            {
-                int drawX = correctedX + x;
-                if(drawX < 0 || drawX >= m_GraphTexture.width) { continue; }
-                int drawY = correctedY + y;
-                if (drawY < 0 || drawY >= m_GraphTexture.height) { continue; }
-                m_GraphTexture.SetPixel(drawX, drawY, color);
-            }
-        }
-        m_GraphTexture.Apply();
+        DrawBoxUnscaled(correctedX - size, correctedY - width, size * 2, (width * 2) + 1, color);
+        DrawBox(correctedX - width, correctedY - size, (width * 2) + 1, size * 2, color);
     }
 
     public void DrawPolygon(Vector2Int[] vertices, Color color)
@@ -60,71 +76,15 @@ public class Graph
             {
                 if (IsInPolygon(x, y, vertices))
                 {
-                    m_GraphTexture.SetPixel(x, y, color);
+                    m_graphTexture.SetPixel(x, y, color);
                 }
             }
         }
         for (int i = 0; i < vertices.Length; ++i)
         {
-            m_GraphTexture.SetPixel(GetCorrectedXValue(vertices[i].x), GetCorrectedYValue(vertices[i].y), Color.magenta);
-            if(i > 0)
-            {
-                DrawLine(vertices[i], vertices[i - 1], Color.black);
-            }
+            m_graphTexture.SetPixel(GetCorrectedXValue(vertices[i].x), GetCorrectedYValue(vertices[i].y), Color.magenta);
         }
-        m_GraphTexture.Apply();
-    }
-
-    public void DrawLine(Vector2Int start, Vector2Int end, Color col)
-    {
-        int x0 = GetCorrectedXValue(start.x);
-        int x1 = GetCorrectedXValue(end.x);
-        int y0 = GetCorrectedXValue(start.y);
-        int y1 = GetCorrectedXValue(end.y);
-        int dy = y1 - y0;
-        int dx = x1 - x0;
-        int stepx, stepy;
-
-        if (dy < 0) { dy = -dy; stepy = -1; }
-        else { stepy = 1; }
-        if (dx < 0) { dx = -dx; stepx = -1; }
-        else { stepx = 1; }
-        dy <<= 1;
-        dx <<= 1;
-
-        float fraction = 0;
-
-        m_GraphTexture.SetPixel(x0, y0, col);
-        if (dx > dy)
-        {
-            fraction = dy - (dx >> 1);
-            while (Mathf.Abs(x0 - x1) > 1)
-            {
-                if (fraction >= 0)
-                {
-                    y0 += stepy;
-                    fraction -= dx;
-                }
-                x0 += stepx;
-                fraction += dy;
-                m_GraphTexture.SetPixel(x0, y0, col);
-            }
-        }
-        else
-        {
-            fraction = dx - (dy >> 1);
-            while (Mathf.Abs(y0 - y1) > 1)
-            {
-                if (fraction >= 0)
-                {
-                    x0 += stepx;
-                    fraction -= dy;
-                }
-                y0 += stepy;
-                fraction += dx;
-                m_GraphTexture.SetPixel(x0, y0, col);
-            }
-        }
+        m_graphTexture.Apply();
     }
 
     public bool IsInPolygon(int y, int x, Vector2Int[] vertices)   // X and Y is passed in flipped for this function.
@@ -149,11 +109,11 @@ public class Graph
 
     private int GetCorrectedXValue(int value)
     {
-        return (value + m_XAxisOffset) * m_GraphScale;
+        return (value + m_xAxisOffset) * m_xAxisScale;
     }
 
     private int GetCorrectedYValue(int value)
     {
-        return (value + m_YAxisOffset) * m_GraphScale;
+        return (value + m_yAxisOffset);
     }
 }

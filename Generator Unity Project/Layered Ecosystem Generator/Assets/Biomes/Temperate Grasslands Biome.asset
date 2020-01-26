@@ -10,15 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4afc4fd2db86014e8bd5f4b82d6a9d5, type: 3}
-  m_Name: Forrest Biome
+  m_Name: Temperate Grasslands Biome
   m_EditorClassIdentifier: 
-  m_biomeName: Forrest
+  m_biomeName: Temperate grasslands/desert
   m_temperatureAndRainfallSamplePoints:
-  - {x: 15, y: 0}
-  - {x: 30, y: 0}
-  - {x: 30, y: 15}
-  - {x: 27, y: 11}
-  - {x: 21, y: 8}
-  - {x: 15, y: 7}
-  m_colorOnGraph: {r: 0.3902304, g: 0.8867924, b: 0.32208967, a: 1}
+  - {x: -10, y: 0}
+  - {x: 17, y: 60}
+  - {x: 14, y: 0}
+  m_colorOnGraph: {r: 0.79215693, g: 0.6901961, b: 0.78823537, a: 1}
   m_layers: []
