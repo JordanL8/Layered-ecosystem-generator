@@ -18,6 +18,7 @@ MonoBehaviour:
   - {x: 17, y: 60}
   - {x: 25, y: 80}
   - {x: 29, y: 100}
+  - {x: 30, y: 20}
   - {x: 30, y: 0}
   m_colorOnGraph: {r: 1, g: 0.92549026, b: 0.65882355, a: 1}
   m_layers: []

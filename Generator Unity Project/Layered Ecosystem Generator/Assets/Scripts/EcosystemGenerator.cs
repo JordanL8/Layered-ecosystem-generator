@@ -2,9 +2,11 @@
 
 public class EcosystemGenerator : MonoBehaviour
 {
+    [Header("Available Biomes")]
     public Biome[] m_biomes;
-    [Range(-10, 30)]
-    public int m_averageAnnualTemperature;
-    [Range(0, 45)]
-    public int m_averageAnnualRainfall;
+    [Header("Ecosystem Properties")]
+    [Range(-15, 30)]
+    public int m_averageAnnualTemperature = 9;
+    [Range(0, 450)]
+    public int m_averageAnnualRainfall = 125;
 }

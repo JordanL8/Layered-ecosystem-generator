@@ -11,6 +11,7 @@ public class EcosystemGeneratorEditor : Editor
     // Graph
     private GUIStyle m_graphGuiStyle;
     private Graph m_biomeGraph;
+    private Biome m_currentBiome;
 
     private void OnEnable()
     {
@@ -24,13 +25,16 @@ public class EcosystemGeneratorEditor : Editor
         m_targetComponent = (EcosystemGenerator)target;
         base.OnInspectorGUI();
 
-        // Ecosystem properties
-
-
         // Graph
-        GUILayout.Space(20.0f);
-        GUILayout.Label("Biome Graph", EditorStyles.boldLabel);
+        EditorGUILayout.Space(20.0f);
+        EditorGUILayout.LabelField("Biome", EditorStyles.boldLabel);
 
+        //EditorGUI.BeginDisabledGroup(true);
+        string displayBiomeText = m_currentBiome != null ? $"Current Biome: { m_currentBiome.m_biomeName }." : "Invalid Selection!";
+        EditorGUILayout.LabelField(displayBiomeText);
+        //EditorGUI.EndDisabledGroup();
+
+        EditorGUILayout.Space(20.0f);
         GUILayout.Label(m_biomesRepresentationTexture, m_graphGuiStyle);
         if (GUILayout.Button("Redraw Biome Graph"))
         {
@@ -56,10 +60,20 @@ public class EcosystemGeneratorEditor : Editor
 
         m_biomeGraph.Fill(Color.white);
 
+        bool validSample = false;
         foreach (Biome biome in m_targetComponent.m_biomes)
         {
             m_biomeGraph.DrawPolygon(biome.m_temperatureAndRainfallSamplePoints, biome.m_colorOnGraph);
+            if (m_biomeGraph.IsInPolygon((m_targetComponent.m_averageAnnualTemperature + 15) * 10, m_targetComponent.m_averageAnnualRainfall, biome.m_temperatureAndRainfallSamplePoints))
+            {
+                validSample = true;
+                m_currentBiome = biome;
+            }
         }
+        if(!validSample) { m_currentBiome = null; }
+
+        m_biomeGraph.DrawCross(new Vector2Int(m_targetComponent.m_averageAnnualTemperature, m_targetComponent.m_averageAnnualRainfall), 7, 1, Color.black);
+        m_biomeGraph.Apply();
 
         m_biomesRepresentationTexture = m_biomeGraph.GetGraph();
     }

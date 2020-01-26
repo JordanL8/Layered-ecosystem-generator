@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4afc4fd2db86014e8bd5f4b82d6a9d5, type: 3}
-  m_Name: Tundra Biome
+  m_Name: Boreal Forest Biome
   m_EditorClassIdentifier: 
-  m_biomeName: Tundra
+  m_biomeName: Boreal forest
   m_temperatureAndRainfallSamplePoints:
-  - {x: -15, y: 0}
-  - {x: -15, y: 15}
-  - {x: -10, y: 40}
-  - {x: -5, y: 100}
   - {x: -6, y: 20}
-  - {x: -10, y: 0}
-  m_colorOnGraph: {r: 0.8235295, g: 0.82745105, b: 0.8352942, a: 1}
+  - {x: -5, y: 100}
+  - {x: 0, y: 160}
+  - {x: 4, y: 200}
+  - {x: 3, y: 170}
+  - {x: 2, y: 70}
+  - {x: -1, y: 40}
+  m_colorOnGraph: {r: 0.69411767, g: 0.7803922, b: 0.14901961, a: 1}
   m_layers: []

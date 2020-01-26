@@ -29,7 +29,6 @@ public class Graph
                 m_graphTexture.SetPixel(x, y, color);
             }
         }
-        m_graphTexture.Apply();
     }
 
     public void DrawBox(int startX, int startY, int width, int height, Color color)
@@ -43,27 +42,25 @@ public class Graph
                 m_graphTexture.SetPixel(x, y, color);
             }
         }
-        m_graphTexture.Apply();
     }
 
-    public void DrawBoxUnscaled(int startX, int startY, int width, int height, Color color)
+    public void DrawCrossBox(int startX, int startY, int width, int height, Color color)
     {
-        for (int x = startX + m_xAxisOffset; x < (startX + width) + m_xAxisOffset; ++x)
+        for (int x = startX; x < (startX + width); ++x)
         {
-            for (int y = startY + m_yAxisOffset; y < (startY + height) + m_yAxisOffset; ++y)
+            for (int y = startY; y < (startY + height); ++y)
             {
                 m_graphTexture.SetPixel(x, y, color);
             }
         }
-        m_graphTexture.Apply();
     }
 
     public void DrawCross(Vector2Int centre, int size, int width, Color color)
     {
         int correctedX = GetCorrectedXValue(centre.x);
-        int correctedY = GetCorrectedXValue(centre.y);
-        DrawBoxUnscaled(correctedX - size, correctedY - width, size * 2, (width * 2) + 1, color);
-        DrawBox(correctedX - width, correctedY - size, (width * 2) + 1, size * 2, color);
+        int correctedY = GetCorrectedYValue(centre.y);
+        DrawCrossBox(correctedX - size, correctedY - width, (size * 2) + 1, (width * 2) + 1, color);
+        DrawCrossBox(correctedX - width, correctedY - size, (width * 2) + 1, (size * 2) + 1, color);
     }
 
     public void DrawPolygon(Vector2Int[] vertices, Color color)
@@ -80,10 +77,10 @@ public class Graph
                 }
             }
         }
-        for (int i = 0; i < vertices.Length; ++i)
-        {
-            m_graphTexture.SetPixel(GetCorrectedXValue(vertices[i].x), GetCorrectedYValue(vertices[i].y), Color.magenta);
-        }
+    }
+
+    public void Apply()
+    {
         m_graphTexture.Apply();
     }
 

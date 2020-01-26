@@ -307,7 +307,7 @@ GameObject:
   - component: {fileID: 1987639355}
   - component: {fileID: 1987639354}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Ecosystem generator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -330,8 +330,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fdb71cec7aac16c459281c3e77912258, type: 2}
   - {fileID: 11400000, guid: 343833bd62ea1c440a6e6cfa21eb85c0, type: 2}
   - {fileID: 11400000, guid: 0ea8faaa4c2d58f4caa199adf2fa3274, type: 2}
-  m_averageAnnualTemperature: 5
-  m_averageAnnualRainfall: 5
+  - {fileID: 11400000, guid: 8f53a3cf2511de149b0684e95a15ebfb, type: 2}
+  - {fileID: 11400000, guid: 617b95e7b90d2c349b9e05116a02befc, type: 2}
+  - {fileID: 11400000, guid: 50379d0ae9eb10749b4707aa5241766e, type: 2}
+  - {fileID: 11400000, guid: df723756e4ddfc44ca366f9e210d64c1, type: 2}
+  - {fileID: 11400000, guid: ad6d9c8026ffbe643a86b8e160ea5a96, type: 2}
+  m_averageAnnualTemperature: 7
+  m_averageAnnualRainfall: 125
 --- !u!4 &1987639355
 Transform:
   m_ObjectHideFlags: 0
