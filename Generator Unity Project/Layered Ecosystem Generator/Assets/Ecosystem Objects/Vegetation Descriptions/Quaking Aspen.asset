@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f07acac4f4624478b10e76a21790fb, type: 3}
+  m_Name: Quaking Aspen
+  m_EditorClassIdentifier: 
+  m_innerRadius: 0
+  m_outerRadius: 0
+  m_shape: 7
+  m_baseSize: 0.4
+  m_scale: 13
+  m_scaleV: 3
+  m_zScake: 1
+  m_zScaleV: 0
+  m_levels: 3
+  m_ratio: 0.015
+  m_ratioPower: 1.2
+  m_lobes: 5
+  m_lobeDepth: 0.07
+  m_flare: 0.6
+  m_0Scale: 1
+  m_0ScaleV: 0
+  m_0Length: 1
+  m_0LengthV: 0
+  m_0Taper: 1
+  m_0BaseSplits: 0
+  m_0SegSplits: 0
+  m_0SplitAngle: 0
+  m_0SplitAngleV: 0
+  m_0CurveRes: 3
+  m_0Curve: 0
+  m_0CurveBack: 0
+  m_0CurveV: 20
+  m_1DownAngle: 60
+  m_1DownAngleV: -50
+  m_1Rotate: 140
+  m_1RotateV: 0
+  m_1Branches: 50
+  m_1Length: 0.3
+  m_1LengthV: 0
+  m_1Taper: 1
+  m_1SegSplits: 0
+  m_1SplitAngle: 0
+  m_1SplitAngleV: 0
+  m_1CurveRes: 5
+  m_1Curve: -40
+  m_1CurveBack: 0
+  m_1CurveV: 50
+  m_2DownAngle: 45
+  m_2DownAngleV: 10
+  m_2Rotate: 140
+  m_2RotateV: 0
+  m_2Branches: 390
+  m_2Length: 0.6
+  m_2LengthV: 0
+  m_2Taper: 1
+  m_2SegSplits: 0
+  m_2SplitAngle: 0
+  m_2SplitAngleV: 0
+  m_2CurveRes: 3
+  m_2Curve: -40
+  m_2CurveBack: 0
+  m_2CurveV: 75
+  m_3DownAngle: 45
+  m_3DownAngleV: 10
+  m_3Rotate: 77
+  m_3RotateV: 0
+  m_3Branches: 10
+  m_3Length: 0
+  m_3LengthV: 0
+  m_3Taper: 1
+  m_3SegSplits: 0
+  m_3SplitAngle: 0
+  m_3SplitAngleV: 0
+  m_3CurveRes: 1
+  m_3Curve: 0
+  m_3CurveBack: 0
+  m_3CurveV: 0
+  m_leaves: 25
+  m_leafShape: 0
+  m_leafScale: 0.17
+  m_leafScaleX: 1
+  m_attractionUp: 0.5
+  m_pruneRation: 0
+  m_pruneWidth: 0.5
+  m_pruneWidthPeak: 0.5
+  m_prunePowerLow: 0.5
+  m_prunePowerHigh: 0.5

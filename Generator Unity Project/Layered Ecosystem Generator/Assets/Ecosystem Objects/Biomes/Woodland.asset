@@ -10,15 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4afc4fd2db86014e8bd5f4b82d6a9d5, type: 3}
-  m_Name: Temperate Seasonal Forest Biome
+  m_Name: Woodland
   m_EditorClassIdentifier: 
-  m_biomeName: Temperate seasonal forest
+  m_biomeName: Woodland/shrubland
   m_temperatureAndRainfallSamplePoints:
+  - {x: -10, y: 0}
+  - {x: -6, y: 20}
   - {x: -1, y: 40}
-  - {x: 2, y: 70}
-  - {x: 3, y: 170}
-  - {x: 7, y: 200}
-  - {x: 18, y: 240}
   - {x: 18, y: 120}
-  m_colorOnGraph: {r: 0.5058824, g: 0.61960787, b: 0.36078432, a: 1}
+  - {x: 17, y: 60}
+  m_colorOnGraph: {r: 0.8431373, g: 0.53333336, b: 0.3647059, a: 1}
   m_layers: []

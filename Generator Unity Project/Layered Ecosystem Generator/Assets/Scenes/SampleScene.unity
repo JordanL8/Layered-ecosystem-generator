@@ -307,7 +307,7 @@ GameObject:
   - component: {fileID: 1987639355}
   - component: {fileID: 1987639354}
   m_Layer: 0
-  m_Name: Ecosystem generator
+  m_Name: Ecosystem Generator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,6 +337,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ad6d9c8026ffbe643a86b8e160ea5a96, type: 2}
   m_averageAnnualTemperature: 7
   m_averageAnnualRainfall: 125
+  biome: {fileID: 11400000, guid: 8f53a3cf2511de149b0684e95a15ebfb, type: 2}
 --- !u!4 &1987639355
 Transform:
   m_ObjectHideFlags: 0
