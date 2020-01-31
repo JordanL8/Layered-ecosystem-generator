@@ -19,7 +19,7 @@ public class EcosystemGenerator : MonoBehaviour
 
     private void Start()
     {
-        //GenerateEcosystem(biome);
+        GenerateEcosystem(biome);
     }
 
     private void ClearHierarchy()
@@ -30,28 +30,14 @@ public class EcosystemGenerator : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            m_sampler.SampleForLayer(biome.m_vegetationLayers[0], 0);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            m_sampler.SampleForLayer(biome.m_vegetationLayers[1], 1);
-        }
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            GenerateEcosystem(biome);
-        }
-    }
+
     public void GenerateEcosystem(Biome biome)
     {
-        //ClearHierarchy();
-        //for (int i = 0; i < biome.m_vegetationLayers.Length; i++)
-        //{
-        //    m_sampler.SampleForLayer(biome.m_vegetationLayers[i], i);
-        //}
+        ClearHierarchy();
+        for (int i = 0; i < biome.m_vegetationLayers.Length; i++)
+        {
+            m_sampler.SampleForLayer(biome.m_vegetationLayers[i], i);
+        }
         List<PoissonSample> samples = m_sampler.GetSamples();
         for (int i = 0; i < samples.Count; i++)
         {
