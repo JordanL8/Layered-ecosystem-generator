@@ -6,6 +6,20 @@ using UnityEditor;
 // 2. Properties suffixed with a V denote a vatiation property. They describe the magnitude of variation. A negative value acts as a flag.
 // 3. All angular properties are expressed in degrees.
 
+[System.Serializable]
+public struct RecursiveStemProperties
+{
+    public int m_nDownAngle;                    // Main branch: angle from trunk.
+    public int m_nDownAngleV;                   // Angle variation.
+    public int m_nRotate, m_nRotateV,           // Spiraling angles, number of branches.
+        m_nBranches;
+    public float m_nLength, m_nLengthV,         // Relative length, cross-section scaling.
+        m_nTaper;
+    public float m_nSegSplits, m_nSplitAngle,   //Stem splits per segment.
+        m_nSplitAngleV;
+    public int m_nCurveRes, m_nCurve,           // Curvature resolution and angles.
+        m_nCurveBack, m_nCurveV;
+}
 
 [CreateAssetMenu(fileName = "Vegetation Description", menuName = "Ecosystem Generator/Vegetation Description", order = 2)]
 public class VegetationDescription : ScriptableObject
@@ -38,44 +52,9 @@ public class VegetationDescription : ScriptableObject
     public int m_0CurveRes, m_0Curve,           // Curvature resolution and angles.
         m_0CurveBack, m_0CurveV;
 
-    [Header("1st Recursion")]
+    [Header("Recursive Stem Properties")]
 
-    public int m_1DownAngle;                    // Main branch: angle from trunk.
-    public int m_1DownAngleV;                   // Angle variation.
-    public int m_1Rotate, m_1RotateV,           // Spiraling angles, number of branches.
-        m_1Branches;
-    public float m_1Length, m_1LengthV,         // Relative length, cross-section scaling.
-        m_1Taper;
-    public float m_1SegSplits, m_1SplitAngle,   //Stem splits per segment.
-        m_1SplitAngleV;
-    public int m_1CurveRes, m_1Curve,           // Curvature resolution and angles.
-        m_1CurveBack, m_1CurveV;
-
-    [Header("2nd Recursion")]
-
-    public int m_2DownAngle;                    // Main branch: angle from parent.
-    public int m_2DownAngleV;                   // Angle variation.
-    public int m_2Rotate, m_2RotateV,           // Spiraling angles, number of branches.
-        m_2Branches;
-    public float m_2Length, m_2LengthV,         // Relative length, cross-section scaling.
-        m_2Taper;
-    public float m_2SegSplits, m_2SplitAngle,   //Stem splits per segment.
-        m_2SplitAngleV;
-    public int m_2CurveRes, m_2Curve,           // Curvature resolution and angles.
-        m_2CurveBack, m_2CurveV;
-
-    [Header("3rd Recursion")]
-
-    public int m_3DownAngle;                    // Main branch: angle from parent.
-    public int m_3DownAngleV;                   // Angle variation.
-    public int m_3Rotate, m_3RotateV,           // Spiraling angles, number of branches.
-        m_3Branches;
-    public float m_3Length, m_3LengthV,         // Relative length, cross-section scaling.
-        m_3Taper;
-    public float m_3SegSplits, m_3SplitAngle,   //Stem splits per segment.
-        m_3SplitAngleV;
-    public int m_3CurveRes, m_3Curve,           // Curvature resolution and angles.
-        m_3CurveBack, m_3CurveV;
+    public RecursiveStemProperties[] m_recLevelStem;
 
     [Header("Leaves")]
 

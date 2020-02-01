@@ -39,51 +39,7 @@ MonoBehaviour:
   m_0Curve: 0
   m_0CurveBack: 0
   m_0CurveV: 20
-  m_1DownAngle: 60
-  m_1DownAngleV: -50
-  m_1Rotate: 140
-  m_1RotateV: 0
-  m_1Branches: 50
-  m_1Length: 0.3
-  m_1LengthV: 0
-  m_1Taper: 1
-  m_1SegSplits: 0
-  m_1SplitAngle: 0
-  m_1SplitAngleV: 0
-  m_1CurveRes: 5
-  m_1Curve: -40
-  m_1CurveBack: 0
-  m_1CurveV: 50
-  m_2DownAngle: 45
-  m_2DownAngleV: 10
-  m_2Rotate: 140
-  m_2RotateV: 0
-  m_2Branches: 390
-  m_2Length: 0.6
-  m_2LengthV: 0
-  m_2Taper: 1
-  m_2SegSplits: 0
-  m_2SplitAngle: 0
-  m_2SplitAngleV: 0
-  m_2CurveRes: 3
-  m_2Curve: -40
-  m_2CurveBack: 0
-  m_2CurveV: 75
-  m_3DownAngle: 45
-  m_3DownAngleV: 10
-  m_3Rotate: 77
-  m_3RotateV: 0
-  m_3Branches: 10
-  m_3Length: 0
-  m_3LengthV: 0
-  m_3Taper: 1
-  m_3SegSplits: 0
-  m_3SplitAngle: 0
-  m_3SplitAngleV: 0
-  m_3CurveRes: 1
-  m_3Curve: 0
-  m_3CurveBack: 0
-  m_3CurveV: 0
+  m_recLevelStem: []
   m_leaves: 25
   m_leafShape: 0
   m_leafScale: 0.17

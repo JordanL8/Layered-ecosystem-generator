@@ -13,7 +13,7 @@ public enum StemCapOption
 
 public static class StemFactory // Cylinder creation based on https://github.com/doukasd/Unity-Components/blob/master/ProceduralCylinder/Assets/Scripts/Procedural/ProceduralCylinder.cs created by Dimitris Doukas.
 {
-    public static Mesh CreateStemMesh(Stem stem, int radialSegments, StemCapOption stemCapOption)  // Infers there are only two height segments. One for the top and one for the bottom.
+    public static Mesh CreateStemMesh(StemSegment stem, int radialSegments, StemCapOption stemCapOption)  // Infers there are only two height segments. One for the top and one for the bottom.
     {
         Mesh stemMesh = new Mesh();
         
@@ -38,6 +38,8 @@ public static class StemFactory // Cylinder creation based on https://github.com
 
         float height = Vector3.Distance(stem.m_startPos, stem.m_endPos); 
         float currentRadius = stem.m_startRadius;
+        Vector3 currentCentre = Vector3.zero;
+        Quaternion stemAngle = Quaternion.FromToRotation(stem.m_startPos, stem.m_endPos);
 
         for (int j = 0; j < 2; j++)
         {
@@ -46,7 +48,7 @@ public static class StemFactory // Cylinder creation based on https://github.com
                 float angle = i * angleStep;
                 angle = i == vertColumnCount - 1 ? 0 : angle;
 
-                stemVertices[j * vertColumnCount + i] = new Vector3(currentRadius * Mathf.Cos(angle), j * height, currentRadius * Mathf.Sin(angle));
+                stemVertices[j * vertColumnCount + i] = currentCentre + (stemAngle * new Vector3(currentRadius * Mathf.Cos(angle), 0, currentRadius * Mathf.Sin(angle)));
                 stemUVs[j * vertColumnCount + i] = new Vector2(i * uvStepH, j * uvStepV);
 
                 if (j == 0 || i >= vertColumnCount - 1)
@@ -67,6 +69,7 @@ public static class StemFactory // Cylinder creation based on https://github.com
                 }
             }
             currentRadius = stem.m_endRadius;
+            currentCentre = stem.m_endPos + (-stem.m_startPos);
         }
 
         bool leftSided = true;

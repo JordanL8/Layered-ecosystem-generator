@@ -361,9 +361,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2001523509}
-  - component: {fileID: 2001523508}
   - component: {fileID: 2001523511}
   - component: {fileID: 2001523510}
+  - component: {fileID: 2001523508}
   m_Layer: 0
   m_Name: Tree
   m_TagString: Untagged
@@ -380,18 +380,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2001523507}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 832928758f4fe184d91b71302a32c000, type: 3}
+  m_Script: {fileID: 11500000, guid: 993f8ef4de0c8c84cbc41557f697e2c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radialSegments: 30
-  heightSegments: 2
-  stemCapOption: 1
-  modelMesh: {fileID: 0}
-  meshFilter: {fileID: 0}
-  numVertexColumns: 0
-  numVertexRows: 0
-  radius: 0.5
-  length: 1
+  m_vegDesc: {fileID: 11400000, guid: d590c9af28f4b604fb09246bb6de6c86, type: 2}
 --- !u!4 &2001523509
 Transform:
   m_ObjectHideFlags: 0
