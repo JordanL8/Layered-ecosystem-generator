@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_vegetationInLayer:
   - {fileID: 11400000, guid: 5868c46c1e4706b409b2b63b4b8fbb05, type: 2}
+  TEMPPREFABS:
+  - {fileID: 7619520611185007445, guid: f132c567bc531f243b64ef314112ef18, type: 3}

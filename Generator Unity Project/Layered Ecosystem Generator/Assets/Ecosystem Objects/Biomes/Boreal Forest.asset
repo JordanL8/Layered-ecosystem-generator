@@ -26,3 +26,4 @@ MonoBehaviour:
   m_vegetationLayers:
   - {fileID: 11400000, guid: bc415dd6ba259d741bd49c8fd1e8fc7f, type: 2}
   - {fileID: 11400000, guid: 15b192d1fa3e1bd47a002127fd14654e, type: 2}
+  m_sparcity: 3

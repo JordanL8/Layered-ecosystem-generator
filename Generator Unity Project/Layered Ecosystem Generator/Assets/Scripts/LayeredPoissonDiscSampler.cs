@@ -5,14 +5,15 @@ using UnityEngine;
 public class LayeredPoissonDiscSampler
 {
     private List<PoissonSample> m_samples;
-    private Vector2 m_bounds;
-    private int m_rejectionNumber = 30;
+    private Bounds m_bounds;
+    private int m_rejectionNumber = 25;
+    private float m_sparcity;
 
-    public LayeredPoissonDiscSampler()
+    public LayeredPoissonDiscSampler(Bounds bounds, float sparcity = 1.0f)
     {
         m_samples = new List<PoissonSample>();
-        m_bounds.x = 10.0f;
-        m_bounds.y = 10.0f;
+        m_bounds = bounds;
+        m_sparcity = sparcity;
     }
 
     public void SampleForLayer(VegetationLayer layer, int layerNumber)
@@ -22,7 +23,7 @@ public class LayeredPoissonDiscSampler
         {
             spawnPoints = new List<PoissonSample>();
             PoissonSample newSample = GetSample(layer, layerNumber);
-            newSample.m_position = new Vector2(m_bounds.x / 2, m_bounds.y / 2);
+            newSample.m_samplePosition = new Vector2(m_bounds.min.x + Random.value * (m_bounds.max.x - m_bounds.min.x), m_bounds.min.z + Random.value * (m_bounds.max.z - m_bounds.min.z));
             m_samples.Add(newSample);
             spawnPoints.Add(newSample);
         }
@@ -41,7 +42,7 @@ public class LayeredPoissonDiscSampler
             while (numRejcetions <= m_rejectionNumber)
             {
                 successfulSample = true;
-                newSample.m_position = GetRandomPosition(spawnPoint, newSample);
+                newSample.m_samplePosition = GetRandomPosition(spawnPoint, newSample);
                 if (!IsInPlacementRegion(newSample))
                 {
                     successfulSample = false;
@@ -81,10 +82,10 @@ public class LayeredPoissonDiscSampler
 
     private bool IsInPlacementRegion(PoissonSample sample)
     {
-        return !(sample.m_position.x + sample.m_outerRadius > m_bounds.x ||
-            sample.m_position.x - sample.m_outerRadius < 0 ||
-            sample.m_position.y + sample.m_outerRadius > m_bounds.y ||
-            sample.m_position.y - sample.m_outerRadius < 0);
+        return !(sample.m_samplePosition.x + sample.m_outerRadius > m_bounds.max.x ||
+            sample.m_samplePosition.x - sample.m_outerRadius < m_bounds.min.x ||
+            sample.m_samplePosition.y + sample.m_outerRadius > m_bounds.max.z ||
+            sample.m_samplePosition.y - sample.m_outerRadius < m_bounds.min.z);
     }
 
     private PoissonSample GetSample(VegetationLayer layer, int layerNumber)
@@ -93,8 +94,8 @@ public class LayeredPoissonDiscSampler
         VegetationDescription currentVegetation = layer.m_vegetationInLayer[vegetationIndex];
 
         PoissonSample newSample = new PoissonSample();
-        newSample.m_innerRadius = currentVegetation.m_innerRadius;
-        newSample.m_outerRadius = currentVegetation.m_outerRadius;
+        newSample.m_innerRadius = currentVegetation.m_innerRadius * m_sparcity;
+        newSample.m_outerRadius = currentVegetation.m_outerRadius * m_sparcity;
         newSample.m_layer = layerNumber;
         newSample.m_vegetationType = vegetationIndex;
         return newSample;
@@ -107,6 +108,6 @@ public class LayeredPoissonDiscSampler
 
         float minimumDistance = sample.m_outerRadius;
         minimumDistance += sample.m_layer == spawnPoint.m_layer ? spawnPoint.m_outerRadius : spawnPoint.m_innerRadius;
-        return spawnPoint.m_position + (direction * Random.Range(minimumDistance, minimumDistance * 2.0f));   // This naive range results in a distribution biased towards the smaller radius. This gives a more packed result.
+        return spawnPoint.m_samplePosition + (direction * Random.Range(minimumDistance, minimumDistance * 2.0f));   // This naive range results in a distribution biased towards the smaller radius. This gives a more packed result.
     }
 }

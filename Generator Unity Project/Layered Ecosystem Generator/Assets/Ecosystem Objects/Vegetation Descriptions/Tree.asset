@@ -13,4 +13,40 @@ MonoBehaviour:
   m_Name: Tree
   m_EditorClassIdentifier: 
   m_innerRadius: 0.5
-  m_outerRadius: 1
+  m_outerRadius: 6
+  m_shape: 0
+  m_baseSize: 0
+  m_scale: 0
+  m_scaleV: 0
+  m_zScake: 0
+  m_zScaleV: 0
+  m_levels: 0
+  m_ratio: 0
+  m_ratioPower: 0
+  m_lobes: 0
+  m_lobeDepth: 0
+  m_flare: 0
+  m_0Scale: 0
+  m_0ScaleV: 0
+  m_0Length: 0
+  m_0LengthV: 0
+  m_0Taper: 0
+  m_0BaseSplits: 0
+  m_0SegSplits: 0
+  m_0SplitAngle: 0
+  m_0SplitAngleV: 0
+  m_0CurveRes: 0
+  m_0Curve: 0
+  m_0CurveBack: 0
+  m_0CurveV: 0
+  m_recLevelStem: []
+  m_leaves: 0
+  m_leafShape: 0
+  m_leafScale: 0
+  m_leafScaleX: 0
+  m_attractionUp: 0
+  m_pruneRation: 0
+  m_pruneWidth: 0
+  m_pruneWidthPeak: 0
+  m_prunePowerLow: 0
+  m_prunePowerHigh: 0

@@ -107,6 +107,11 @@ public class VegetationGenerator : MonoBehaviour
 
             if(i == 0 && stem.m_recursionLevel < 0)
             {
+                // Base split at this segment.
+            }
+            else
+            {
+                // Normal split.
             }
         }
 

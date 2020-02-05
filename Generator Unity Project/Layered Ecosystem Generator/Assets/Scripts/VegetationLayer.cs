@@ -6,4 +6,5 @@ using UnityEngine;
 public class VegetationLayer : ScriptableObject
 {
     public VegetationDescription[] m_vegetationInLayer;
+    public GameObject[] TEMPPREFABS;
 }

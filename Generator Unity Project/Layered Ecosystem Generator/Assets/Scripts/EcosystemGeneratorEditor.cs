@@ -40,6 +40,10 @@ public class EcosystemGeneratorEditor : Editor
         {
             DrawBiomeGraph();
         }
+        if(GUILayout.Button("Generate Ecosystem"))
+        {
+            m_targetComponent.GenerateEcosystem(m_targetComponent.biome, m_targetComponent.gameObject);
+        }
     }
 
     // UI

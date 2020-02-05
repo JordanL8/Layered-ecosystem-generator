@@ -11,4 +11,5 @@ public class Biome : ScriptableObject
     [Header("Generation")]
     public GroundLayer m_groundLayer;
     public VegetationLayer[] m_vegetationLayers;
+    public float m_sparcity = 1.0f;
 }
