@@ -7,7 +7,7 @@ using UnityEditor.AnimatedValues;
 public class EcosystemGeneratorWindow : EditorWindow
 {
     [SerializeField]
-    EcosystemGeneratorProperties m_properties;
+    private EcosystemGeneratorProperties m_properties;
 
     // Temp Window properties.
     private Texture2D m_biomesRepresentationTexture;
@@ -19,6 +19,8 @@ public class EcosystemGeneratorWindow : EditorWindow
     
     private LayeredPoissonDiscSampler m_sampler;
     private List<Transform> m_layerParents = new List<Transform>();
+
+    private Vector2 m_currentScrollPosition;
 
 
     [MenuItem("Window/Ecosystem Generator")]
@@ -42,14 +44,20 @@ public class EcosystemGeneratorWindow : EditorWindow
         }
         m_properties.m_hideBiomeSection.valueChanged.AddListener(Repaint);
         m_graphGuiStyle = new GUIStyle { alignment = TextAnchor.MiddleCenter };
+        m_currentScrollPosition = new Vector2();
         DrawBiomeGraph();
     }
 
     private void OnGUI()
     {
         if(m_properties == null) { return; }
+        // TODO: Fix vertical scroll view appearing over the UI.
+        m_currentScrollPosition = GUILayout.BeginScrollView(m_currentScrollPosition, false, false, GUIStyle.none, GUI.skin.verticalScrollbar);
         RenderBiomeSection();
-        RenderGraphSection();        
+        RenderEcosystemPropertiesSection();
+        RenderGenerationPropertiesSection();
+        RenderGraphSection();  // TODO: Add fade for showing the graph.
+        GUILayout.EndScrollView();
     }
 
     private void RenderBiomeSection()
@@ -104,35 +112,66 @@ public class EcosystemGeneratorWindow : EditorWindow
         EditorGUILayout.EndFadeGroup();
     }
 
-    private void RenderPropertiesSection()
+    private void RenderEcosystemPropertiesSection()
     {
+        EditorGUILayout.Space(20.0f);
+        EditorGUILayout.LabelField("Ecosystem Properties", EditorStyles.boldLabel);
+        
+        float halfWindowWidth = position.width / 2;
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Average Annual Temperature", GUILayout.Width(halfWindowWidth));
+        EditorGUILayout.LabelField("Average Annual Rainfall", GUILayout.Width(halfWindowWidth));
+        EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
+        m_properties.m_averageAnnualTemperature = EditorGUILayout.IntField(m_properties.m_averageAnnualTemperature);
+        m_properties.m_averageAnnualRainfall = EditorGUILayout.IntField(m_properties.m_averageAnnualRainfall);
+        EditorGUILayout.EndHorizontal();
     }
+
+    private void RenderGenerationPropertiesSection()
+    {
+        EditorGUILayout.Space(20.0f);
+        EditorGUILayout.LabelField("Placement Properties", EditorStyles.boldLabel);
+        m_properties.m_maximumIncline = EditorGUILayout.FloatField("Maximumg Include", m_properties.m_maximumIncline);
+        m_properties.m_checkHeightOffset = EditorGUILayout.FloatField("Height Check Offset", m_properties.m_checkHeightOffset);
+        m_properties.m_checkForEncroachment = EditorGUILayout.Toggle("Check For Encroachment", m_properties.m_checkForEncroachment);
+        m_properties.m_targetGameObject = EditorGUILayout.ObjectField("Target GameObject", m_properties.m_targetGameObject, typeof(GameObject)) as GameObject;
+}
 
     private void RenderGraphSection()
     {
         // Graph
         EditorGUILayout.Space(20.0f);
         EditorGUILayout.LabelField("Biome Graph", EditorStyles.boldLabel);
-
-        //EditorGUI.BeginDisabledGroup(true);
+   
         string displayBiomeText = m_currentBiome != null ? $"Current Biome: { m_currentBiome.m_biomeName }." : "Invalid Selection!";
         EditorGUILayout.LabelField(displayBiomeText);
-        //EditorGUI.EndDisabledGroup();
 
-        if (m_biomesRepresentationTexture != null)
+        if (GUILayout.Button(m_properties.m_hideGraphSection.target ? "Hide Graph" : "Show Graph"))
         {
-            EditorGUILayout.Space(20.0f);
-            GUILayout.Label(m_biomesRepresentationTexture, m_graphGuiStyle);
+            m_properties.m_hideGraphSection.target = !m_properties.m_hideGraphSection.target;
         }
-        if (GUILayout.Button("Redraw Biome Graph"))
+        if (EditorGUILayout.BeginFadeGroup(m_properties.m_hideGraphSection.faded))
         {
-            DrawBiomeGraph();
+            if (m_biomesRepresentationTexture != null)
+            {
+                EditorGUILayout.Space(20.0f);
+                GUILayout.Label(m_biomesRepresentationTexture, m_graphGuiStyle);
+            }
+            if (GUILayout.Button("Redraw Biome Graph"))
+            {
+                DrawBiomeGraph();
+            }
         }
-        if (GUILayout.Button("Generate Ecosystem"))
+        EditorGUILayout.EndFadeGroup();
+        EditorGUI.BeginDisabledGroup(m_currentBiome == null ||
+            m_properties.m_targetGameObject == null);
+        if (GUILayout.Button($"Generate {(m_currentBiome != null ? (m_currentBiome.m_biomeName) : "Ecosystem")}"))
         {
             GenerateEcosystem(m_currentBiome, m_properties.m_targetGameObject);
         }
+        EditorGUI.EndDisabledGroup();
     }
 
     private void DrawBiomeGraph()

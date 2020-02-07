@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4afc4fd2db86014e8bd5f4b82d6a9d5, type: 3}
   m_Name: Temperate Grasslands
   m_EditorClassIdentifier: 
-  m_biomeName: Temperate grasslands/desert
+  m_biomeName: Temperate Grasslands/Desert
+  m_groundLayer: {fileID: 0}
+  m_vegetationLayers: []
+  m_sparcity: 1
   m_temperatureAndRainfallSamplePoints:
   - {x: -10, y: 0}
   - {x: 17, y: 60}
   - {x: 14, y: 0}
   m_colorOnGraph: {r: 0.79215693, g: 0.6901961, b: 0.78823537, a: 1}
-  m_layers: []
+  m_hideGraph:
+    m_Target: 1
+    speed: 2
+    m_Value: 0

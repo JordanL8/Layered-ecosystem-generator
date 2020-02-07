@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4afc4fd2db86014e8bd5f4b82d6a9d5, type: 3}
   m_Name: Tropical Seasonal Forest Savanna
   m_EditorClassIdentifier: 
-  m_biomeName: Tropical seasonal forest/savanna
+  m_biomeName: Tropical Seasonal Forest/Savanna
+  m_groundLayer: {fileID: 0}
+  m_vegetationLayers: []
+  m_sparcity: 1
   m_temperatureAndRainfallSamplePoints:
   - {x: 17, y: 60}
   - {x: 18, y: 120}
@@ -22,4 +25,7 @@ MonoBehaviour:
   - {x: 29, y: 100}
   - {x: 25, y: 80}
   m_colorOnGraph: {r: 0.8313726, g: 0.6745098, b: 0.3019608, a: 1}
-  m_layers: []
+  m_hideGraph:
+    m_Target: 1
+    speed: 2
+    m_Value: 0

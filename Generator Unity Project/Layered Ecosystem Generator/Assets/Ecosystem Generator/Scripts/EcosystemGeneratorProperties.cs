@@ -24,4 +24,5 @@ public class EcosystemGeneratorProperties : ScriptableObject
 
     // Window Properties.
     [HideInInspector] [SerializeField] public AnimBool m_hideBiomeSection = new AnimBool(true);
+    [HideInInspector] [SerializeField] public AnimBool m_hideGraphSection = new AnimBool(true);
 }
