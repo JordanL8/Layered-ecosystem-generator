@@ -9,14 +9,14 @@ public class EcosystemGeneratorProperties : ScriptableObject
     [HideInInspector] [SerializeField] public List<Biome> m_biomes;
 
     // Ecosystem properties.
-    [Range(-15, 30), Tooltip("Controls the average annual temperature of your ecosystem.")]
+    [Range(-15, 30)]
     [HideInInspector] [SerializeField] public int m_averageAnnualTemperature = 9;
 
-    [Range(0, 450), Tooltip("Controls the average annual rainfall of your ecosystem.")]
+    [Range(0, 450)]
     [HideInInspector] [SerializeField] public int m_averageAnnualRainfall = 125;
 
     // Generation Properties.
-    [Range(0, 90), Tooltip("Controls the maximum incline that the generator places vegetation. If the angle from the ground's normal to Vector3.up is greater than this value, the generator does not place vegetation.")]
+    [Range(0, 90)]
     [HideInInspector] [SerializeField] public float m_maximumIncline = 10.0f;
     [HideInInspector] [SerializeField] public float m_checkHeightOffset = 5.0f;
     [HideInInspector] [SerializeField] public bool m_checkForEncroachment = false;

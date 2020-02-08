@@ -22,6 +22,13 @@ public class EcosystemGeneratorWindow : EditorWindow
 
     private Vector2 m_currentScrollPosition;
 
+    // UI
+    private GUIContent m_guiContentAverageAnnualTemp = new GUIContent("Average Annual Temperature", "Controls the average annual temperature of your ecosystem.");
+    private GUIContent m_guiContentAverageAnnualRain = new GUIContent("Average Annual Rainfall", "Controls the average annual rainfall of your ecosystem.");
+    private GUIContent m_guiContentMaximumInclude = new GUIContent("Maximum Incline", "Controls the maximum incline to place vegetation on. If the angle from the ground's normal to Vector3.up is greater than this value, the generator does not place vegetation on that ground.");
+    private GUIContent m_guiContentHeightCheckOffset = new GUIContent("Height Check Offset", "Controls the vertical offset that the generator adds to the height of the Collider attached to the Target GameObject. The generator casts a Ray downwards from this height to find the 3D world position of each sample.");
+    private GUIContent m_guiContentEncroachment = new GUIContent("Check For Encroachment", "When enabled, the generator does not place vegetation if the vegetation would encroach on GameObjects in your Scene.");
+    private GUIContent m_guiContentTargetGameObject = new GUIContent("Target GameObject", "Specifies the GameObject to generator the ecosystem on.");
 
     [MenuItem("Window/Ecosystem Generator")]
     private static void Init()
@@ -118,25 +125,23 @@ public class EcosystemGeneratorWindow : EditorWindow
         EditorGUILayout.LabelField("Ecosystem Properties", EditorStyles.boldLabel);
         
         float halfWindowWidth = position.width / 2;
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Average Annual Temperature", GUILayout.Width(halfWindowWidth));
-        EditorGUILayout.LabelField("Average Annual Rainfall", GUILayout.Width(halfWindowWidth));
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        m_properties.m_averageAnnualTemperature = EditorGUILayout.IntField(m_properties.m_averageAnnualTemperature);
-        m_properties.m_averageAnnualRainfall = EditorGUILayout.IntField(m_properties.m_averageAnnualRainfall);
-        EditorGUILayout.EndHorizontal();
+        EditorGUI.BeginChangeCheck();
+        m_properties.m_averageAnnualTemperature = EditorGUILayout.IntSlider(m_guiContentAverageAnnualTemp, m_properties.m_averageAnnualTemperature, -15, 30);
+        m_properties.m_averageAnnualRainfall = EditorGUILayout.IntSlider(m_guiContentAverageAnnualRain, m_properties.m_averageAnnualRainfall, 0, 450);
+        if(EditorGUI.EndChangeCheck())
+        {
+            DrawBiomeGraph();
+        }
     }
 
     private void RenderGenerationPropertiesSection()
     {
         EditorGUILayout.Space(20.0f);
         EditorGUILayout.LabelField("Placement Properties", EditorStyles.boldLabel);
-        m_properties.m_maximumIncline = EditorGUILayout.FloatField("Maximumg Include", m_properties.m_maximumIncline);
-        m_properties.m_checkHeightOffset = EditorGUILayout.FloatField("Height Check Offset", m_properties.m_checkHeightOffset);
-        m_properties.m_checkForEncroachment = EditorGUILayout.Toggle("Check For Encroachment", m_properties.m_checkForEncroachment);
-        m_properties.m_targetGameObject = EditorGUILayout.ObjectField("Target GameObject", m_properties.m_targetGameObject, typeof(GameObject)) as GameObject;
+        m_properties.m_maximumIncline = EditorGUILayout.Slider(m_guiContentMaximumInclude, m_properties.m_maximumIncline, 0.0f, 90.0f);
+        m_properties.m_checkHeightOffset = EditorGUILayout.FloatField(m_guiContentHeightCheckOffset, m_properties.m_checkHeightOffset);
+        m_properties.m_checkForEncroachment = EditorGUILayout.Toggle(m_guiContentEncroachment, m_properties.m_checkForEncroachment);
+        m_properties.m_targetGameObject = EditorGUILayout.ObjectField(m_guiContentTargetGameObject, m_properties.m_targetGameObject, typeof(GameObject)) as GameObject;
 }
 
     private void RenderGraphSection()
