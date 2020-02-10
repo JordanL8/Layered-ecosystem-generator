@@ -10,7 +10,7 @@ public class StemSegment
     public float m_startRadius;
     public float m_endRadius;
 }
-
+/*
 public class Stem 
 {
     private List<StemSegment> m_segments;
@@ -40,3 +40,4 @@ public class Stem
 
     
 }
+*/

@@ -15,38 +15,51 @@ MonoBehaviour:
   m_innerRadius: 0
   m_outerRadius: 0
   m_shape: 7
-  m_baseSize: 0.4
-  m_scale: 13
-  m_scaleV: 3
-  m_zScake: 1
-  m_zScaleV: 0
-  m_levels: 3
-  m_ratio: 0.015
-  m_ratioPower: 1.2
-  m_lobes: 5
-  m_lobeDepth: 0.07
-  m_flare: 0.6
   m_0Scale: 1
   m_0ScaleV: 0
-  m_0Length: 1
-  m_0LengthV: 0
-  m_0Taper: 1
-  m_0BaseSplits: 0
-  m_0SegSplits: 0
-  m_0SplitAngle: 0
-  m_0SplitAngleV: 0
-  m_0CurveRes: 3
-  m_0Curve: 0
-  m_0CurveBack: 0
-  m_0CurveV: 20
-  m_recLevelStem: []
-  m_leaves: 25
+  m_levels: 4
+  m_ratio: 0.015
+  m_ratioPower: 1.2
+  m_flare: 0.6
+  m_baseSplits: 0
+  m_baseSize:
+  - 0.4
+  - 0
+  - 0
+  m_downAngle: 0000000000000000
+  m_downAngleV: 0000000000000000
+  m_rotate: 0000000000000000
+  m_rotateV: 0000000000000000
+  m_branches: 0000000000000000
+  m_length:
+  - 1
+  - 0.4
+  - 0.6
+  - 0
+  - 0
+  - 0
+  m_lengthV:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  m_taper: 0000000000000000
+  m_segSplits: 0000000000000000
+  m_splitAngle: 0000000000000000
+  m_splitAngleV: 0000000000000000
+  m_curveRes: 0000000000000000
+  m_curve: 0000000000000000
+  m_curveV: 0000000000000000
+  m_curveBack: 0000000000000000
+  m_leafNumber: 25
   m_leafShape: 0
   m_leafScale: 0.17
   m_leafScaleX: 1
   m_attractionUp: 0.5
-  m_pruneRation: 0
+  m_pruneRatio: 0
   m_pruneWidth: 0.5
   m_pruneWidthPeak: 0.5
-  m_prunePowerLow: 0.5
-  m_prunePowerHigh: 0.5
+  prunePowerLow: 0
+  prunePowerHigh: 0
