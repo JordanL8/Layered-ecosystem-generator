@@ -28,11 +28,9 @@ public class EcosystemGeneratorEditor : Editor
         // Graph
         EditorGUILayout.Space(20.0f);
         EditorGUILayout.LabelField("Biome", EditorStyles.boldLabel);
-
-        //EditorGUI.BeginDisabledGroup(true);
+        
         string displayBiomeText = m_currentBiome != null ? $"Current Biome: { m_currentBiome.m_biomeName }." : "Invalid Selection!";
         EditorGUILayout.LabelField(displayBiomeText);
-        //EditorGUI.EndDisabledGroup();
 
         EditorGUILayout.Space(20.0f);
         GUILayout.Label(m_biomesRepresentationTexture, m_graphGuiStyle);

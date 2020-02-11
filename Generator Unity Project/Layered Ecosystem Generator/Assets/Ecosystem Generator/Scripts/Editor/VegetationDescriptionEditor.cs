@@ -9,12 +9,14 @@ public class VegetationDescriptionEditor : Editor
 {
     private VegetationDescription m_targetDescription;
 
-
-
+    private void Awake()
+    {
+        m_targetDescription = (VegetationDescription)target;
+        ResizeRelevantArrays();
+    }
     private void OnEnable()
     {
         m_targetDescription = (VegetationDescription)target;
-        m_targetDescription.m_levels = 4;
         ResizeRelevantArrays();
     }
 
@@ -43,7 +45,7 @@ public class VegetationDescriptionEditor : Editor
         m_targetDescription.m_0Scale = EditorGUILayout.IntField("Base Scale", m_targetDescription.m_0Scale);
         m_targetDescription.m_0ScaleV = EditorGUILayout.IntField("Base Scale V", m_targetDescription.m_0ScaleV);
         EditorGUI.BeginChangeCheck();
-        m_targetDescription.m_levels = EditorGUILayout.IntSlider("Levels", m_targetDescription.m_levels, 0, 4);
+        m_targetDescription.m_levels = EditorGUILayout.IntSlider("Levels", m_targetDescription.m_levels, 0, 3);
         if(EditorGUI.EndChangeCheck())
         {
             ResizeRelevantArrays();
@@ -56,11 +58,11 @@ public class VegetationDescriptionEditor : Editor
 
     private void RenderRecursiveProperties()
     {
-        if(m_targetDescription.m_levels == 0) { return; }
         GUILayout.Space(20.0f);
         EditorGUILayout.LabelField("Branch", EditorStyles.boldLabel);
         GUILayout.BeginHorizontal();
         GUILayout.BeginVertical();
+        GUILayout.Label("Property", EditorStyles.boldLabel, GUILayout.Height(20.0f));
         GUILayout.Label("Base Size", GUILayout.Height(20.0f));
         GUILayout.Label("Down Angle", GUILayout.Height(20.0f));
         GUILayout.Label("Down Angle V", GUILayout.Height(20.0f));
@@ -80,9 +82,11 @@ public class VegetationDescriptionEditor : Editor
         GUILayout.Label("Curve V", GUILayout.Height(20.0f));
         GUILayout.Label("Curve Back", GUILayout.Height(20.0f));
         GUILayout.EndVertical();
-        for (int i = 0; i < m_targetDescription.m_levels; i++)
+        for (int i = 0; i < m_targetDescription.m_levels + 1; i++)
         {
             GUILayout.BeginVertical();
+            string levelHeading = i == 0 ? "Base" : i.ToString();
+            GUILayout.Label(levelHeading, EditorStyles.boldLabel, GUILayout.Height(20.0f));
             m_targetDescription.m_baseSize[i] = EditorGUILayout.FloatField(m_targetDescription.m_baseSize[i], GUILayout.Height(20.0f));
             m_targetDescription.m_downAngle[i] = EditorGUILayout.IntField(m_targetDescription.m_downAngle[i], GUILayout.Height(20.0f));
             m_targetDescription.m_downAngleV[i] = EditorGUILayout.IntField(m_targetDescription.m_downAngleV[i], GUILayout.Height(20.0f));
@@ -129,36 +133,41 @@ public class VegetationDescriptionEditor : Editor
 
     private void ResizeRelevantArrays()
     {
-        int newSize = m_targetDescription.m_levels;
-        int oldSize = m_targetDescription.m_baseSize.Length;
+        int newSize = m_targetDescription.m_levels + 1;
+        int oldSize = 0;
+        bool initialisesArray = true;
+        if (m_targetDescription.m_baseSize != null)
+        {
+            oldSize = m_targetDescription.m_baseSize.Length;
+            initialisesArray = false;
+        }
         if (newSize == oldSize) { return; }
         else
         {
-            bool isIncrease = newSize > oldSize;
-            ResizeArray(ref m_targetDescription.m_baseSize, newSize);
-            ResizeArray(ref m_targetDescription.m_downAngle, newSize);
-            ResizeArray(ref m_targetDescription.m_downAngleV, newSize);
-            ResizeArray(ref m_targetDescription.m_rotate, newSize);
-            ResizeArray(ref m_targetDescription.m_rotateV, newSize);
-            ResizeArray(ref m_targetDescription.m_branches, newSize);
-            ResizeArray(ref m_targetDescription.m_length, newSize);
-            ResizeArray(ref m_targetDescription.m_lengthV, newSize);
-            ResizeArray(ref m_targetDescription.m_taper, newSize);
-            ResizeArray(ref m_targetDescription.m_segSplits, newSize);
-            ResizeArray(ref m_targetDescription.m_splitAngle, newSize);
-            ResizeArray(ref m_targetDescription.m_splitAngleV, newSize);
-            ResizeArray(ref m_targetDescription.m_curveRes, newSize);
-            ResizeArray(ref m_targetDescription.m_curve, newSize);
-            ResizeArray(ref m_targetDescription.m_curveV, newSize);
-            ResizeArray(ref m_targetDescription.m_curveBack, newSize);
+            ResizeArray(ref m_targetDescription.m_baseSize, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_downAngle, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_downAngleV, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_rotate, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_rotateV, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_branches, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_length, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_lengthV, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_taper, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_segSplits, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_splitAngle, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_splitAngleV, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_curveRes, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_curve, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_curveV, newSize, initialisesArray);
+            ResizeArray(ref m_targetDescription.m_curveBack, newSize, initialisesArray);
         }
     }
     
 
-    private void ResizeArray<T>(ref T[] array, int newSize)
+    private void ResizeArray<T>(ref T[] array, int newSize, bool initialisesArray)
     {
         T[] newArray = new T[newSize];
-        int smallestSize = newSize < array.Length ? newSize : array.Length;
+        int smallestSize = initialisesArray ? 0 : newSize < array.Length ? newSize : array.Length;
         for (int i = 0; i < smallestSize; i++)
         {
             newArray[i] = array[i];
