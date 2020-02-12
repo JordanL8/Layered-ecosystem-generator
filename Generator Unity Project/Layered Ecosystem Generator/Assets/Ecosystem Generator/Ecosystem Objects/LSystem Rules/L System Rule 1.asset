@@ -17,7 +17,7 @@ MonoBehaviour:
     m_value: FF-[>->F+>F]+[>+>F->>F]
   - m_key: 88
     m_value: FF+[>+>F]+[>->F]
-  m_iterations: 5
+  m_iterations: 4
   m_axiom: FX
   d_lines: []
   m_length: 0.1
