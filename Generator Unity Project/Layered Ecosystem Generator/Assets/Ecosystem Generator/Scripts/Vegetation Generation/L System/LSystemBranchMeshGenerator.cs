@@ -43,6 +43,13 @@ public static class LSystemBranchMeshGenerator
     {
         MeshBuilder meshBuilder = new MeshBuilder();
         Quaternion rotation = Quaternion.identity;
+        float height = 0.0f;
+        for (int i = 0; i < branch.m_branchPositions.Count - 1; i++)
+        {
+            height += Vector3.Magnitude(branch.m_branchPositions[i].m_position - branch.m_branchPositions[i + 1].m_position);
+        }
+        float circumference = branch.m_branchPositions[0].m_radius * 2 * Mathf.PI;
+        float ratio = height / circumference;
         for (int i = 0; i < branch.m_branchPositions.Count; i++)
         {
             LSystemPosition currentPosition = branch.m_branchPositions[i];
@@ -50,7 +57,7 @@ public static class LSystemBranchMeshGenerator
             {
                 rotation = Quaternion.LookRotation(branch.m_branchPositions[i + 1].m_position - currentPosition.m_position);
             }
-            float v = (float)i / branch.m_branchPositions.Count;
+            float v = (float)i / branch.m_branchPositions.Count * ratio;
             BuildRing(meshBuilder, currentPosition.m_position, rotation, 6, currentPosition.m_radius, v, i > 0);
         }
 

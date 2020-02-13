@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
+using UnityEngine.Android;
 
 [CreateAssetMenu(fileName = "L System Rules", menuName = "Ecosystem Generator/L System Rules/Standard Rules", order = 0)]
 public class LSystemGenerationRulesStandard : LSystemGenerationRuleAsset
@@ -27,6 +28,7 @@ public class LSystemGenerationRulesStandard : LSystemGenerationRuleAsset
 
     [Tooltip("Sets the default amount to multiply the current thickness by when you use the ; command.")]
     public float m_thicknessScale;
+
 
     public override List<LSystemBranch> Build(string commandString)
     {

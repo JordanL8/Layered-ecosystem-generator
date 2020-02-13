@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 
-public class LSystem : MonoBehaviour
+public class LSystemTree : MonoBehaviour
 {
     public LSystemGenerationRuleAsset m_rulesAsset;
+
+    [Header("Rendering")]
+    [Tooltip("Specifies the Material that the trunk and branches use.")]
+    public Material m_branchMaterial;
+
+    [Tooltip("Specifies the Prefab that the L-System uses for the tree leaves.")]
+    public GameObject m_leafPrefab;
 
     private string m_sentence;
     
@@ -15,7 +22,6 @@ public class LSystem : MonoBehaviour
     {
         SetInitialReferences();
         //Generate();
-        // Get branches from turtle then build
     }
 
     private void SetInitialReferences()
@@ -73,7 +79,7 @@ public class LSystem : MonoBehaviour
         {
             Mesh segmentMesh = LSystemBranchMeshGenerator.BuildBranch(branches[i]);
             GameObject obj = new GameObject();
-            obj.AddComponent<MeshRenderer>();
+            obj.AddComponent<MeshRenderer>().sharedMaterial = m_branchMaterial;
             obj.AddComponent<MeshFilter>().sharedMesh = segmentMesh;
             //obj.transform.position = branches[i].m_branchPositions[0].m_position;
             obj.transform.parent = transform;
