@@ -28,9 +28,9 @@ public class LSystemGenerationRulesStandard : LSystemGenerationRuleAsset
     [Tooltip("Sets the default amount to multiply the current thickness by when you use the ; command.")]
     public float m_thicknessScale;
 
-    public override void Build(string commandString)
+    public override List<LSystemBranch> Build(string commandString)
     {
-        LSystemTurtle turtle = new LSystemTurtle(Vector3.zero, Vector3.up, Vector3.right, m_stepSize, m_stepSizeScale, m_angle, m_angleScale, m_thickness, m_thicknessScale);
+        m_turtle = new LSystemTurtle(Vector3.zero, Vector3.up, Vector3.right, m_stepSize, m_stepSizeScale, m_angle, m_angleScale, m_thickness, m_thicknessScale);
         for (int i = 0; i < commandString.Length; i++)
         {
             if (i + 1 < commandString.Length)
@@ -45,36 +45,16 @@ public class LSystemGenerationRulesStandard : LSystemGenerationRuleAsset
                     }
                     string parametersString = parameters.ToString();
                     string[] parameterArray = parametersString.Split(',');
-                    ParseCommand(commandString[i], turtle, parameterArray);
+                    ParseCommand(commandString[i], m_turtle, parameterArray);
                     i = j;
                     continue;
                 }
             }
-            ParseCommand(commandString[i], turtle);
+            ParseCommand(commandString[i], m_turtle);
         }
 
-        turtle.Commit();
-        List<LSystemBranch> branches = turtle.GetBranches();
-
-        for (int i = 0; i < branches.Count; i++)
-        {
-            for (int j = 0; j < branches[i].m_branchPositions.Count - 1; j++)
-            {
-                StemSegment seg = new StemSegment()
-                {
-                    m_startPos = branches[i].m_branchPositions[j].m_position,
-                    m_endPos = branches[i].m_branchPositions[j + 1].m_position,
-                    m_startRadius = branches[i].m_branchPositions[j].m_radius < 0 ? branches[i].m_branchPositions[j + 1].m_radius : branches[i].m_branchPositions[j].m_radius,
-                    m_endRadius = branches[i].m_branchPositions[j + 1].m_radius
-                };
-                Mesh segmentMesh = StemFactory.CreateStemMesh(seg, 6, StemCapOption.BOTH_CAPS);
-                GameObject obj = new GameObject();
-                obj.AddComponent<MeshRenderer>();
-                obj.AddComponent<MeshFilter>().sharedMesh = segmentMesh;
-                obj.transform.position = seg.m_startPos;
-                obj.transform.parent = GameObject.Find("LSystem Tree").transform;
-            }
-        }
+        m_turtle.Commit();
+        return m_turtle.GetBranches();
     }
 
     private void ParseCommand(char command, LSystemTurtle turtle, params string[] commandParameters)
@@ -314,5 +294,10 @@ public class LSystemGenerationRulesStandard : LSystemGenerationRuleAsset
                 turtle.DivideAngle();
             } break;
         }
+    }
+
+    public List<LSystemBranch> GetBranches()
+    {
+        return m_turtle.GetBranches();
     }
 }

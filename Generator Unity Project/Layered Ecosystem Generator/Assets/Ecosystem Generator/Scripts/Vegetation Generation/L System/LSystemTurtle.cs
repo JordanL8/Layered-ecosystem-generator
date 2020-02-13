@@ -72,7 +72,7 @@ public class LSystemTurtle
         m_currentTurtleProperties.m_branch.m_branchPositions.Add(new LSystemPosition()
         {
             m_position = position,
-            m_radius = -1
+            m_radius = thickness
         });
         Push();
     }
@@ -209,7 +209,7 @@ public class LSystemTurtle
         newPosition.m_branch.m_branchPositions.Add(new LSystemPosition()
         {
             m_position = m_currentTurtleProperties.m_position,
-            m_radius = -1
+            m_radius = m_currentTurtleProperties.m_thickness
         });
 
         m_positionStack.Push(newPosition);

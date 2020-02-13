@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabdc02414acb214e9ecb3e00192c288, type: 3}
+  m_Name: Tree Preset 1
+  m_EditorClassIdentifier: 
+  m_axiom: X
+  m_rules:
+  - X=F-[[X]+X]+F[+FX]-X
+  - F=FF
+  m_iterations: 4
+  m_stepSize: 0.3
+  m_stepSizeScale: 0.9
+  m_angle: 22.5
+  m_angleScale: 0.97
+  m_thickness: 0.1
+  m_thicknessScale: 0.9

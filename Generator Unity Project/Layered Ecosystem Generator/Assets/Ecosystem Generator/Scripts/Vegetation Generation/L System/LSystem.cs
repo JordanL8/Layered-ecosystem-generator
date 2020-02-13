@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 
-
 public class LSystem : MonoBehaviour
 {
     public LSystemGenerationRuleAsset m_rulesAsset;
@@ -30,7 +29,15 @@ public class LSystem : MonoBehaviour
         m_rulesDictionary = new Dictionary<char, string>();
         for (int i = 0; i < m_rulesAsset.m_rules.Length; i++)
         {
-            m_rulesDictionary.Add(m_rulesAsset.m_rules[i].m_key, m_rulesAsset.m_rules[i].m_value);
+            string[] keyValue = m_rulesAsset.m_rules[i].Split('=');
+            if (keyValue.Length < 2)
+            {
+                Debug.LogError($"{m_rulesAsset.m_rules[i]} is not a valid rule");
+            }
+            else
+            {
+                m_rulesDictionary.Add(keyValue[0].ToCharArray()[0], keyValue[1]);
+            }
         }
     }
 
@@ -54,8 +61,23 @@ public class LSystem : MonoBehaviour
             }
             m_sentence = stringBuilder.ToString();
         }
-        m_rulesAsset.Build(m_sentence);
+        List<LSystemBranch> branches = m_rulesAsset.Build(m_sentence);
         m_sentence = "";
+
+        Build(branches);
+    }
+
+    private void Build(List<LSystemBranch> branches)
+    {
+        for (int i = 0; i < branches.Count; i++)
+        {
+            Mesh segmentMesh = LSystemBranchMeshGenerator.BuildBranch(branches[i]);
+            GameObject obj = new GameObject();
+            obj.AddComponent<MeshRenderer>();
+            obj.AddComponent<MeshFilter>().sharedMesh = segmentMesh;
+            //obj.transform.position = branches[i].m_branchPositions[0].m_position;
+            obj.transform.parent = transform;
+        }
     }
     
 
@@ -65,21 +87,5 @@ public class LSystem : MonoBehaviour
         {
             Generate();
         }
-        if (Input.GetKey(KeyCode.D))
-        {
-            if (m_rulesAsset != null &&
-                m_rulesAsset.d_lines != null)
-            {
-                for (int i = 0; i < m_rulesAsset.d_lines.Count; i += 2)
-                {
-                    Debug.DrawLine(m_rulesAsset.d_lines[i], m_rulesAsset.d_lines[i + 1]);
-                }
-            }
-        }
-    }
-
-    private void OnApplicationQuit()
-    {
-        m_rulesAsset.d_lines.Clear();
     }
 }
