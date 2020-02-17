@@ -81,8 +81,13 @@ public class LSystemTree : MonoBehaviour
             GameObject obj = new GameObject();
             obj.AddComponent<MeshRenderer>().sharedMaterial = m_branchMaterial;
             obj.AddComponent<MeshFilter>().sharedMesh = segmentMesh;
-            //obj.transform.position = branches[i].m_branchPositions[0].m_position;
             obj.transform.parent = transform;
+
+            for (int j = 0; j < branches[i].m_leafTransforms.Count; j++)
+            {
+                LSystemLeafTransform leafTransform = branches[i].m_leafTransforms[j];
+                Instantiate(m_leafPrefab, leafTransform.m_position, Quaternion.LookRotation(leafTransform.m_eularRotation));
+            }
         }
     }
     

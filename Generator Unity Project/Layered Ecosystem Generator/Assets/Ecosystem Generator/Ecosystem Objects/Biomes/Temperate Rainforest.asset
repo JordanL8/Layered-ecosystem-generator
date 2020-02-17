@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_biomeName: Temperate Rainforest
   m_groundLayer: {fileID: 0}
-  m_vegetationLayers: []
+  m_vegetationLayers:
+  - {fileID: 11400000, guid: f02bae4301d7a074a9199ece439108b0, type: 2}
+  - {fileID: 11400000, guid: 950ae5d489a1d7f4ab9ed77e9e9665e3, type: 2}
+  - {fileID: 11400000, guid: e62e74d1f2ab5e949a47a89021562845, type: 2}
+  - {fileID: 11400000, guid: eb645c6f4999b9b49ba4e9b129824c07, type: 2}
   m_sparcity: 1
   m_temperatureAndRainfallSamplePoints:
   - {x: 3, y: 170}
@@ -27,4 +31,4 @@ MonoBehaviour:
   m_hideGraph:
     m_Target: 1
     speed: 2
-    m_Value: 0
+    m_Value: 1

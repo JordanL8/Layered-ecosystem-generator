@@ -33,8 +33,8 @@ public class VegetationDescriptionEditor : Editor
     private void RenderPlacementProperties()
     {
         EditorGUILayout.LabelField("Placement Model", EditorStyles.boldLabel);
-        m_targetDescription.m_innerRadius = EditorGUILayout.FloatField("Inner Radius", m_targetDescription.m_innerRadius);
-        m_targetDescription.m_outerRadius = EditorGUILayout.FloatField("Outer Radius", m_targetDescription.m_outerRadius);
+        m_targetDescription.m_innerRadius = Mathf.Max(EditorGUILayout.FloatField("Inner Radius", m_targetDescription.m_innerRadius), 0.05f);
+        m_targetDescription.m_outerRadius = Mathf.Max(EditorGUILayout.FloatField("Outer Radius", m_targetDescription.m_outerRadius), 0.05f);
     }
 
     private void RenderGeneralProperties()

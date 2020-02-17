@@ -220,11 +220,15 @@ public class EcosystemGeneratorWindow : EditorWindow
     // Generator.
 
 
-    public void ClearHierarchy()
+    public void ClearHierarchy(GameObject targetGameObject)
     {
         if (m_layerParents == null)
         {
             return;
+        }
+        else if(m_layerParents.Count > 0 && m_layerParents[0].parent != targetGameObject.transform)
+        {
+            m_layerParents.Clear();
         }
         for (int i = 0; i < m_layerParents.Count; i++)
         {
@@ -248,7 +252,7 @@ public class EcosystemGeneratorWindow : EditorWindow
 
         m_sampler = new LayeredPoissonDiscSampler(targetBounds, biome.m_sparcity);
         if (m_layerParents == null) { m_layerParents = new List<Transform>(); }
-        ClearHierarchy();
+        ClearHierarchy(targetGameObject);
 
         for (int i = 0; i < biome.m_vegetationLayers.Length; i++)
         {
@@ -339,11 +343,11 @@ public class EcosystemGeneratorWindow : EditorWindow
             veg.transform.parent = m_layerParents[samples[i].m_layer];
 
             //GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            //obj.transform.position = new Vector3(samples[i].m_position.x, 0, samples[i].m_position.y);
+            //obj.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0, samples[i].m_correctedWorldSpacePosition.z);
             //obj.transform.localScale = new Vector3(samples[i].m_outerRadius * 2, 0.0f, samples[i].m_outerRadius * 2);
             //obj.transform.parent = m_layerParents[samples[i].m_layer];
             //GameObject obj2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            //obj2.transform.position = new Vector3(samples[i].m_position.x, 0, samples[i].m_position.y);
+            //obj2.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0, samples[i].m_correctedWorldSpacePosition.z);
             //obj2.transform.localScale = new Vector3(samples[i].m_innerRadius * 2, 0.0f, samples[i].m_innerRadius * 2);
             //obj2.transform.parent = m_layerParents[samples[i].m_layer];
         }

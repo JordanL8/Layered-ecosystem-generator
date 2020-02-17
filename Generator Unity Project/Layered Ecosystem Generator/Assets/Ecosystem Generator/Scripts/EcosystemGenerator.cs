@@ -148,14 +148,14 @@ public class EcosystemGenerator : MonoBehaviour
             veg.transform.rotation = Quaternion.Euler(0, Random.value * 360, 0);
             veg.transform.parent = m_layerParents[samples[i].m_layer];
 
-            //GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            //obj.transform.position = new Vector3(samples[i].m_position.x, 0, samples[i].m_position.y);
-            //obj.transform.localScale = new Vector3(samples[i].m_outerRadius * 2, 0.0f, samples[i].m_outerRadius * 2);
-            //obj.transform.parent = m_layerParents[samples[i].m_layer];
-            //GameObject obj2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            //obj2.transform.position = new Vector3(samples[i].m_position.x, 0, samples[i].m_position.y);
-            //obj2.transform.localScale = new Vector3(samples[i].m_innerRadius * 2, 0.0f, samples[i].m_innerRadius * 2);
-            //obj2.transform.parent = m_layerParents[samples[i].m_layer];
+            GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            obj.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0, samples[i].m_correctedWorldSpacePosition.y);
+            obj.transform.localScale = new Vector3(samples[i].m_outerRadius * 2, 0.0f, samples[i].m_outerRadius * 2);
+            obj.transform.parent = m_layerParents[samples[i].m_layer];
+            GameObject obj2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            obj2.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0, samples[i].m_correctedWorldSpacePosition.y);
+            obj2.transform.localScale = new Vector3(samples[i].m_innerRadius * 2, 0.0f, samples[i].m_innerRadius * 2);
+            obj2.transform.parent = m_layerParents[samples[i].m_layer];
         }
     }
 }

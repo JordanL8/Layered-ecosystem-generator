@@ -2,7 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LSystemPosition
+public class LSystemLeafTransform
+{
+    public Vector3 m_position;
+    public Vector3 m_eularRotation;
+}
+
+public class LSystemBranchPosition
 {
     public Vector3 m_position;
     public float m_radius;
@@ -10,14 +16,15 @@ public class LSystemPosition
 
 public class LSystemBranch
 {
-    public List<LSystemPosition> m_branchPositions;
+    public List<LSystemBranchPosition> m_branchPositions;
+    public List<LSystemLeafTransform> m_leafTransforms;
 
     public LSystemBranch()
     {
-        m_branchPositions = new List<LSystemPosition>();
+        m_branchPositions = new List<LSystemBranchPosition>();
+        m_leafTransforms = new List<LSystemLeafTransform>();
     }
 }
-
 
 
 public class TurtleProperties
@@ -69,7 +76,7 @@ public class LSystemTurtle
             m_thicknessScale = thicknessScale,
             m_branch = new LSystemBranch(),
         };
-        m_currentTurtleProperties.m_branch.m_branchPositions.Add(new LSystemPosition()
+        m_currentTurtleProperties.m_branch.m_branchPositions.Add(new LSystemBranchPosition()
         {
             m_position = position,
             m_radius = thickness
@@ -83,7 +90,7 @@ public class LSystemTurtle
         radius = radius < 0 ? m_currentTurtleProperties.m_thickness : radius;
 
         m_currentTurtleProperties.m_position += m_currentTurtleProperties.m_forward * distance;
-        m_currentTurtleProperties.m_branch.m_branchPositions.Add(new LSystemPosition()
+        m_currentTurtleProperties.m_branch.m_branchPositions.Add(new LSystemBranchPosition()
         {
             m_position = m_currentTurtleProperties.m_position,
             m_radius = radius
@@ -188,6 +195,19 @@ public class LSystemTurtle
     }
     #endregion
 
+    #region Leaves
+    // L
+    public void AddLeaf(int option = 0)
+    {
+        LSystemLeafTransform newLeaf = new LSystemLeafTransform()
+        {
+            m_position = m_currentTurtleProperties.m_position + m_currentTurtleProperties.m_right * m_currentTurtleProperties.m_thickness,
+            m_eularRotation = m_currentTurtleProperties.m_right
+        };
+        m_currentTurtleProperties.m_branch.m_leafTransforms.Add(newLeaf);
+    }
+    #endregion
+
     #region Stack Management
     // [
     public void Push()
@@ -206,7 +226,7 @@ public class LSystemTurtle
             m_branch = new LSystemBranch()
         };
 
-        newPosition.m_branch.m_branchPositions.Add(new LSystemPosition()
+        newPosition.m_branch.m_branchPositions.Add(new LSystemBranchPosition()
         {
             m_position = m_currentTurtleProperties.m_position,
             m_radius = m_currentTurtleProperties.m_thickness

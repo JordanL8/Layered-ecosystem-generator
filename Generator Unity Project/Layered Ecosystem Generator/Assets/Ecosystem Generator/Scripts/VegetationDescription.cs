@@ -11,7 +11,6 @@ using UnityEditor;
 public class VegetationDescription : ScriptableObject
 {
     [Header("Placement Model")]
-
     public float m_innerRadius;
     public float m_outerRadius;
 

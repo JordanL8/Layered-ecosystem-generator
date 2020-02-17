@@ -37,7 +37,7 @@ public class LSystemGenerationRulesStandard : LSystemGenerationRuleAsset
         {
             if (i + 1 < commandString.Length)
             {
-                if (commandString[i + 1] == '(') // Move command has parameters
+                if (commandString[i + 1] == '(') // Command has parameters
                 {
                     StringBuilder parameters = new StringBuilder();
                     int j = i + 2;
@@ -294,6 +294,21 @@ public class LSystemGenerationRulesStandard : LSystemGenerationRuleAsset
                     }
                 }
                 turtle.DivideAngle();
+            } break;
+
+
+            case 'L':
+            {
+                if (commandParameters.Length > 0)
+                {
+                    int leafOption;
+                    if (int.TryParse(commandParameters[0], out leafOption))
+                    {
+                        turtle.AddLeaf(leafOption);
+                        break;
+                    }
+                }
+                turtle.AddLeaf();
             } break;
         }
     }

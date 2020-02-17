@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_axiom: FFFA
   m_rules:
-  - A="![&~(5)FFA]////[&~(5)FFA]////[&~(5)FFA]
-  m_iterations: 5
+  - A="![B]////[B]////[B]
+  - B=&~(5)FFA
+  m_iterations: 10
   m_stepSize: 0.3
   m_stepSizeScale: 0.9
   m_angle: 25
