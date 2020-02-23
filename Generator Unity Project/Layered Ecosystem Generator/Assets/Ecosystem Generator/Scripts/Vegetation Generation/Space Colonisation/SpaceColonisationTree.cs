@@ -292,7 +292,7 @@ public class SpaceColonisationTree : MonoBehaviour
             }
         }
         node.m_validAttractionPoints.Clear();
-        influenceDirection = averageDirection.normalized;
+        influenceDirection = (node.m_direction + averageDirection).normalized;
         return count == 0 ? false : true;
     }
 

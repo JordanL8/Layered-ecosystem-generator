@@ -46,6 +46,84 @@ public class MeshBuilder
         mesh.RecalculateBounds();
 
         return mesh;
-    }    
+    }
+
+    // Cylinder generation based on https://gamasutra.com/blogs/JayelindaSuridge/20130905/199626/Modelling_by_numbers_Part_Two_A.php.
+
+    public void BuildRing(Vector3 position, Quaternion rotation, int segments, float radius, float v, bool buildTriangles)
+    {
+        float angleInc = (Mathf.PI * 2.0f) / segments;
+
+        for (int i = 0; i <= segments; i++)
+        {
+            float angle = angleInc * i;
+
+            Vector3 unitPosition = Vector3.zero;
+            unitPosition.x = Mathf.Cos(angle);
+            unitPosition.y = Mathf.Sin(-angle);
+
+            unitPosition = rotation * unitPosition;
+
+            Vertices.Add(position + unitPosition * radius);
+            Normals.Add(unitPosition);
+            UVs.Add(new Vector2((float)i / segments, v));
+
+            if (i > 0 && buildTriangles)
+            {
+                int baseIndex = Vertices.Count - 1;
+
+                int vertsPerRow = segments + 1;
+
+                int index0 = baseIndex;
+                int index1 = baseIndex - 1;
+                int index2 = baseIndex - vertsPerRow;
+                int index3 = baseIndex - vertsPerRow - 1;
+
+                AddTriangle(index0, index2, index1);
+                AddTriangle(index2, index3, index1);
+            }
+        }
+    }
+
+    public void BuildCap(Vector3 position, Quaternion rotation, int segments, float radius)
+    {
+        Vector3 normal = rotation.eulerAngles.normalized;
+
+        //one vertex in the center:
+        Vertices.Add(position);
+        Normals.Add(normal);
+        UVs.Add(new Vector2(0.5f, 0.5f));
+
+        int centreVertexIndex = Vertices.Count - 1;
+
+        //vertices around the edge:
+        float angleInc = (Mathf.PI * 2.0f) / segments;
+
+        for (int i = 0; i <= segments; i++)
+        {
+            float angle = angleInc * i;
+
+            Vector3 unitPosition = Vector3.zero;
+            unitPosition.x = Mathf.Cos(angle);
+            unitPosition.y = Mathf.Sin(angle);
+
+            unitPosition = rotation * unitPosition;
+
+            Vertices.Add(position + unitPosition * radius);
+            Normals.Add(normal);
+
+            Vector2 uv = new Vector2(unitPosition.x + 1.0f, unitPosition.z + 1.0f) * 0.5f;
+            UVs.Add(uv);
+
+            //build a triangle:
+            if (i > 0)
+            {
+                int baseIndex = Vertices.Count - 1;
+
+                AddTriangle(centreVertexIndex, baseIndex - 1,
+                    baseIndex);
+            }
+        }
+    }
 }
 
