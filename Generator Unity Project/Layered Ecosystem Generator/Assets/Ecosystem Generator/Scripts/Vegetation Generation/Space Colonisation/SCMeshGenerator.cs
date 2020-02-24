@@ -6,42 +6,23 @@ public static class SCMeshGenerator
 {
     private class SCMeshGeneratorBranchList
     {
-        public List<Vector3> m_positions = new List<Vector3>();
+        public List<SCBranch> branches = new List<SCBranch>();
         public int m_recursionNumber;
     }
 
-    public static void BuildTree(SCBranch root, Transform parent)
+    public static void BuildTree(SCBranch root, Transform parent, GameObject leafPrefab)
     {
-        int maxRecursionDepth = FindMaxRecursionDepth(root, 0);
-        BuildBranches(root, 0, 0.075f, 0.001f, maxRecursionDepth, parent);
+        BuildBranches(root, 0, leafPrefab, parent);
     }
 
-    private static int FindMaxRecursionDepth(SCBranch branch, int currentDepth)
-    {
-        int maxFoundDepth = 0;
-        while (branch != null)
-        {
-            for (int i = 0; i < branch.ChildCount; i++)
-            {
-                if (i > 0)
-                {
-                    int depth = FindMaxRecursionDepth(branch.GetChild(i), currentDepth + 1);
-                    if(depth > maxFoundDepth) { maxFoundDepth = depth; }
-                }
-            }
-            branch = branch.GetChild(0);
-        }
-        return maxFoundDepth > currentDepth ? maxFoundDepth : currentDepth;
-    }
-
-    private static void BuildBranches(SCBranch branchStart, int recursionNumber, float maxBranchThickness, float minBranchThickness, int maximumRecursionDepth, Transform parent = null)
+    private static void BuildBranches(SCBranch branchStart, int recursionNumber, GameObject leafPrefab, Transform parent = null)
     {
         SCMeshGeneratorBranchList branchList = new SCMeshGeneratorBranchList();
         if(branchStart.m_parent != null)
         {
-            branchList.m_positions.Add(branchStart.m_parent.Position);
+            branchList.branches.Add(branchStart.m_parent);
         }
-        branchList.m_positions.Add(branchStart.Position);
+        branchList.branches.Add(branchStart);
         branchList.m_recursionNumber = recursionNumber;
 
         SCBranch curBranch = branchStart;
@@ -49,10 +30,14 @@ public static class SCMeshGenerator
         {
             for (int i = 0; i < curBranch.ChildCount; i++)
             {
-                if (i == 0) { branchList.m_positions.Add(curBranch.GetChild(0).Position); }
+                if (i == 0)
+                {
+                    SCBranch firstChildBranch = curBranch.GetChild(0);
+                    branchList.branches.Add(firstChildBranch);
+                }
                 else
                 {
-                    BuildBranches(curBranch.GetChild(i), recursionNumber + 1, maxBranchThickness, minBranchThickness, maximumRecursionDepth, parent);
+                    BuildBranches(curBranch.GetChild(i), recursionNumber + 1, leafPrefab, parent);
                 }
             }
             curBranch = curBranch.GetChild(0);
@@ -60,35 +45,35 @@ public static class SCMeshGenerator
 
         // Build
 
-        float radiusStep = (float)(recursionNumber) / (float)maximumRecursionDepth;
-        if (radiusStep > 0.05f)
-        {
-            radiusStep += 0.3f;
-        }
-        float radius = Mathf.Lerp(maxBranchThickness, minBranchThickness, radiusStep);
 
         MeshBuilder meshBuilder = new MeshBuilder();
         Quaternion rotation = Quaternion.identity;
         float height = 0.0f;
-        for (int j = 0; j < branchList.m_positions.Count - 1; j++)
+        for (int j = 0; j < branchList.branches.Count - 1; j++)
         {
-            height += Vector3.Magnitude(branchList.m_positions[j] - branchList.m_positions[j + 1]);
+            height += Vector3.Magnitude(branchList.branches[j].Position - branchList.branches[j + 1].Position);
         }
-        float circumference = radius * 2 * Mathf.PI;
+        float circumference = branchList.branches[0].m_thickness * 2 * Mathf.PI;
         float ratio = height / circumference;
 
-        for (int j = 0; j < branchList.m_positions.Count; j++)
+        for (int j = 0; j < branchList.branches.Count; j++)
         {
-            Vector3 currentPosition = branchList.m_positions[j];
-            if (j + 1 < branchList.m_positions.Count)
+            SCBranch currentBranch = branchList.branches[j];
+            if (j + 1 < branchList.branches.Count)
             {
-                rotation = Quaternion.LookRotation(branchList.m_positions[j + 1] - currentPosition);
+                rotation = Quaternion.LookRotation(branchList.branches[j + 1].Position - currentBranch.Position);
             }
-            float v = (float)j / branchList.m_positions.Count * ratio;
-            meshBuilder.BuildRing(currentPosition, rotation, 6, radius, v, j > 0);
-            if (j == branchList.m_positions.Count - 1)
+            float v = (float)j / branchList.branches.Count * ratio;
+            meshBuilder.BuildRing(currentBranch.Position, rotation, 6, currentBranch.m_thickness, v, j > 0);
+
+            if(j > 0 && recursionNumber > 0)
             {
-                meshBuilder.BuildCap(currentPosition, rotation, 6, radius);
+                //CreateLeaf(leafPrefab,currentPosition, rotation, currentRadius, 0.5f);
+            }
+
+            if (j == branchList.branches.Count - 1)
+            {
+                meshBuilder.BuildCap(currentBranch.Position, rotation, 6, currentBranch.m_thickness);
             }
         }
         Mesh segmentMesh = meshBuilder.CreateMesh();
@@ -96,5 +81,23 @@ public static class SCMeshGenerator
         obj.AddComponent<MeshRenderer>();
         obj.AddComponent<MeshFilter>().sharedMesh = segmentMesh;
         obj.transform.parent = parent;
+
+
+
+    }
+
+    private static void CreateLeaf(GameObject leafPrefab, Vector3 position, Quaternion rotation, float radius, float chance = 1.0f)
+    {
+        if (Random.value <= chance)
+        {
+            GameObject newLeaf = GameObject.Instantiate(leafPrefab);
+            //newLeaf.transform.localScale = Vector3.one * Vector3.Distance(leaf.Position, branch.Position);
+            
+            Vector3 eularRotation = rotation.eulerAngles;
+            //eularRotation = new Vector3(eularRotation.z, 0, -eularRotation.x);
+            newLeaf.transform.rotation = rotation;// Quaternion.LookRotation(eularRotation - position);
+
+            newLeaf.transform.position = position + rotation.eulerAngles.normalized * (radius + newLeaf.transform.localScale.x/2.0f);
+        }
     }
 }

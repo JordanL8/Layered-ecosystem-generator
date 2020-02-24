@@ -25,6 +25,7 @@ public class SCBranch
     public List<Vector3> m_leafPositions = new List<Vector3>();
 
     public float m_thickness;
+    public bool m_hasHadThicknessVisit = false;
 
     private List<SCBranch> m_children;
 
@@ -50,7 +51,7 @@ public class SCBranch
         m_position = position;
         m_direction = direction;
         m_weldDirection = direction;
-        m_thickness = 0.05f;
+        m_thickness = 0.02f;
         m_children = new List<SCBranch>();
     }
 
@@ -96,6 +97,28 @@ public class SCBranch
         m_count = 0;
     }
 
+    public bool BeenReachedByAllChildren()
+    {
+        for (int i = 0; i < ChildCount; i++)
+        {
+            if (!GetChild(i).m_hasHadThicknessVisit)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public float GetPipeRadius()
+    {
+        float radiusPower = 0.0f;
+        for (int i = 0; i < ChildCount; i++)
+        {
+            radiusPower += Mathf.Pow(m_children[i].m_thickness, 2.1f);
+        }
+        return Mathf.Sqrt(radiusPower); 
+    }
+
     public void D_Draw()
     {
         if (m_parent != null)
@@ -129,12 +152,14 @@ public class SCTree : MonoBehaviour
 
     public float m_branchLength;
 
+    public int m_maxGrowthIterations;
+
     private List<SCLeaf> m_leaves = new List<SCLeaf>();
     private List<SCBranch> m_branches = new List<SCBranch>();
 
     [Header("Rendering")]
     public Material m_branchMaterial;
-
+    public GameObject m_leafPrefab;
 
     private void Start()
     {
@@ -158,22 +183,29 @@ public class SCTree : MonoBehaviour
         InitialiseLeaves();
         InitialiseTree();
         GrowTree();
+        CalculateBranchThickness();
         BuildMesh();
-        //D_DrawLeaves();
+        D_DrawLeaves();
     }
 
     
     private void InitialiseLeaves()
     {
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 130; i++)
         {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.5f + Vector3.up * 7.5f);
+            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 3f + Vector3.up * 7.5f);
             m_leaves.Add(leaf);
         }
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 130; i++)
         {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.5f + Vector3.up * 10.0f);
+            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 3f + Vector3.up * 10.0f);
+            m_leaves.Add(leaf);
+        }
+
+        for (int i = 0; i < 250; i++)
+        {
+            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 5f + Vector3.up * 12.0f);
             m_leaves.Add(leaf);
         }
     }
@@ -210,7 +242,7 @@ public class SCTree : MonoBehaviour
 
     private void GrowTree()
     {
-        int maxGrowthIterations = 40;
+        int maxGrowthIterations = m_maxGrowthIterations;
         while (GrowthStep() && maxGrowthIterations> 0)
         {
             maxGrowthIterations--;
@@ -231,7 +263,7 @@ public class SCTree : MonoBehaviour
                 if(sqrDistance < m_sqrLeafKillDistance)
                 {
                     // Remove Leaf
-                    m_leaves.RemoveAt(i);
+                    RemoveLeaf(i, curLeaf, curBranch);
                     i--;
                     closestBranchToLeaf = null;
                     break;
@@ -266,12 +298,73 @@ public class SCTree : MonoBehaviour
         return grew;
     }
 
+    private void RemoveLeaf(int index, SCLeaf leaf, SCBranch branch)
+    {
+        m_leaves.RemoveAt(index);
+        //GameObject newLeaf = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //newLeaf.transform.localScale = Vector3.one * Vector3.Distance(leaf.Position, branch.Position);
+        //newLeaf.transform.position = leaf.Position + ((branch.Position - leaf.Position) / 2.0f);
+        //newLeaf.GetComponent<MeshRenderer>().sharedMaterial.color = Color.green;
+    }
+
+    private void CalculateBranchThickness()
+    {
+        List<SCBranch> branchEnds = new List<SCBranch>();
+        SCBranch root = m_branches[0];
+        GetBranchEnds(root, ref branchEnds);
+
+        for (int i = 0; i < branchEnds.Count; i++)
+        {
+            SCBranch curBranch = branchEnds[i];
+
+            while(curBranch != null)
+            {
+                curBranch.m_hasHadThicknessVisit = true;
+
+                SCBranch parentBranch = curBranch.m_parent;
+                if (parentBranch == null)
+                {
+                    break;
+                }
+                
+                if (parentBranch.ChildCount > 1)
+                {
+                    if (!parentBranch.BeenReachedByAllChildren())
+                    {
+                        break;
+                    }
+                    float radius = parentBranch.GetPipeRadius();
+                    parentBranch.m_thickness = radius;
+                }
+                else
+                {
+                    parentBranch.m_thickness = curBranch.m_thickness;
+                }
+                curBranch = parentBranch;
+            }
+        }
+    }
+
+   
+
+    private void GetBranchEnds(SCBranch curBranch, ref List<SCBranch> branchEnds)
+    {
+        if(curBranch.ChildCount == 0)
+        {
+            branchEnds.Add(curBranch);
+        }
+        for (int i = 0; i < curBranch.ChildCount; i++)
+        {
+            GetBranchEnds(curBranch.GetChild(i), ref branchEnds);
+        }
+    }
+
     private void BuildMesh()
     {
         Transform branchObjectTransform = new GameObject("Branches").transform;
         branchObjectTransform.parent = transform;
         branchObjectTransform.localPosition = Vector3.zero;
-        SCMeshGenerator.BuildTree(m_branches[0], branchObjectTransform);
+        SCMeshGenerator.BuildTree(m_branches[0], branchObjectTransform, m_leafPrefab);
 
         // Combine Meshes
         MeshFilter[] meshFilters = branchObjectTransform.GetComponentsInChildren<MeshFilter>();
@@ -290,10 +383,6 @@ public class SCTree : MonoBehaviour
 
     private void D_DrawLeaves()
     {
-        if (transform.childCount > 0)
-        {
-            Destroy(transform.GetChild(0).gameObject);
-        }
         Transform leafParent = new GameObject("D_Leaves").transform;
         leafParent.parent = transform;
         for (int i = 0; i < m_leaves.Count; i++)
