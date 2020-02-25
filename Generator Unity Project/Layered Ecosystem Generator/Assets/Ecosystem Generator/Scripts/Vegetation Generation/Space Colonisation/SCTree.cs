@@ -55,11 +55,6 @@ public class SCBranch
         m_children = new List<SCBranch>();
     }
 
-    private void AddChild(SCBranch child)
-    {
-        m_children.Add(child);
-    }
-
     public SCBranch Next(float length)
     {
         SCBranch nextBranch;
@@ -117,6 +112,17 @@ public class SCBranch
             radiusPower += Mathf.Pow(m_children[i].m_thickness, 2.1f);
         }
         return Mathf.Sqrt(radiusPower); 
+    }
+
+    public void RemoveChild(SCBranch branch)
+    {
+        m_children.Remove(branch);
+    }
+
+    public void AddChild(SCBranch branch)
+    {
+        m_children.Add(branch);
+        branch.m_parent = this;
     }
 
     public void D_Draw()
@@ -183,6 +189,9 @@ public class SCTree : MonoBehaviour
         InitialiseLeaves();
         InitialiseTree();
         GrowTree();
+        Debug.Log(m_branches.Count);
+        OptimiseBranch(m_branches[0]);
+        Debug.Log(m_branches.Count);
         CalculateBranchThickness();
         BuildMesh();
         D_DrawLeaves();
@@ -191,21 +200,32 @@ public class SCTree : MonoBehaviour
     
     private void InitialiseLeaves()
     {
-        for (int i = 0; i < 130; i++)
+        for (int i = 0; i < 300; i++)
         {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 3f + Vector3.up * 7.5f);
+            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 7.0f + Vector3.up * 14f);
+            m_leaves.Add(leaf);
+        }
+        for (int i = 0; i < 300; i++)
+        {
+            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 7.0f + Vector3.up * 21f);
+            m_leaves.Add(leaf);
+        }
+        return;
+        for (int i = 0; i < 100; i++)
+        {
+            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
             m_leaves.Add(leaf);
         }
 
-        for (int i = 0; i < 130; i++)
+        for (int i = 0; i < 100; i++)
         {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 3f + Vector3.up * 10.0f);
+            SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, 4.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
             m_leaves.Add(leaf);
         }
 
-        for (int i = 0; i < 250; i++)
+        for (int i = 0; i < 100; i++)
         {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 5f + Vector3.up * 12.0f);
+            SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, 2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 10.0f);
             m_leaves.Add(leaf);
         }
     }
@@ -238,7 +258,6 @@ public class SCTree : MonoBehaviour
             d_I++;
         }
     }
-
 
     private void GrowTree()
     {
@@ -301,10 +320,44 @@ public class SCTree : MonoBehaviour
     private void RemoveLeaf(int index, SCLeaf leaf, SCBranch branch)
     {
         m_leaves.RemoveAt(index);
-        //GameObject newLeaf = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        GameObject newLeaf = Instantiate(m_leafPrefab);
+        Vector3 leafUp = leaf.Position - branch.Position;
         //newLeaf.transform.localScale = Vector3.one * Vector3.Distance(leaf.Position, branch.Position);
-        //newLeaf.transform.position = leaf.Position + ((branch.Position - leaf.Position) / 2.0f);
-        //newLeaf.GetComponent<MeshRenderer>().sharedMaterial.color = Color.green;
+        newLeaf.transform.position = branch.Position + (leafUp.normalized * newLeaf.transform.localScale.x / 2.0f);
+        newLeaf.transform.up = leafUp;
+    }
+
+    private void OptimiseBranch(SCBranch branch)
+    {
+        SCBranch curBranch = branch;
+        while(curBranch != null)
+        {
+            int childCount = curBranch.ChildCount;
+            if (childCount == 0) { break; }
+
+            if (childCount == 1)
+            {
+                SCBranch childBranch = curBranch.GetChild(0);
+                if (Vector3.Dot(curBranch.Direction, childBranch.Direction) > 0.95f)
+                {
+                    if (curBranch.m_parent != null)
+                    {
+                        curBranch.m_parent.RemoveChild(curBranch);
+                        curBranch.m_parent.AddChild(childBranch);
+                        m_branches.Remove(curBranch);
+                    }
+                }
+                curBranch = childBranch;
+            }
+            else
+            {
+                for (int i = 1; i < childCount; i++)
+                {
+                    OptimiseBranch(curBranch.GetChild(i));
+                }
+                curBranch = curBranch.GetChild(0);
+            }
+        }
     }
 
     private void CalculateBranchThickness()
@@ -345,8 +398,6 @@ public class SCTree : MonoBehaviour
         }
     }
 
-   
-
     private void GetBranchEnds(SCBranch curBranch, ref List<SCBranch> branchEnds)
     {
         if(curBranch.ChildCount == 0)
@@ -365,7 +416,7 @@ public class SCTree : MonoBehaviour
         branchObjectTransform.parent = transform;
         branchObjectTransform.localPosition = Vector3.zero;
         SCMeshGenerator.BuildTree(m_branches[0], branchObjectTransform, m_leafPrefab);
-
+        return;
         // Combine Meshes
         MeshFilter[] meshFilters = branchObjectTransform.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
@@ -376,8 +427,10 @@ public class SCTree : MonoBehaviour
             combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
             Destroy(meshFilters[i].gameObject);
         }
-        gameObject.AddComponent<MeshFilter>().mesh = new Mesh();
-        gameObject.GetComponent<MeshFilter>().mesh.CombineMeshes(combine, true);
+        MeshFilter myMeshFilter = gameObject.AddComponent<MeshFilter>();
+        myMeshFilter.mesh = new Mesh();
+        myMeshFilter.mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        myMeshFilter.mesh.CombineMeshes(combine, true);
         gameObject.AddComponent<MeshRenderer>().sharedMaterial = m_branchMaterial;
     }
 

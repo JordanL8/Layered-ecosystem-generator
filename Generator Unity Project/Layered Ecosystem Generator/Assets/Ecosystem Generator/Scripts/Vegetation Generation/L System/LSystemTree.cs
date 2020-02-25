@@ -14,6 +14,9 @@ public class LSystemTree : MonoBehaviour
     [Tooltip("Specifies the Prefab that the L-System uses for the tree leaves.")]
     public GameObject m_leafPrefab;
 
+    [Tooltip("Specifies the Material that the L-System uses for the tree leaves. If your Leaf Prefab already has a Material, assign that Material to this property.")]
+    public Material m_leafMaterial;
+
     private string m_sentence;
     
     private Dictionary<char, string> m_rulesDictionary;
@@ -75,20 +78,54 @@ public class LSystemTree : MonoBehaviour
 
     private void Build(List<LSystemBranch> branches)
     {
+        Transform branchParentTransform = new GameObject("Branches").transform;
+        Transform leafParentTransform = new GameObject("Leaves").transform;
+        branchParentTransform.parent = transform;
+        leafParentTransform.parent = transform;
+
         for (int i = 0; i < branches.Count; i++)
         {
             Mesh segmentMesh = LSystemBranchMeshGenerator.BuildBranch(branches[i]);
             GameObject obj = new GameObject();
             obj.AddComponent<MeshRenderer>().sharedMaterial = m_branchMaterial;
             obj.AddComponent<MeshFilter>().sharedMesh = segmentMesh;
-            obj.transform.parent = transform;
+            obj.transform.parent = branchParentTransform;
 
             for (int j = 0; j < branches[i].m_leafTransforms.Count; j++)
             {
-                LSystemLeafTransform leafTransform = branches[i].m_leafTransforms[j];
-                Instantiate(m_leafPrefab, leafTransform.m_position, Quaternion.LookRotation(leafTransform.m_eularRotation));
+                LSystemLeafTransform curLeafTransform = branches[i].m_leafTransforms[j];
+                GameObject newLeaf = Instantiate(m_leafPrefab, curLeafTransform.m_position, Quaternion.identity);
+                newLeaf.transform.up = curLeafTransform.m_transformForward;
+                newLeaf.transform.position += (newLeaf.transform.up * (newLeaf.transform.localScale.x / 3.0f));
+                newLeaf.transform.parent = leafParentTransform;
+                //newLeaf.transform.Rotate(newLeaf.transform.up, Random.value * 360.0f);
             }
         }
+
+
+        // Combine Meshes
+        CombineMeshes(branchParentTransform, m_branchMaterial);
+        CombineMeshes(leafParentTransform, m_leafMaterial);
+    }
+
+    private void CombineMeshes(Transform parent, Material material)
+    {
+        MeshFilter[] meshFilters = parent.GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+
+        for (int i = 0; i < meshFilters.Length; i++)
+        {
+            combine[i].mesh = meshFilters[i].sharedMesh;
+            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+        }
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Destroy(parent.GetChild(i).gameObject);
+        }
+        MeshFilter myMeshFilter = parent.gameObject.AddComponent<MeshFilter>();
+        myMeshFilter.mesh = new Mesh();
+        myMeshFilter.mesh.CombineMeshes(combine, true);
+        parent.gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
     }
     
 

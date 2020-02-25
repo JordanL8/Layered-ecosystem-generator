@@ -29,7 +29,6 @@ public class LSystemGenerationRulesStandard : LSystemGenerationRuleAsset
     [Tooltip("Sets the default amount to multiply the current thickness by when you use the ; command.")]
     public float m_thicknessScale;
 
-
     public override List<LSystemBranch> Build(string commandString)
     {
         m_turtle = new LSystemTurtle(Vector3.zero, Vector3.up, Vector3.right, m_stepSize, m_stepSizeScale, m_angle, m_angleScale, m_thickness, m_thicknessScale);

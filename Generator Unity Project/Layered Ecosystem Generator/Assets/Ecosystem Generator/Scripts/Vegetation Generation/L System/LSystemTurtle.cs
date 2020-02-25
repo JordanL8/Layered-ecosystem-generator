@@ -5,7 +5,7 @@ using UnityEngine;
 public class LSystemLeafTransform
 {
     public Vector3 m_position;
-    public Vector3 m_eularRotation;
+    public Vector3 m_transformForward;
 }
 
 public class LSystemBranchPosition
@@ -55,8 +55,6 @@ public class LSystemTurtle
 
     private List<LSystemBranch> m_branches;
     private TurtleProperties m_currentTurtleProperties;
-
-    
 
     public LSystemTurtle(Vector3 position, Vector3 direction, Vector3 right, float stepSize, float stepSizeScale, float angle,
         float angleScale, float thickness, float thicknessScale)
@@ -199,10 +197,17 @@ public class LSystemTurtle
     // L
     public void AddLeaf(int option = 0)
     {
+        if (option > 0)
+        {
+            if(option > m_positionStack.Count)
+            {
+                return;
+            }
+        }
         LSystemLeafTransform newLeaf = new LSystemLeafTransform()
         {
-            m_position = m_currentTurtleProperties.m_position + m_currentTurtleProperties.m_right * m_currentTurtleProperties.m_thickness,
-            m_eularRotation = m_currentTurtleProperties.m_right
+            m_position = m_currentTurtleProperties.m_position,
+            m_transformForward = m_currentTurtleProperties.m_forward
         };
         m_currentTurtleProperties.m_branch.m_leafTransforms.Add(newLeaf);
     }

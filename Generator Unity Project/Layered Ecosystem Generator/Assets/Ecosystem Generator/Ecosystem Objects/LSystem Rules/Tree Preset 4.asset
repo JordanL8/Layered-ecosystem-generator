@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eabdc02414acb214e9ecb3e00192c288, type: 3}
   m_Name: Tree Preset 4
   m_EditorClassIdentifier: 
-  m_axiom: FFFA
+  m_axiom: FFFFF[A]//[!FFFF"[A]]
   m_rules:
   - A="![B]////[B]////[B]
-  - B=&~(5)FFA
+  - B=&(30)~(5)FFL(4)A
   m_iterations: 10
-  m_stepSize: 0.3
-  m_stepSizeScale: 0.9
-  m_angle: 25
+  m_stepSize: 0.7
+  m_stepSizeScale: 0.85
+  m_angle: 29
   m_angleScale: 0.9
-  m_thickness: 0.1
+  m_thickness: 0.2
   m_thicknessScale: 0.5
