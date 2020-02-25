@@ -28,19 +28,24 @@ public static class SCMeshGenerator
         SCBranch curBranch = branchStart;
         while (curBranch != null)
         {
-            for (int i = 0; i < curBranch.ChildCount; i++)
+            if(curBranch.ChildCount == 0)
             {
-                if (i == 0)
-                {
-                    SCBranch firstChildBranch = curBranch.GetChild(0);
-                    branchList.branches.Add(firstChildBranch);
-                }
-                else
+                break;
+            }
+            if (curBranch.ChildCount == 1)
+            {
+                SCBranch firstChildBranch = curBranch.GetChild(0);
+                branchList.branches.Add(firstChildBranch);
+                curBranch = firstChildBranch;
+            }
+            else
+            {
+                for (int i = 0; i < curBranch.ChildCount; i++)
                 {
                     BuildBranches(curBranch.GetChild(i), recursionNumber + 1, leafPrefab, parent);
                 }
+                break;
             }
-            curBranch = curBranch.GetChild(0);
         }
 
         // Build

@@ -34,15 +34,6 @@ public class SCBranch
         get { return m_children.Count; }
     }
 
-    public SCBranch GetChild(int i)
-    {
-        if(i < m_children.Count)
-        {
-            return m_children[i];
-        }
-        return null;
-    }
-
     public bool m_grownToParent = false;
 
     public SCBranch(SCBranch parent, Vector3 position, Vector3 direction)
@@ -81,6 +72,16 @@ public class SCBranch
         {
             nextBranch = new SCBranch(this, m_position + m_direction.normalized * length, m_direction.normalized);
         }
+        // Check for duplicates
+        Vector3 position = nextBranch.Position;
+        for (int i = 0; i < m_children.Count; i++)
+        {
+            if (Vector3.SqrMagnitude(m_children[i].Position - position) < 0.01f * 0.01f)
+            {
+                return null;
+            }
+        }
+
         m_children.Add(nextBranch);
         return nextBranch;
     } 
@@ -109,7 +110,7 @@ public class SCBranch
         float radiusPower = 0.0f;
         for (int i = 0; i < ChildCount; i++)
         {
-            radiusPower += Mathf.Pow(m_children[i].m_thickness, 2.1f);
+            radiusPower += Mathf.Pow(m_children[i].m_thickness, 2.0f);
         }
         return Mathf.Sqrt(radiusPower); 
     }
@@ -123,6 +124,36 @@ public class SCBranch
     {
         m_children.Add(branch);
         branch.m_parent = this;
+    }
+
+    public SCBranch GetChild(int i)
+    {
+        if (i < m_children.Count)
+        {
+            return m_children[i];
+        }
+        return null;
+    }
+
+    public void ClearChildren()
+    {
+        for (int i = 0; i < m_children.Count; i++)
+        {
+            m_children[i].m_parent = null;
+        }
+        m_children.Clear();
+    }
+
+    public SCBranch Copy()
+    {
+        SCBranch copy = new SCBranch(m_parent, m_position, m_direction);
+        copy.m_thickness = m_thickness;
+        copy.ClearChildren();
+        for (int i = 0; i < m_children.Count; i++)
+        {
+            copy.AddChild(m_children[i]);
+        }
+        return copy;
     }
 
     public void D_Draw()
@@ -189,43 +220,36 @@ public class SCTree : MonoBehaviour
         InitialiseLeaves();
         InitialiseTree();
         GrowTree();
-        Debug.Log(m_branches.Count);
         OptimiseBranch(m_branches[0]);
-        Debug.Log(m_branches.Count);
         CalculateBranchThickness();
         BuildMesh();
-        D_DrawLeaves();
+        //D_DrawLeaves();
     }
 
     
     private void InitialiseLeaves()
     {
-        for (int i = 0; i < 300; i++)
-        {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 7.0f + Vector3.up * 14f);
-            m_leaves.Add(leaf);
-        }
-        for (int i = 0; i < 300; i++)
-        {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 7.0f + Vector3.up * 21f);
-            m_leaves.Add(leaf);
-        }
-        return;
         for (int i = 0; i < 100; i++)
         {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
+            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 6.0f);
             m_leaves.Add(leaf);
         }
 
         for (int i = 0; i < 100; i++)
         {
-            SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, 4.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
+            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 10.0f);
             m_leaves.Add(leaf);
         }
 
         for (int i = 0; i < 100; i++)
         {
-            SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, 2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 10.0f);
+            SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, -2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
+            m_leaves.Add(leaf);
+        }
+
+        for (int i = 0; i < 100; i++)
+        {
+            SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, 2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
             m_leaves.Add(leaf);
         }
     }
@@ -252,8 +276,11 @@ public class SCTree : MonoBehaviour
             if(!isInRange)
             {
                 SCBranch nextBranch = currentBranch.Next(m_branchLength);
-                m_branches.Add(nextBranch);
-                currentBranch = nextBranch;
+                if (nextBranch != null)
+                {
+                    m_branches.Add(nextBranch);
+                    currentBranch = nextBranch;
+                }
             }
             d_I++;
         }
@@ -309,9 +336,12 @@ public class SCTree : MonoBehaviour
             if(curBranch.m_count > 0)
             {
                 SCBranch newBranch = curBranch.Next(m_branchLength);
-                m_branches.Add(newBranch);
-                curBranch.Reset();
-                grew = true;
+                if (newBranch != null)
+                {
+                    m_branches.Add(newBranch);
+                    curBranch.Reset();
+                    grew = true;
+                }
             }
         }
         return grew;
@@ -338,7 +368,7 @@ public class SCTree : MonoBehaviour
             if (childCount == 1)
             {
                 SCBranch childBranch = curBranch.GetChild(0);
-                if (Vector3.Dot(curBranch.Direction, childBranch.Direction) > 0.95f)
+                if (Vector3.Dot(curBranch.Direction, childBranch.Direction) > 0.98f)
                 {
                     if (curBranch.m_parent != null)
                     {
@@ -358,6 +388,11 @@ public class SCTree : MonoBehaviour
                 curBranch = curBranch.GetChild(0);
             }
         }
+    }
+
+    private void PruneBranch(SCBranch branch)
+    {
+
     }
 
     private void CalculateBranchThickness()
@@ -416,7 +451,7 @@ public class SCTree : MonoBehaviour
         branchObjectTransform.parent = transform;
         branchObjectTransform.localPosition = Vector3.zero;
         SCMeshGenerator.BuildTree(m_branches[0], branchObjectTransform, m_leafPrefab);
-        return;
+
         // Combine Meshes
         MeshFilter[] meshFilters = branchObjectTransform.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
