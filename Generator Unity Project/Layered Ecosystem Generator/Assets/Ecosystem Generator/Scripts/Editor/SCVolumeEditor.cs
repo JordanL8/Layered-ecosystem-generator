@@ -24,14 +24,15 @@ public class SCVolumeEditor : Editor
 
 
     private SCTree m_scTree;
-    private SCVolume m_scVolume;
     private SelectionInformation m_selectionInformation;
-    private SCVolumeShape SelectedShape { get { return m_scVolume?.m_volumeShapes[m_selectionInformation.m_shapeIndex]; } }
+    private SCVolumeShape SelectedShape { get { return m_scTree.m_volume?.m_volumeShapes[m_selectionInformation.m_shapeIndex]; } }
 
     private float m_gizmoDiscRadius = 0.15f;
     private float m_sqrGizmoDiscRadius;
 
     private bool m_needsRepaint;
+
+    private bool m_inEditorMode = false;
 
     private void OnEnable()
     {
@@ -47,13 +48,71 @@ public class SCVolumeEditor : Editor
     private void SetInitialReferences()
     {
         m_scTree = target as SCTree;
-        m_scVolume = m_scTree.m_volume;
         m_selectionInformation = new SelectionInformation();
         m_sqrGizmoDiscRadius = m_gizmoDiscRadius * m_gizmoDiscRadius;
     }
 
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        int shapeDeleteIndex = -1;
+        if (m_scTree.m_volume == null)
+        {
+            if (GUILayout.Button("Create New Volume"))
+            {
+                CreateAndAssignNewSCVolume();
+            }
+        }
+        else
+        {
+            if (GUILayout.Button(m_scTree.m_volume.m_isEditable ? "Stop Editing" : "Edit"))
+            {
+                ToggleEditor();
+            }
+            if (GUILayout.Button(m_scTree.m_volume.m_showVolumeShapeList.value ? "Hide Volume Shape List" : "Show Volume Shape List"))
+            {
+                m_scTree.m_volume.m_showVolumeShapeList.value = !m_scTree.m_volume.m_showVolumeShapeList.value;
+            }
+            EditorGUILayout.BeginFadeGroup(m_scTree.m_volume.m_showVolumeShapeList.faded);
+            for (int i = 0; i < m_scTree.m_volume.m_volumeShapes.Count; i++)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Volume Shape " + (i + 1));
+                GUI.enabled = i != m_selectionInformation.m_shapeIndex;
+                if (GUILayout.Button("Select"))
+                {
+                    m_selectionInformation.m_shapeIndex = i;
+                }
+                GUI.enabled = i > 0;
+                if (GUILayout.Button("Delete"))
+                {
+                    shapeDeleteIndex = i;
+                }
+                GUI.enabled = true;
+                GUILayout.EndHorizontal();
+            }
+            EditorGUILayout.EndFadeGroup();
+            if (shapeDeleteIndex != -1)
+            {
+                Undo.RecordObject(m_scTree.m_volume, "Delete Volume Shape");
+                m_scTree.m_volume.m_volumeShapes.RemoveAt(shapeDeleteIndex);
+                m_selectionInformation.m_shapeIndex = Mathf.Clamp(m_selectionInformation.m_shapeIndex, 0, m_scTree.m_volume.m_volumeShapes.Count - 1);
+            }
+        }
+
+        if(GUI.changed)
+        {
+            m_needsRepaint = true;
+            SceneView.RepaintAll();
+        }
+    }
+
     private void OnSceneGUI()
     {
+        if(m_scTree.m_volume == null)
+        {
+            return;
+        }
         Event guiEvent = Event.current;
         HandleEvent(guiEvent);
     }
@@ -70,7 +129,10 @@ public class SCVolumeEditor : Editor
         }
         else
         {
-            HandleInput(guiEvent);
+            if (m_scTree.m_volume.m_isEditable)
+            {
+                HandleInput(guiEvent);
+            }
             if (m_needsRepaint)
             {
                 HandleUtility.Repaint();
@@ -81,9 +143,9 @@ public class SCVolumeEditor : Editor
 
     void OnUndoRedoPerformed()
     {
-        if(m_selectionInformation.m_shapeIndex >= m_scVolume.m_volumeShapes.Count)
+        if(m_selectionInformation.m_shapeIndex >= m_scTree.m_volume.m_volumeShapes.Count || m_selectionInformation.m_shapeIndex == -1)
         {
-            m_selectionInformation.m_shapeIndex = m_scVolume.m_volumeShapes.Count - 1;
+            m_selectionInformation.m_shapeIndex = m_scTree.m_volume.m_volumeShapes.Count - 1;
         }
     }
 
@@ -101,7 +163,7 @@ public class SCVolumeEditor : Editor
             return;
         }
 
-        if (guiEvent.modifiers == EventModifiers.None && m_scVolume != null)
+        if (guiEvent.modifiers == EventModifiers.None)
         {
             if (guiEvent.type == EventType.MouseDown)
             {
@@ -121,12 +183,12 @@ public class SCVolumeEditor : Editor
             }
         }
 
-        if (guiEvent.type == EventType.MouseUp && m_scVolume != null)
+        if (guiEvent.type == EventType.MouseUp)
         {
             HandleLeftMouseUp(mousePosition);
         }
 
-        if (!m_selectionInformation.m_pointSelected && m_scVolume != null)
+        if (!m_selectionInformation.m_pointSelected)
         {
             UpdateMouseOverInformation(mousePosition);
         }
@@ -134,10 +196,12 @@ public class SCVolumeEditor : Editor
 
     private void HandleControlMouseDown(Vector3 mousePosition)
     {
-        if (m_scVolume == null)
+        if(m_selectionInformation.m_mouseOverPoint)
         {
-            CreateAndAssignNewSCVolume();
+            SelectShapeUnderMouse();
+            DeletePointUnderMouse();
         }
+
         else
         {
             CreateNewVolumeShape();
@@ -147,7 +211,7 @@ public class SCVolumeEditor : Editor
 
     private void HandleLeftMouseDown(Vector3 mousePosition)
     {
-        if(m_scVolume.m_volumeShapes.Count == 0)
+        if(m_scTree.m_volume.m_volumeShapes.Count == 0)
         {
             CreateNewVolumeShape();
         }
@@ -169,7 +233,7 @@ public class SCVolumeEditor : Editor
         if(m_selectionInformation.m_pointSelected)
         {
             SelectedShape.m_boundingPoints[m_selectionInformation.m_pointIndex] = m_selectionInformation.m_dragStartPosition;
-            Undo.RecordObject(m_scVolume, "Move Point");
+            Undo.RecordObject(m_scTree.m_volume, "Move Point");
             SelectedShape.m_boundingPoints[m_selectionInformation.m_pointIndex] = mousePosition;
             m_selectionInformation.m_pointSelected = false;
             m_selectionInformation.m_pointIndex = -1;
@@ -191,9 +255,9 @@ public class SCVolumeEditor : Editor
         // Check to see if the mouse is above any shape point.
         int mouseOverPointIndex = -1;
         int mouseOverShapeIndex = -1;
-        for (int i = 0; i < m_scVolume.m_volumeShapes.Count; i++)
+        for (int i = 0; i < m_scTree.m_volume.m_volumeShapes.Count; i++)
         {
-            SCVolumeShape curShape = m_scVolume.m_volumeShapes[i];
+            SCVolumeShape curShape = m_scTree.m_volume.m_volumeShapes[i];
             for (int j = 0; j < curShape.m_boundingPoints.Count; j++)
             {
                 if (Vector3.SqrMagnitude(curShape.m_boundingPoints[j] - mousePosition) < m_sqrGizmoDiscRadius)
@@ -227,9 +291,9 @@ public class SCVolumeEditor : Editor
             // Check to see if the mouse is near any shape line.
             int mouseOverLineIndex = -1;
             float closestLineDistance = m_gizmoDiscRadius;
-            for (int i = 0; i < m_scVolume.m_volumeShapes.Count; i++)
+            for (int i = 0; i < m_scTree.m_volume.m_volumeShapes.Count; i++)
             {
-                SCVolumeShape curShape = m_scVolume.m_volumeShapes[i];
+                SCVolumeShape curShape = m_scTree.m_volume.m_volumeShapes[i];
                 for (int j = 0; j < curShape.m_boundingPoints.Count; j++)
                 {
                     Vector3 curPoint = curShape.m_boundingPoints[j];
@@ -282,22 +346,41 @@ public class SCVolumeEditor : Editor
 
     private void CreateNewVolumeShape()
     {
-        Undo.RecordObject(m_scVolume, "Create new VolumeShape");
-        m_scVolume.m_volumeShapes.Add(new SCVolumeShape());
-        m_selectionInformation.m_shapeIndex = m_scVolume.m_volumeShapes.Count - 1;
+        Undo.RecordObject(m_scTree.m_volume, "Create new VolumeShape");
+        m_scTree.m_volume.m_volumeShapes.Add(new SCVolumeShape());
+        m_selectionInformation.m_shapeIndex = m_scTree.m_volume.m_volumeShapes.Count - 1;
     }
 
     private void CreateNewVolumeShapePoint(Vector3 position)
     {
         bool mouseIsOverSelectedShape = m_selectionInformation.m_mouseOverShapeIndex == m_selectionInformation.m_shapeIndex;
         int newPointIndex = m_selectionInformation.m_mouseOverLine && mouseIsOverSelectedShape ? m_selectionInformation.m_lineIndex + 1 : SelectedShape.m_boundingPoints.Count;
-        Undo.RecordObject(m_scVolume, "Add New Point");
+        Undo.RecordObject(m_scTree.m_volume, "Add New Point");
         SelectedShape.m_boundingPoints.Insert(newPointIndex, position);
         m_selectionInformation.m_pointIndex = newPointIndex;
         m_selectionInformation.m_mouseOverShapeIndex = m_selectionInformation.m_shapeIndex;
         m_needsRepaint = true;
 
         SelectPointUnderMouse();
+    }
+
+    private void DeletePointUnderMouse()
+    {
+        if(m_selectionInformation.m_shapeIndex == 0 && SelectedShape.m_boundingPoints.Count == 1)
+        {
+            return;
+        }
+        Undo.RecordObject(m_scTree.m_volume, "Delete Point");
+        SelectedShape.m_boundingPoints.RemoveAt(m_selectionInformation.m_pointIndex);
+        m_selectionInformation.m_pointSelected = false;
+        m_selectionInformation.m_mouseOverPoint = false;
+        m_needsRepaint = true;
+
+        if(SelectedShape.m_boundingPoints.Count == 0)
+        {
+            m_scTree.m_volume.m_volumeShapes.RemoveAt(m_selectionInformation.m_shapeIndex);
+            m_selectionInformation.m_shapeIndex = Mathf.Clamp(m_selectionInformation.m_shapeIndex, 0, m_scTree.m_volume.m_volumeShapes.Count - 1);
+        }
     }
 
     #endregion
@@ -307,17 +390,11 @@ public class SCVolumeEditor : Editor
 
     private void DrawBounds()
     {
-        if(m_scVolume == null)
+        Color trunkColour = new Color(0.4f, 0.25f, 0.13f);
+        Color leafColour = new Color(0.1f, 0.9f, 0.1f);
+        for (int i = 0; i < m_scTree.m_volume.m_volumeShapes.Count; i++)
         {
-            return;
-        }
-        if (m_scTree.transform.hasChanged)
-        {
-            m_scTree.transform.hasChanged = false;
-        }
-        for (int i = 0; i < m_scVolume.m_volumeShapes.Count; i++)
-        {
-            SCVolumeShape volumeShape = m_scVolume.m_volumeShapes[i];
+            SCVolumeShape volumeShape = m_scTree.m_volume.m_volumeShapes[i];
             bool shapeIsSelected = i == m_selectionInformation.m_shapeIndex;
             bool mouseIsOverShape = i == m_selectionInformation.m_mouseOverShapeIndex;
             Color deselectedShapeColour = Color.gray;
@@ -325,17 +402,27 @@ public class SCVolumeEditor : Editor
             for (int j = 0; j < volumeShape.m_boundingPoints.Count; j++)
             {
                 Vector3 curPoint = volumeShape.m_boundingPoints[j];
-                Vector3 nextPont = volumeShape.m_boundingPoints[(j + 1) % volumeShape.m_boundingPoints.Count];
+                Vector3 nextPoint = volumeShape.m_boundingPoints[(j + 1) % volumeShape.m_boundingPoints.Count];
 
-                if (j == m_selectionInformation.m_lineIndex && mouseIsOverShape)
+                if (j == m_selectionInformation.m_lineIndex && mouseIsOverShape && (i > 0 || j != volumeShape.m_boundingPoints.Count - 1))
                 {
                     Handles.color = Color.cyan;
-                    Handles.DrawLine(curPoint, nextPont);
+                    Handles.DrawLine(curPoint, nextPoint);
                 }
                 else
                 {
-                    Handles.color = shapeIsSelected ? Color.green : deselectedShapeColour;
-                    Handles.DrawDottedLine(curPoint, nextPont, 4);
+                    if (!shapeIsSelected)
+                    {
+                        Handles.color = deselectedShapeColour;
+                    }
+                    else
+                    {
+                        Handles.color = i > 0 ? leafColour : trunkColour;
+                    }
+                    if (i > 0 || j != volumeShape.m_boundingPoints.Count - 1)
+                    {
+                        Handles.DrawDottedLine(curPoint, nextPoint, 4);
+                    }
                 }
 
 
@@ -345,7 +432,14 @@ public class SCVolumeEditor : Editor
                 }
                 else
                 {
-                    Handles.color = shapeIsSelected ? Color.green : deselectedShapeColour;
+                    if (!shapeIsSelected)
+                    {
+                        Handles.color = deselectedShapeColour;
+                    }
+                    else
+                    {
+                        Handles.color = i > 0 ? leafColour : trunkColour;
+                    }
                 }
                 Handles.DrawSolidDisc(curPoint, Vector3.back, m_gizmoDiscRadius);
 
@@ -353,6 +447,7 @@ public class SCVolumeEditor : Editor
         }
         m_needsRepaint = false;
     }
+    
 
     #endregion
     
@@ -374,6 +469,18 @@ public class SCVolumeEditor : Editor
         AssetDatabase.SaveAssets();
 
         m_scTree.m_volume = newVolume;
-        m_scVolume = newVolume;
+        m_scTree.m_volume.m_volumeShapes.Add(new SCVolumeShape());
+        m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(m_scTree.transform.position);
+        m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(m_scTree.transform.position + Vector3.up * 5.0f);
+        if (!m_scTree.m_volume.m_isEditable)
+        {
+            ToggleEditor();
+        }
+    }
+
+    private void ToggleEditor()
+    {
+        m_scTree.m_volume.m_isEditable = !m_scTree.m_volume.m_isEditable;
+        Tools.hidden = m_scTree.m_volume.m_isEditable;
     }
 }

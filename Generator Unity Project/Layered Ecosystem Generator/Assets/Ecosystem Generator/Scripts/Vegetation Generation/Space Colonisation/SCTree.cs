@@ -46,7 +46,7 @@ public class SCBranch
         m_children = new List<SCBranch>();
     }
 
-    public SCBranch Next(float length)
+    public SCBranch Next(float length, bool checkForOverlap = true)
     {
         SCBranch nextBranch;
         if (m_leafPositions.Count > 0)
@@ -73,18 +73,28 @@ public class SCBranch
             nextBranch = new SCBranch(this, m_position + m_direction.normalized * length, m_direction.normalized);
         }
         // Check for duplicates
-        Vector3 position = nextBranch.Position;
-        for (int i = 0; i < m_children.Count; i++)
+        if (checkForOverlap)
         {
-            if (Vector3.SqrMagnitude(m_children[i].Position - position) < 0.01f * 0.01f)
+            Vector3 position = nextBranch.Position;
+            for (int i = 0; i < m_children.Count; i++)
             {
-                return null;
+                if (Vector3.SqrMagnitude(m_children[i].Position - position) < 0.01f * 0.01f)
+                {
+                    return null;
+                }
             }
         }
 
         m_children.Add(nextBranch);
         return nextBranch;
     } 
+
+    public void OverridePosition(Vector3 newPosition)
+    {
+        m_position = newPosition;
+
+        m_direction = m_parent != null ? m_position - m_parent.Position : Vector3.up;
+    }
 
     public void Reset()
     {
@@ -181,7 +191,8 @@ public class SCLeaf
 
 public class SCTree : MonoBehaviour
 {
-    public SCVolume m_volume;
+    public float m_leafDensity = 10.0f;
+
     public float m_leafKillDistance;
     private float m_sqrLeafKillDistance;
 
@@ -198,6 +209,9 @@ public class SCTree : MonoBehaviour
     [Header("Rendering")]
     public Material m_branchMaterial;
     public GameObject m_leafPrefab;
+
+    [Header("Leaf Volume")]
+    public SCVolume m_volume;
 
     private void Start()
     {
@@ -216,6 +230,11 @@ public class SCTree : MonoBehaviour
 
     private void Generate()
     {
+        if(m_volume == null)
+        {
+            Debug.LogError("SCTree has no SCVolume attached. Can not generate a tree.");
+            return;
+        }
         m_sqrLeafKillDistance = m_leafKillDistance * m_leafKillDistance;
         m_sqrInteractionDistance = m_interactionDistance * m_interactionDistance;
         InitialiseLeaves();
@@ -230,59 +249,72 @@ public class SCTree : MonoBehaviour
 
     private void InitialiseLeaves()
     {
-        //if (m_volume != null)
+        if (m_volume != null)
+        {
+            m_leaves = m_volume.GetLeavesList(transform, m_leafDensity);
+        }
+        //for (int i = 0; i < 100; i++)
         //{
-        //    m_leaves = m_volume.GetLeavesList(transform);
+        //    SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 10.0f);
+        //    m_leaves.Add(leaf);
         //}
-        for (int i = 0; i < 100; i++)
-        {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 10.0f);
-            m_leaves.Add(leaf);
-        }
 
-        for (int i = 0; i < 100; i++)
-        {
-            SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, -2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
-            m_leaves.Add(leaf);
-        }
+        //for (int i = 0; i < 100; i++)
+        //{
+        //    SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, -2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
+        //    m_leaves.Add(leaf);
+        //}
 
-        for (int i = 0; i < 100; i++)
-        {
-            SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, 2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
-            m_leaves.Add(leaf);
-        }
+        //for (int i = 0; i < 100; i++)
+        //{
+        //    SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, 2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
+        //    m_leaves.Add(leaf);
+        //}
     }
 
     private void InitialiseTree()
     {
-        SCBranch root = new SCBranch(null, transform.position, Vector3.up);
+        SCVolumeShape trunkShape = m_volume.m_volumeShapes[0];
+        SCBranch root = new SCBranch(null, trunkShape.m_boundingPoints[0], Vector3.up);
         m_branches.Add(root);
-
-        int d_I = 0;
-        bool isInRange = false;
         SCBranch currentBranch = root;
 
-        while (!isInRange && d_I < 1000)
+        for (int i = 1; i < trunkShape.m_boundingPoints.Count; i++)
         {
-            for (int i = 0; i < m_leaves.Count; i++)
-            {
-                if (Vector3.SqrMagnitude(m_leaves[i].Position - currentBranch.Position) < m_sqrInteractionDistance)
-                {
-                    isInRange = true;
-                }
-            }
-
-            if(!isInRange)
-            {
-                SCBranch nextBranch = currentBranch.Next(m_branchLength);
-                if (nextBranch != null)
-                {
-                    m_branches.Add(nextBranch);
-                    currentBranch = nextBranch;
-                }
-            }
-            d_I++;
+            SCBranch nextBranch = currentBranch.Next(m_branchLength, false);
+            nextBranch.OverridePosition(trunkShape.m_boundingPoints[i]);
+            m_branches.Add(nextBranch);
+            currentBranch = nextBranch;
         }
+
+
+        //SCBranch root = new SCBranch(null, transform.position, Vector3.up);
+        //m_branches.Add(root);
+        //SCBranch currentBranch = root;
+        //int d_I = 0;
+        //bool isInRange = false;
+
+        //while (!isInRange && d_I < 1000)
+        //{
+        //    for (int i = 0; i < m_leaves.Count; i++)
+        //    {
+        //        if (Vector3.SqrMagnitude(m_leaves[i].Position - currentBranch.Position) < m_sqrInteractionDistance)
+        //        {
+        //            isInRange = true;
+        //        }
+        //    }
+
+        //    if(!isInRange)
+        //    {
+        //        SCBranch nextBranch = currentBranch.Next(m_branchLength);
+        //        if (nextBranch != null)
+        //        {
+        //            m_branches.Add(nextBranch);
+        //            currentBranch = nextBranch;
+        //        }
+        //    }
+        //    d_I++;
+        //}
     }
 
     private void GrowTree()
@@ -388,11 +420,7 @@ public class SCTree : MonoBehaviour
             }
         }
     }
-
-    private void PruneBranch(SCBranch branch)
-    {
-
-    }
+    
 
     private void CalculateBranchThickness()
     {

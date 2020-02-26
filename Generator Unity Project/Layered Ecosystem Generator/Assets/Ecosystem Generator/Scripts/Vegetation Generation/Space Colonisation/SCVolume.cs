@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.AnimatedValues;
 
 [System.Serializable]
 public class SCVolumeShape
@@ -11,12 +12,14 @@ public class SCVolumeShape
 [CreateAssetMenu(fileName = "SCVolume", menuName = "Ecosystem Generator/Space Colonisation Volume", order = 2)]
 public class SCVolume : ScriptableObject
 {
-    public List<SCVolumeShape> m_volumeShapes = new List<SCVolumeShape>();
+    [HideInInspector] public List<SCVolumeShape> m_volumeShapes = new List<SCVolumeShape>();  // Index 0 is the trunk.
+    [HideInInspector] public AnimBool m_showVolumeShapeList = new AnimBool(false);
+    [HideInInspector] public bool m_isEditable = false;
 
-    public List<SCLeaf> GetLeavesList(Transform basePosition)
+    public List<SCLeaf> GetLeavesList(Transform basePosition, float density)
     {
         List<SCLeaf> leavesList = new List<SCLeaf>();
-        for (int i = 0; i < m_volumeShapes.Count; i++)
+        for (int i = 1; i < m_volumeShapes.Count; i++)
         {
             SCVolumeShape curShape = m_volumeShapes[i];
             if (curShape.m_boundingPoints.Count == 0) { continue; }
@@ -31,7 +34,9 @@ public class SCVolume : ScriptableObject
                 if (position.y > maxPosition.y) { maxPosition.y = position.y; }
                 else if (position.y < minPosition.y) { minPosition.y = position.y; }
             }
-            for (int j = 0; j < 100; j++)
+            float area = (maxPosition.x - minPosition.x) * (maxPosition.y - minPosition.y);
+
+            for (int j = 0; j < 200; j++)
             {
                 Vector3 position = new Vector3(Random.Range(minPosition.x, maxPosition.x), Random.Range(minPosition.y, maxPosition.y), 0.0f);
                 if (IsInVolume(position, curShape.m_boundingPoints))
