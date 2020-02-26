@@ -181,6 +181,7 @@ public class SCLeaf
 
 public class SCTree : MonoBehaviour
 {
+    public SCVolume m_volume;
     public float m_leafKillDistance;
     private float m_sqrLeafKillDistance;
 
@@ -223,18 +224,16 @@ public class SCTree : MonoBehaviour
         OptimiseBranch(m_branches[0]);
         CalculateBranchThickness();
         BuildMesh();
-        //D_DrawLeaves();
+        D_DrawLeaves();
     }
-
     
+
     private void InitialiseLeaves()
     {
-        for (int i = 0; i < 100; i++)
-        {
-            SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 6.0f);
-            m_leaves.Add(leaf);
-        }
-
+        //if (m_volume != null)
+        //{
+        //    m_leaves = m_volume.GetLeavesList(transform);
+        //}
         for (int i = 0; i < 100; i++)
         {
             SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 10.0f);

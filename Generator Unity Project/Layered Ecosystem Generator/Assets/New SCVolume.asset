@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1370e64b06fbe6e44b846608ce940a8c, type: 3}
+  m_Name: New SCVolume
+  m_EditorClassIdentifier: 
+  m_volumeShapes:
+  - m_boundingPoints:
+    - {x: -2.9920118, y: 7.080476, z: 0}
+    - {x: -3.993097, y: 5.5693855, z: 0}
+    - {x: -2.839091, y: 3.8170393, z: 0}
+    - {x: -0.48117578, y: 3.9942212, z: 0}
+    - {x: 1.8884429, y: 4.014775, z: 0}
+    - {x: 4.154465, y: 4.035008, z: 0}
+    - {x: 4.82094, y: 5.827313, z: 0}
+    - {x: 4.202499, y: 7.262194, z: 0}
+    - {x: 3.2114844, y: 8.067159, z: 0}
+    - {x: 1.6780462, y: 8.493713, z: 0}
+    - {x: 1.7874813, y: 12.91831, z: 0}
+    - {x: 1.5041709, y: 14.449562, z: 0}
+    - {x: 0.4413609, y: 14.83238, z: 0}
+    - {x: -0.34061563, y: 14.397359, z: 0}
+    - {x: -0.6448102, y: 13.80173, z: 0}
+    - {x: -0.6460289, y: 13.308962, z: 0}
+    - {x: -1.0192633, y: 8.914068, z: 0}
+    - {x: -1.7516026, y: 7.6471972, z: 0}
+    - {x: -19.26136, y: 18.5502, z: 0}
+    - {x: 8.110878, y: 6.4156203, z: 0}

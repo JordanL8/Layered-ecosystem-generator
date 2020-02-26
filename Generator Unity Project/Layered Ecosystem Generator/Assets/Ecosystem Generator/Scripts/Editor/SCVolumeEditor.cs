@@ -5,7 +5,7 @@ using UnityEditor;
 
 // Code based on the following tutorial series by Sebastian Lague: https://www.youtube.com/watch?v=bPO7_JNWNmI
 
-[CustomEditor(typeof(SCVolume))]
+[CustomEditor(typeof(SCTree))]
 public class SCVolumeEditor : Editor
 {
     public class SelectionInformation
@@ -23,6 +23,7 @@ public class SCVolumeEditor : Editor
     }
 
 
+    private SCTree m_scTree;
     private SCVolume m_scVolume;
     private SelectionInformation m_selectionInformation;
     private SCVolumeShape SelectedShape { get { return m_scVolume?.m_volumeShapes[m_selectionInformation.m_shapeIndex]; } }
@@ -45,7 +46,8 @@ public class SCVolumeEditor : Editor
 
     private void SetInitialReferences()
     {
-        m_scVolume = target as SCVolume;
+        m_scTree = target as SCTree;
+        m_scVolume = m_scTree.m_volume;
         m_selectionInformation = new SelectionInformation();
         m_sqrGizmoDiscRadius = m_gizmoDiscRadius * m_gizmoDiscRadius;
     }
@@ -90,7 +92,7 @@ public class SCVolumeEditor : Editor
     private void HandleInput(Event guiEvent)
     {
         Ray mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
-        float drawPlaneDistance = 0;
+        float drawPlaneDistance = m_scTree.transform.position.z;
         float distanceToDrawPlane = (drawPlaneDistance - mouseRay.origin.z) / mouseRay.direction.z;
         Vector3 mousePosition = mouseRay.GetPoint(distanceToDrawPlane);
 
@@ -99,7 +101,7 @@ public class SCVolumeEditor : Editor
             return;
         }
 
-        if (guiEvent.modifiers == EventModifiers.None)
+        if (guiEvent.modifiers == EventModifiers.None && m_scVolume != null)
         {
             if (guiEvent.type == EventType.MouseDown)
             {
@@ -119,12 +121,12 @@ public class SCVolumeEditor : Editor
             }
         }
 
-        if (guiEvent.type == EventType.MouseUp)
+        if (guiEvent.type == EventType.MouseUp && m_scVolume != null)
         {
             HandleLeftMouseUp(mousePosition);
         }
 
-        if (!m_selectionInformation.m_pointSelected)
+        if (!m_selectionInformation.m_pointSelected && m_scVolume != null)
         {
             UpdateMouseOverInformation(mousePosition);
         }
@@ -132,8 +134,15 @@ public class SCVolumeEditor : Editor
 
     private void HandleControlMouseDown(Vector3 mousePosition)
     {
-        CreateNewVolumeShape();
-        CreateNewVolumeShapePoint(mousePosition);
+        if (m_scVolume == null)
+        {
+            CreateAndAssignNewSCVolume();
+        }
+        else
+        {
+            CreateNewVolumeShape();
+            CreateNewVolumeShapePoint(mousePosition);
+        }
     }
 
     private void HandleLeftMouseDown(Vector3 mousePosition)
@@ -298,6 +307,14 @@ public class SCVolumeEditor : Editor
 
     private void DrawBounds()
     {
+        if(m_scVolume == null)
+        {
+            return;
+        }
+        if (m_scTree.transform.hasChanged)
+        {
+            m_scTree.transform.hasChanged = false;
+        }
         for (int i = 0; i < m_scVolume.m_volumeShapes.Count; i++)
         {
             SCVolumeShape volumeShape = m_scVolume.m_volumeShapes[i];
@@ -338,4 +355,25 @@ public class SCVolumeEditor : Editor
     }
 
     #endregion
+    
+    private void CreateAndAssignNewSCVolume()
+    {
+        SCVolume newVolume = ScriptableObject.CreateInstance<SCVolume>();
+
+        string saveDirectory = EditorUtility.SaveFilePanel("Save New SCVolume Asset", Application.dataPath, "New SCVolume", "asset");
+        if (saveDirectory == "")
+        {
+            return;
+        }
+        string relativeSavePath = saveDirectory;
+        if (saveDirectory.StartsWith(Application.dataPath))
+        {
+            relativeSavePath = "Assets" + saveDirectory.Substring(Application.dataPath.Length);
+        }
+        AssetDatabase.CreateAsset(newVolume, relativeSavePath);
+        AssetDatabase.SaveAssets();
+
+        m_scTree.m_volume = newVolume;
+        m_scVolume = newVolume;
+    }
 }
