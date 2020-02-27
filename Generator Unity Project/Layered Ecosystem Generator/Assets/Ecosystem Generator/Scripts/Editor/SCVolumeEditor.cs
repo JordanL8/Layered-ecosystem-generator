@@ -33,16 +33,18 @@ public class SCVolumeEditor : Editor
     private bool m_needsRepaint;
 
     private bool m_inEditorMode = false;
-
+    
     private void OnEnable()
     {
         SetInitialReferences();
         Undo.undoRedoPerformed += OnUndoRedoPerformed;
+        EditorApplication.playModeStateChanged += DisableEditor;
     }
 
     private void OnDisable()
     {
         Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+        EditorApplication.playModeStateChanged -= DisableEditor;
     }
 
     private void SetInitialReferences()
@@ -73,23 +75,25 @@ public class SCVolumeEditor : Editor
             {
                 m_scTree.m_volume.m_showVolumeShapeList.value = !m_scTree.m_volume.m_showVolumeShapeList.value;
             }
-            EditorGUILayout.BeginFadeGroup(m_scTree.m_volume.m_showVolumeShapeList.faded);
-            for (int i = 0; i < m_scTree.m_volume.m_volumeShapes.Count; i++)
+            if(EditorGUILayout.BeginFadeGroup(m_scTree.m_volume.m_showVolumeShapeList.faded))
             {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Volume Shape " + (i + 1));
-                GUI.enabled = i != m_selectionInformation.m_shapeIndex;
-                if (GUILayout.Button("Select"))
+                for (int i = 0; i < m_scTree.m_volume.m_volumeShapes.Count; i++)
                 {
-                    m_selectionInformation.m_shapeIndex = i;
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(i == 0 ? "Trunk Path" : "Leaf Volume " + i);
+                    GUI.enabled = i != m_selectionInformation.m_shapeIndex;
+                    if (GUILayout.Button("Select"))
+                    {
+                        m_selectionInformation.m_shapeIndex = i;
+                    }
+                    GUI.enabled = i > 0;
+                    if (GUILayout.Button("Delete"))
+                    {
+                        shapeDeleteIndex = i;
+                    }
+                    GUI.enabled = true;
+                    GUILayout.EndHorizontal();
                 }
-                GUI.enabled = i > 0;
-                if (GUILayout.Button("Delete"))
-                {
-                    shapeDeleteIndex = i;
-                }
-                GUI.enabled = true;
-                GUILayout.EndHorizontal();
             }
             EditorGUILayout.EndFadeGroup();
             if (shapeDeleteIndex != -1)
@@ -482,5 +486,14 @@ public class SCVolumeEditor : Editor
     {
         m_scTree.m_volume.m_isEditable = !m_scTree.m_volume.m_isEditable;
         Tools.hidden = m_scTree.m_volume.m_isEditable;
+    }
+
+    private void DisableEditor(PlayModeStateChange stateChange)
+    {
+        if (stateChange == PlayModeStateChange.EnteredPlayMode)
+        {
+            m_scTree.m_volume.m_isEditable = false;
+            Tools.hidden = false;
+        }
     }
 }

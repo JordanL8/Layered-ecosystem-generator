@@ -34,9 +34,11 @@ public class SCVolume : ScriptableObject
                 if (position.y > maxPosition.y) { maxPosition.y = position.y; }
                 else if (position.y < minPosition.y) { minPosition.y = position.y; }
             }
-            float area = (maxPosition.x - minPosition.x) * (maxPosition.y - minPosition.y);
 
-            for (int j = 0; j < 200; j++)
+            float area = (maxPosition.x - minPosition.x) * (maxPosition.y - minPosition.y);
+            int leafNumber = Mathf.RoundToInt(density * area);
+            
+            for (int j = 0; j < leafNumber; j++)
             {
                 Vector3 position = new Vector3(Random.Range(minPosition.x, maxPosition.x), Random.Range(minPosition.y, maxPosition.y), 0.0f);
                 if (IsInVolume(position, curShape.m_boundingPoints))
@@ -44,6 +46,26 @@ public class SCVolume : ScriptableObject
                     SCLeaf leaf = new SCLeaf(basePosition.position + position);
                     leavesList.Add(leaf);
                 }
+            }
+
+            // Remove those too close to one another.
+            float squareClosestDistance = 0.10f * 0.10f;
+            List<int> removalIndices = new List<int>();
+            for (int j = 0; j < leavesList.Count - 1; j++)
+            {
+                for (int k = j + 1; k < leavesList.Count; k++)
+                {
+                    if (Vector3.SqrMagnitude(leavesList[k].Position - leavesList[j].Position) < squareClosestDistance)
+                    {
+                        removalIndices.Add(j);
+                        break;
+                    }
+                }
+            }
+
+            for (int j = removalIndices.Count - 1; j > 0; j--)
+            {
+                leavesList.RemoveAt(removalIndices[j]);
             }
         }
         return leavesList;

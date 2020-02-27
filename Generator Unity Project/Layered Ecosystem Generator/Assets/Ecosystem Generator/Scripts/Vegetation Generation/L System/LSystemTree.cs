@@ -124,6 +124,7 @@ public class LSystemTree : MonoBehaviour
         }
         MeshFilter myMeshFilter = parent.gameObject.AddComponent<MeshFilter>();
         myMeshFilter.mesh = new Mesh();
+        myMeshFilter.mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         myMeshFilter.mesh.CombineMeshes(combine, true);
         parent.gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
     }

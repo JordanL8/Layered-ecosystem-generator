@@ -92,8 +92,7 @@ public class SCBranch
     public void OverridePosition(Vector3 newPosition)
     {
         m_position = newPosition;
-
-        m_direction = m_parent != null ? m_position - m_parent.Position : Vector3.up;
+        //m_direction = m_parent != null ? (m_position - m_parent.Position).normalized : Vector3.up;
     }
 
     public void Reset()
@@ -203,18 +202,23 @@ public class SCTree : MonoBehaviour
 
     public int m_maxGrowthIterations;
 
-    private List<SCLeaf> m_leaves = new List<SCLeaf>();
-    private List<SCBranch> m_branches = new List<SCBranch>();
-
     [Header("Rendering")]
     public Material m_branchMaterial;
     public GameObject m_leafPrefab;
+    public Material m_leafMaterial;
 
     [Header("Leaf Volume")]
     public SCVolume m_volume;
 
+    private List<SCLeaf> m_leaves = new List<SCLeaf>();
+    private List<SCBranch> m_branches = new List<SCBranch>();
+
+    private Transform m_branchObjectTransform;
+    private Transform m_leafObjectTransform;
+
     private void Start()
     {
+        SetInitialReferences();
         //Generate();
     }
 
@@ -228,6 +232,16 @@ public class SCTree : MonoBehaviour
         }
     }
 
+    private void SetInitialReferences()
+    {
+        m_branchObjectTransform = new GameObject("Branches").transform;
+        m_branchObjectTransform.parent = transform;
+        m_branchObjectTransform.localPosition = Vector3.zero;
+        m_leafObjectTransform = new GameObject("Leaves").transform;
+        m_leafObjectTransform.parent = transform;
+        m_leafObjectTransform.localPosition = Vector3.zero;
+    }
+
     private void Generate()
     {
         if(m_volume == null)
@@ -235,6 +249,11 @@ public class SCTree : MonoBehaviour
             Debug.LogError("SCTree has no SCVolume attached. Can not generate a tree.");
             return;
         }
+        if(m_branchObjectTransform == null)
+        {
+            SetInitialReferences();
+        }
+
         m_sqrLeafKillDistance = m_leafKillDistance * m_leafKillDistance;
         m_sqrInteractionDistance = m_interactionDistance * m_interactionDistance;
         InitialiseLeaves();
@@ -242,7 +261,7 @@ public class SCTree : MonoBehaviour
         GrowTree();
         OptimiseBranch(m_branches[0]);
         CalculateBranchThickness();
-        BuildMesh();
+        BuildMeshes();
         D_DrawLeaves();
     }
     
@@ -281,10 +300,17 @@ public class SCTree : MonoBehaviour
 
         for (int i = 1; i < trunkShape.m_boundingPoints.Count; i++)
         {
-            SCBranch nextBranch = currentBranch.Next(m_branchLength, false);
-            nextBranch.OverridePosition(trunkShape.m_boundingPoints[i]);
-            m_branches.Add(nextBranch);
-            currentBranch = nextBranch;
+            Vector3 nextPoint = trunkShape.m_boundingPoints[i];
+            float distance = Vector3.Distance(currentBranch.Position, nextPoint);
+            int connectingBranchNumber = Mathf.Max(Mathf.FloorToInt(distance / m_branchLength), 1);
+            for (int j = 0; j < connectingBranchNumber; j++)
+            {
+                Vector3 nextDirection = (nextPoint - currentBranch.Position).normalized;
+                SCBranch nextBranch = new SCBranch(currentBranch, currentBranch.Position + nextDirection * m_branchLength, nextDirection);
+                currentBranch.AddChild(nextBranch);
+                m_branches.Add(nextBranch);
+                currentBranch = nextBranch;
+            }
         }
 
 
@@ -304,7 +330,7 @@ public class SCTree : MonoBehaviour
         //        }
         //    }
 
-        //    if(!isInRange)
+        //    if (!isInRange)
         //    {
         //        SCBranch nextBranch = currentBranch.Next(m_branchLength);
         //        if (nextBranch != null)
@@ -386,6 +412,7 @@ public class SCTree : MonoBehaviour
         //newLeaf.transform.localScale = Vector3.one * Vector3.Distance(leaf.Position, branch.Position);
         newLeaf.transform.position = branch.Position + (leafUp.normalized * newLeaf.transform.localScale.x / 2.0f);
         newLeaf.transform.up = leafUp;
+        newLeaf.transform.parent = m_leafObjectTransform;
     }
 
     private void OptimiseBranch(SCBranch branch)
@@ -472,28 +499,32 @@ public class SCTree : MonoBehaviour
         }
     }
 
-    private void BuildMesh()
+    private void BuildMeshes()
     {
-        Transform branchObjectTransform = new GameObject("Branches").transform;
-        branchObjectTransform.parent = transform;
-        branchObjectTransform.localPosition = Vector3.zero;
-        SCMeshGenerator.BuildTree(m_branches[0], branchObjectTransform, m_leafPrefab);
+        SCMeshGenerator.BuildTree(m_branches[0], m_branchObjectTransform, m_leafPrefab);
+        CombineMeshes(m_branchObjectTransform, m_branchMaterial);
+        CombineMeshes(m_leafObjectTransform, m_leafMaterial);
+    }
 
-        // Combine Meshes
-        MeshFilter[] meshFilters = branchObjectTransform.GetComponentsInChildren<MeshFilter>();
+    private void CombineMeshes(Transform parent, Material material)
+    {
+        MeshFilter[] meshFilters = parent.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-        
+
         for (int i = 0; i < meshFilters.Length; i++)
         {
             combine[i].mesh = meshFilters[i].sharedMesh;
             combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
-            Destroy(meshFilters[i].gameObject);
         }
-        MeshFilter myMeshFilter = gameObject.AddComponent<MeshFilter>();
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Destroy(parent.GetChild(i).gameObject);
+        }
+        MeshFilter myMeshFilter = parent.gameObject.AddComponent<MeshFilter>();
         myMeshFilter.mesh = new Mesh();
         myMeshFilter.mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         myMeshFilter.mesh.CombineMeshes(combine, true);
-        gameObject.AddComponent<MeshRenderer>().sharedMaterial = m_branchMaterial;
+        parent.gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
     }
 
     private void D_DrawLeaves()
