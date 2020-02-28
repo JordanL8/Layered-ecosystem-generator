@@ -16,13 +16,14 @@ public class SCVolume : ScriptableObject
     [HideInInspector] public AnimBool m_showVolumeShapeList = new AnimBool(false);
     [HideInInspector] public bool m_isEditable = false;
 
-    public List<SCLeaf> GetLeavesList(Transform basePosition, float density)
+    public List<SCLeaf> GetLeavesList(Transform basePosition, float density, float bottomCanopyWidth, float middleCanopyWidth, float topCanopyWidth)
     {
         List<SCLeaf> leavesList = new List<SCLeaf>();
         for (int i = 1; i < m_volumeShapes.Count; i++)
         {
             SCVolumeShape curShape = m_volumeShapes[i];
             if (curShape.m_boundingPoints.Count == 0) { continue; }
+            // Create Bounding Box.
             Vector3 minPosition = curShape.m_boundingPoints[0];
             Vector3 maxPosition = curShape.m_boundingPoints[0];
             for (int j = 0; j < curShape.m_boundingPoints.Count; j++)
@@ -35,18 +36,28 @@ public class SCVolume : ScriptableObject
                 else if (position.y < minPosition.y) { minPosition.y = position.y; }
             }
 
+
+            // Populate shape with leaves
             float area = (maxPosition.x - minPosition.x) * (maxPosition.y - minPosition.y);
             int leafNumber = Mathf.RoundToInt(density * area);
-            
             for (int j = 0; j < leafNumber; j++)
             {
                 Vector3 position = new Vector3(Random.Range(minPosition.x, maxPosition.x), Random.Range(minPosition.y, maxPosition.y), 0.0f);
                 if (IsInVolume(position, curShape.m_boundingPoints))
                 {
+                    // TODO, set the width smarter.
+                    //float width = maxPosition.x - minPosition.x;
+                    float height = maxPosition.y - minPosition.y;
+                    float normalisedHeight = (position.y - minPosition.y) / height;
+                    float width = Lerp3(bottomCanopyWidth, middleCanopyWidth, topCanopyWidth, normalisedHeight);
+                    //float normalisedDiff = (0 - 1) / (maxPosition.x - centreX) * (compareValue - centreX) + centreX;
+                    position.z += Random.Range(-width / 2, width / 2); //* Mathf.Pow(normalisedDiff, 2);
+                    
                     SCLeaf leaf = new SCLeaf(basePosition.position + position);
                     leavesList.Add(leaf);
                 }
             }
+
 
             // Remove those too close to one another.
             float squareClosestDistance = 0.10f * 0.10f;
@@ -84,5 +95,20 @@ public class SCVolume : ScriptableObject
                 inside = !inside;
         }
         return inside;
+    }
+
+    private float Lerp3(float a, float b, float c, float t)
+    {
+      
+        if (t <= 0.5f)
+        {
+            float normalisedCorrection = t / 0.5f;
+            return Mathf.Lerp(a, b, -Mathf.Pow(normalisedCorrection - 1, 2.0f) + 1); 
+        }
+        else
+        {
+            float normalisedCorrection = (t - 0.5f) / (1.0f - 0.5f);
+            return Mathf.Lerp(b, c, Mathf.Pow(normalisedCorrection , 2.0f));
+        }
     }
 }

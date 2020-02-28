@@ -190,17 +190,21 @@ public class SCLeaf
 
 public class SCTree : MonoBehaviour
 {
-    public float m_leafDensity = 10.0f;
+    [Header("Branches")]
+    public float m_branchLength;
+    public int m_maxGrowthIterations;
 
+    [Header("Leaves")]
+    public float m_leafDensity = 10.0f;
     public float m_leafKillDistance;
     private float m_sqrLeafKillDistance;
 
     public float m_interactionDistance;
     private float m_sqrInteractionDistance;
 
-    public float m_branchLength;
-
-    public int m_maxGrowthIterations;
+    public float m_topCanopyWidth;
+    public float m_middleCanopyWidth;
+    public float m_bottomCanopyWidth;
 
     [Header("Rendering")]
     public Material m_branchMaterial;
@@ -270,7 +274,7 @@ public class SCTree : MonoBehaviour
     {
         if (m_volume != null)
         {
-            m_leaves = m_volume.GetLeavesList(transform, m_leafDensity);
+            m_leaves = m_volume.GetLeavesList(transform, m_leafDensity, m_bottomCanopyWidth, m_middleCanopyWidth, m_topCanopyWidth);
         }
         //for (int i = 0; i < 100; i++)
         //{

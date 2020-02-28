@@ -125,7 +125,10 @@ public class SCVolumeEditor : Editor
     {
         if (guiEvent.type == EventType.Repaint)
         {
-            DrawBounds();
+            if (m_scTree.m_volume.m_isEditable)
+            {
+                DrawBounds();
+            }
         }
         else if (guiEvent.type == EventType.Layout)
         {
