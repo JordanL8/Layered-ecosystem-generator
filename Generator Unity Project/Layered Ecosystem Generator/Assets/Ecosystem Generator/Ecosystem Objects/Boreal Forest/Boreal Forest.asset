@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4afc4fd2db86014e8bd5f4b82d6a9d5, type: 3}
+  m_Name: Boreal Forest
+  m_EditorClassIdentifier: 
+  m_biomeName: Boreal Forest
+  m_groundLayer: {fileID: 0}
+  m_vegetationLayers:
+  - {fileID: 11400000, guid: 4a9b9bf3448e7494bb5134c05a2aeb6d, type: 2}
+  m_sparcity: 1
+  m_temperatureAndRainfallSamplePoints:
+  - {x: -6, y: 20}
+  - {x: -5, y: 100}
+  - {x: 0, y: 160}
+  - {x: 4, y: 200}
+  - {x: 3, y: 170}
+  - {x: 2, y: 70}
+  - {x: -1, y: 40}
+  m_colorOnGraph: {r: 0.69411767, g: 0.7803922, b: 0.14901961, a: 1}
+  m_hideGraph:
+    m_Target: 1
+    speed: 2
+    m_Value: 1

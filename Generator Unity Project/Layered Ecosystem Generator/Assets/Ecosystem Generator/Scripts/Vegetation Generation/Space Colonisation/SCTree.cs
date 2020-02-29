@@ -36,13 +36,13 @@ public class SCBranch
 
     public bool m_grownToParent = false;
 
-    public SCBranch(SCBranch parent, Vector3 position, Vector3 direction)
+    public SCBranch(SCBranch parent, Vector3 position, Vector3 direction, float thickness)
     {
         m_parent = parent;
         m_position = position;
         m_direction = direction;
         m_weldDirection = direction;
-        m_thickness = 0.02f;
+        m_thickness = thickness;
         m_children = new List<SCBranch>();
     }
 
@@ -65,12 +65,12 @@ public class SCBranch
                 nextDirection += (m_leafPositions[i] - m_position).normalized;
             }
             nextDirection += (closestLeaf - m_position).normalized * 0.1f;
-            nextBranch = new SCBranch(this, m_position + nextDirection.normalized * length, nextDirection.normalized);
+            nextBranch = new SCBranch(this, m_position + nextDirection.normalized * length, nextDirection.normalized, m_thickness);
             
         }
         else
         {
-            nextBranch = new SCBranch(this, m_position + m_direction.normalized * length, m_direction.normalized);
+            nextBranch = new SCBranch(this, m_position + m_direction.normalized * length, m_direction.normalized, m_thickness);
         }
         // Check for duplicates
         if (checkForOverlap)
@@ -114,12 +114,12 @@ public class SCBranch
         return true;
     }
 
-    public float GetPipeRadius()
+    public float GetPipeRadius(float power)
     {
         float radiusPower = 0.0f;
         for (int i = 0; i < ChildCount; i++)
         {
-            radiusPower += Mathf.Pow(m_children[i].m_thickness, 2.0f);
+            radiusPower += Mathf.Pow(m_children[i].m_thickness, power);
         }
         return Mathf.Sqrt(radiusPower); 
     }
@@ -155,8 +155,7 @@ public class SCBranch
 
     public SCBranch Copy()
     {
-        SCBranch copy = new SCBranch(m_parent, m_position, m_direction);
-        copy.m_thickness = m_thickness;
+        SCBranch copy = new SCBranch(m_parent, m_position, m_direction, m_thickness);
         copy.ClearChildren();
         for (int i = 0; i < m_children.Count; i++)
         {
@@ -192,6 +191,8 @@ public class SCTree : MonoBehaviour
 {
     [Header("Branches")]
     public float m_branchLength;
+    public float m_branchEndThickness = 0.01f;
+    public float m_branchConnectionPower = 2.0f;
     public int m_maxGrowthIterations;
 
     [Header("Leaves")]
@@ -302,7 +303,7 @@ public class SCTree : MonoBehaviour
     private void InitialiseTree()
     {
         SCVolumeShape trunkShape = m_volume.m_volumeShapes[0];
-        SCBranch root = new SCBranch(null, trunkShape.m_boundingPoints[0], Vector3.up);
+        SCBranch root = new SCBranch(null, trunkShape.m_boundingPoints[0], Vector3.up, m_branchEndThickness);
         m_branches.Add(root);
         SCBranch currentBranch = root;
 
@@ -314,7 +315,7 @@ public class SCTree : MonoBehaviour
             for (int j = 0; j < connectingBranchNumber; j++)
             {
                 Vector3 nextDirection = (nextPoint - currentBranch.Position).normalized;
-                SCBranch nextBranch = new SCBranch(currentBranch, currentBranch.Position + nextDirection * m_branchLength, nextDirection);
+                SCBranch nextBranch = new SCBranch(currentBranch, currentBranch.Position + nextDirection * m_branchLength, nextDirection, m_branchEndThickness);
                 currentBranch.AddChild(nextBranch);
                 m_branches.Add(nextBranch);
                 currentBranch = nextBranch;
@@ -486,7 +487,7 @@ public class SCTree : MonoBehaviour
                     {
                         break;
                     }
-                    float radius = parentBranch.GetPipeRadius();
+                    float radius = parentBranch.GetPipeRadius(m_branchConnectionPower);
                     parentBranch.m_thickness = radius;
                 }
                 else
