@@ -44,9 +44,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_branchLength: 0.1
-  m_maxGrowthIterations: 80
+  m_maxGrowthIterations: 430
   m_leafDensity: 20
-  m_leafKillDistance: 0.4
+  m_leafKillDistance: 0.3
   m_interactionDistance: 0.8
   m_topCanopyWidth: 0
   m_middleCanopyWidth: 3

@@ -53,7 +53,7 @@ public class SCVolume : ScriptableObject
                     //float normalisedDiff = (0 - 1) / (maxPosition.x - centreX) * (compareValue - centreX) + centreX;
                     position.z += Random.Range(-width / 2, width / 2); //* Mathf.Pow(normalisedDiff, 2);
                     
-                    SCLeaf leaf = new SCLeaf(basePosition.position + position);
+                    SCLeaf leaf = new SCLeaf(position);
                     leavesList.Add(leaf);
                 }
             }

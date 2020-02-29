@@ -14,40 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_innerRadius: 0.3
   m_outerRadius: 3
-  m_shape: 0
-  m_0Scale: 0
-  m_0ScaleV: 0
-  m_levels: 0
-  m_ratio: 0
-  m_ratioPower: 0
-  m_flare: 0
-  m_baseSplits: 0
-  m_baseSize:
-  - 0
-  m_downAngle: 00000000
-  m_downAngleV: 00000000
-  m_rotate: 00000000
-  m_rotateV: 00000000
-  m_branches: 00000000
-  m_length:
-  - 0
-  m_lengthV:
-  - 0
-  m_taper: 00000000
-  m_segSplits: 00000000
-  m_splitAngle: 00000000
-  m_splitAngleV: 00000000
-  m_curveRes: 00000000
-  m_curve: 00000000
-  m_curveV: 00000000
-  m_curveBack: 00000000
-  m_leafNumber: 0
-  m_leafShape: 0
-  m_leafScale: 0
-  m_leafScaleX: 0
-  m_attractionUp: 0
-  m_pruneRatio: 0
-  m_pruneWidth: 0
-  m_pruneWidthPeak: 0
-  prunePowerLow: 0
-  prunePowerHigh: 0
+  m_vegationType: 0
+  m_lSystemRulesAsset: {fileID: 11400000, guid: 6e9f3de41036d884e838e3ceeb38db29,
+    type: 2}
+  m_branchMaterial: {fileID: 2100000, guid: 92444477416724541ad369f50f596f25, type: 2}
+  m_leafPrefab: {fileID: 2350789629622180032, guid: 381e5ebfea1369d44a80083795b095a5,
+    type: 3}
+  m_leafMaterial: {fileID: 0}
+  m_spaceColonisationTreePrefab: {fileID: 0}

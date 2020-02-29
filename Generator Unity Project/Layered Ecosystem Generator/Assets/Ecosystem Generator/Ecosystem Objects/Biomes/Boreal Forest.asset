@@ -15,9 +15,8 @@ MonoBehaviour:
   m_biomeName: Boreal Forest
   m_groundLayer: {fileID: 0}
   m_vegetationLayers:
-  - {fileID: 11400000, guid: bc415dd6ba259d741bd49c8fd1e8fc7f, type: 2}
-  - {fileID: 11400000, guid: 15b192d1fa3e1bd47a002127fd14654e, type: 2}
-  m_sparcity: 3
+  - {fileID: 11400000, guid: 4a9b9bf3448e7494bb5134c05a2aeb6d, type: 2}
+  m_sparcity: 1
   m_temperatureAndRainfallSamplePoints:
   - {x: -6, y: 20}
   - {x: -5, y: 100}
@@ -30,4 +29,4 @@ MonoBehaviour:
   m_hideGraph:
     m_Target: 1
     speed: 2
-    m_Value: 0
+    m_Value: 1

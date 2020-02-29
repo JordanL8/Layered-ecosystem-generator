@@ -31,8 +31,6 @@ public class SCVolumeEditor : Editor
     private float m_sqrGizmoDiscRadius;
 
     private bool m_needsRepaint;
-
-    private bool m_inEditorMode = false;
     
     private void OnEnable()
     {
@@ -161,7 +159,7 @@ public class SCVolumeEditor : Editor
     private void HandleInput(Event guiEvent)
     {
         Ray mouseRay = HandleUtility.GUIPointToWorldRay(guiEvent.mousePosition);
-        float drawPlaneDistance = m_scTree.transform.position.z;
+        float drawPlaneDistance = 0;// m_scTree.transform.position.z;
         float distanceToDrawPlane = (drawPlaneDistance - mouseRay.origin.z) / mouseRay.direction.z;
         Vector3 mousePosition = mouseRay.GetPoint(distanceToDrawPlane);
 

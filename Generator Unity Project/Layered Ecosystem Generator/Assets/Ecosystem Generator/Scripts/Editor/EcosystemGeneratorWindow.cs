@@ -58,13 +58,18 @@ public class EcosystemGeneratorWindow : EditorWindow
     private void OnGUI()
     {
         if(m_properties == null) { return; }
+        EditorGUI.BeginChangeCheck();
         // TODO: Fix vertical scroll view appearing over the UI.
         m_currentScrollPosition = GUILayout.BeginScrollView(m_currentScrollPosition, false, false, GUIStyle.none, GUI.skin.verticalScrollbar);
         RenderBiomeSection();
         RenderEcosystemPropertiesSection();
         RenderGenerationPropertiesSection();
-        RenderGraphSection();  // TODO: Add fade for showing the graph.
+        RenderGraphSection();  
         GUILayout.EndScrollView();
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorUtility.SetDirty(m_properties);
+        }
     }
 
     private void RenderBiomeSection()
@@ -141,7 +146,7 @@ public class EcosystemGeneratorWindow : EditorWindow
         m_properties.m_maximumIncline = EditorGUILayout.Slider(m_guiContentMaximumInclude, m_properties.m_maximumIncline, 0.0f, 90.0f);
         m_properties.m_checkHeightOffset = EditorGUILayout.FloatField(m_guiContentHeightCheckOffset, m_properties.m_checkHeightOffset);
         m_properties.m_checkForEncroachment = EditorGUILayout.Toggle(m_guiContentEncroachment, m_properties.m_checkForEncroachment);
-        m_properties.m_targetGameObject = EditorGUILayout.ObjectField(m_guiContentTargetGameObject, m_properties.m_targetGameObject, typeof(GameObject)) as GameObject;
+        m_properties.m_targetGameObject = EditorGUILayout.ObjectField(m_guiContentTargetGameObject, m_properties.m_targetGameObject, typeof(GameObject), true) as GameObject;
 }
 
     private void RenderGraphSection()
@@ -226,9 +231,12 @@ public class EcosystemGeneratorWindow : EditorWindow
         {
             return;
         }
-        else if(m_layerParents.Count > 0 && m_layerParents[0].parent != targetGameObject.transform)
+        else if(m_layerParents.Count > 0)
         {
-            m_layerParents.Clear();
+            if (m_layerParents[0] && m_layerParents[0].parent != targetGameObject.transform)
+            {
+                m_layerParents.Clear();
+            }
         }
         for (int i = 0; i < m_layerParents.Count; i++)
         {
@@ -337,10 +345,17 @@ public class EcosystemGeneratorWindow : EditorWindow
     {
         for (int i = 0; i < samples.Count; i++)
         {
-            GameObject veg = Instantiate(m_currentBiome.m_vegetationLayers[samples[i].m_layer].TEMPPREFABS[0]);
-            veg.transform.position = samples[i].m_correctedWorldSpacePosition;
-            veg.transform.rotation = Quaternion.Euler(0, Random.value * 360, 0);
-            veg.transform.parent = m_layerParents[samples[i].m_layer];
+            VegetationLayer sampleLayer = m_currentBiome.m_vegetationLayers[samples[i].m_layer];
+            VegetationDescription sampleVegetation = sampleLayer.m_vegetationInLayer[samples[i].m_vegetationType];
+            if(sampleVegetation.m_vegationType == VegetationType.SpaceColonisation)
+            {
+                GameObject veg = Instantiate(sampleVegetation.m_spaceColonisationTreePrefab);
+                SCTree tree = veg.GetComponent<SCTree>();
+                tree.Generate();
+                veg.transform.position = samples[i].m_correctedWorldSpacePosition;
+                veg.transform.rotation = Quaternion.Euler(0, Random.value * 360, 0);
+                veg.transform.parent = m_layerParents[samples[i].m_layer];
+            }
 
             //GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             //obj.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0, samples[i].m_correctedWorldSpacePosition.z);

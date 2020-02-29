@@ -195,6 +195,7 @@ public class SCTree : MonoBehaviour
     public int m_maxGrowthIterations;
 
     [Header("Leaves")]
+    public bool m_addLeaves = true;
     public float m_leafDensity = 10.0f;
     public float m_leafKillDistance;
     private float m_sqrLeafKillDistance;
@@ -241,12 +242,15 @@ public class SCTree : MonoBehaviour
         m_branchObjectTransform = new GameObject("Branches").transform;
         m_branchObjectTransform.parent = transform;
         m_branchObjectTransform.localPosition = Vector3.zero;
-        m_leafObjectTransform = new GameObject("Leaves").transform;
-        m_leafObjectTransform.parent = transform;
-        m_leafObjectTransform.localPosition = Vector3.zero;
+        if (m_addLeaves)
+        {
+            m_leafObjectTransform = new GameObject("Leaves").transform;
+            m_leafObjectTransform.parent = transform;
+            m_leafObjectTransform.localPosition = Vector3.zero;
+        }
     }
 
-    private void Generate()
+    public void Generate()
     {
         if(m_volume == null)
         {
@@ -411,12 +415,15 @@ public class SCTree : MonoBehaviour
     private void RemoveLeaf(int index, SCLeaf leaf, SCBranch branch)
     {
         m_leaves.RemoveAt(index);
-        GameObject newLeaf = Instantiate(m_leafPrefab);
-        Vector3 leafUp = leaf.Position - branch.Position;
-        //newLeaf.transform.localScale = Vector3.one * Vector3.Distance(leaf.Position, branch.Position);
-        newLeaf.transform.position = branch.Position + (leafUp.normalized * newLeaf.transform.localScale.x / 2.0f);
-        newLeaf.transform.up = leafUp;
-        newLeaf.transform.parent = m_leafObjectTransform;
+        if (m_addLeaves)
+        {
+            GameObject newLeaf = Instantiate(m_leafPrefab);
+            Vector3 leafUp = leaf.Position - branch.Position;
+            //newLeaf.transform.localScale = Vector3.one * Vector3.Distance(leaf.Position, branch.Position);
+            newLeaf.transform.position = branch.Position + (leafUp.normalized * newLeaf.transform.localScale.x / 2.0f);
+            newLeaf.transform.up = leafUp;
+            newLeaf.transform.parent = m_leafObjectTransform;
+        }
     }
 
     private void OptimiseBranch(SCBranch branch)
@@ -507,7 +514,10 @@ public class SCTree : MonoBehaviour
     {
         SCMeshGenerator.BuildTree(m_branches[0], m_branchObjectTransform, m_leafPrefab);
         CombineMeshes(m_branchObjectTransform, m_branchMaterial);
-        CombineMeshes(m_leafObjectTransform, m_leafMaterial);
+        if (m_addLeaves)
+        {
+            CombineMeshes(m_leafObjectTransform, m_leafMaterial);
+        }
     }
 
     private void CombineMeshes(Transform parent, Material material)
@@ -520,14 +530,21 @@ public class SCTree : MonoBehaviour
             combine[i].mesh = meshFilters[i].sharedMesh;
             combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
         }
-        for (int i = 0; i < parent.childCount; i++)
+        for (int i = parent.childCount - 1; i >= 0; i--)
         {
-            Destroy(parent.GetChild(i).gameObject);
+            if (Application.isEditor)
+            {
+                DestroyImmediate(parent.GetChild(i).gameObject);
+            }
+            else
+            {
+                Destroy(parent.GetChild(i).gameObject);
+            }
         }
         MeshFilter myMeshFilter = parent.gameObject.AddComponent<MeshFilter>();
-        myMeshFilter.mesh = new Mesh();
-        myMeshFilter.mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-        myMeshFilter.mesh.CombineMeshes(combine, true);
+        myMeshFilter.sharedMesh = new Mesh();
+        myMeshFilter.sharedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        myMeshFilter.sharedMesh.CombineMeshes(combine, true);
         parent.gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
     }
 

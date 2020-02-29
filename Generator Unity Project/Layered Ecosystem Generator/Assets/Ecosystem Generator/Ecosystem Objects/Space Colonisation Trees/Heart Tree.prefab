@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7959157853722284677}
   - component: {fileID: 7959157853722284730}
   m_Layer: 0
-  m_Name: Space Colonisation Tree
+  m_Name: Heart Tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_branchLength: 0.1
-  m_maxGrowthIterations: 30
+  m_maxGrowthIterations: 80
   m_leafDensity: 20
   m_leafKillDistance: 0.4
   m_interactionDistance: 0.8

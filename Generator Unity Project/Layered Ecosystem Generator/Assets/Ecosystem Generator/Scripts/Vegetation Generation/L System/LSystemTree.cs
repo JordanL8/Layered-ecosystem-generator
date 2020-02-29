@@ -8,13 +8,13 @@ public class LSystemTree : MonoBehaviour
     public LSystemGenerationRuleAsset m_rulesAsset;
 
     [Header("Rendering")]
-    [Tooltip("Specifies the Material that the trunk and branches use.")]
+    [Tooltip("Specifies the Material the trunk and branches use.")]
     public Material m_branchMaterial;
 
-    [Tooltip("Specifies the Prefab that the L-System uses for the tree leaves.")]
+    [Tooltip("Specifies the Prefab the L-System uses for the tree leaves.")]
     public GameObject m_leafPrefab;
 
-    [Tooltip("Specifies the Material that the L-System uses for the tree leaves. If your Leaf Prefab already has a Material, assign that Material to this property.")]
+    [Tooltip("Specifies the Material the L-System uses for the tree leaves. If your Leaf Prefab already has a Material, assign that Material to this property.")]
     public Material m_leafMaterial;
 
     private string m_sentence;

@@ -31,7 +31,7 @@ MonoBehaviour:
     - {x: -1.7218828, y: 3.508913, z: 0}
     - {x: -1.4205055, y: 2.0020232, z: 0}
   m_showVolumeShapeList:
-    m_Target: 1
+    m_Target: 0
     speed: 2
-    m_Value: 1
-  m_isEditable: 1
+    m_Value: 0
+  m_isEditable: 0

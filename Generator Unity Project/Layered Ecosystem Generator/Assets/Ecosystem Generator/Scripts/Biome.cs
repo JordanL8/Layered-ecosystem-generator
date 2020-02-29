@@ -46,6 +46,7 @@ public class BiomeEditor : Editor
         base.OnInspectorGUI();
         if (EditorGUI.EndChangeCheck())
         {
+            EditorUtility.SetDirty(m_targetBiome);
             DrawBiomeGraph();
         }
         if (GUILayout.Button(m_targetBiome.m_hideGraph.target ? "Hide Graph" : "Show Graph"))
@@ -62,6 +63,7 @@ public class BiomeEditor : Editor
         }
         EditorGUILayout.EndFadeGroup();
     }
+
     private void DrawBiomeGraph()
     {
         if (m_targetBiome == null) { return; }

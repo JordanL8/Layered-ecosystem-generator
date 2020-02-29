@@ -43,12 +43,7 @@ public class EcosystemGeneratorEditor : Editor
             m_targetComponent.GenerateEcosystem(m_targetComponent.biome, m_targetComponent.gameObject);
         }
     }
-
-    // UI
-
-
-
-
+    
     // Graph
 
     private void DrawBiomeGraph()
