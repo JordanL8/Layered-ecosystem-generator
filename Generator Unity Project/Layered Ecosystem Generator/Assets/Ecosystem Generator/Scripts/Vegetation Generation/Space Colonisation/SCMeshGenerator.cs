@@ -50,11 +50,22 @@ public static class SCMeshGenerator
             //}
 
             // Implementation 2. Curve bug
+            int nextBranch = 0;
+            float closestDirection = -1;
             for (int i = 0; i < curBranch.ChildCount; i++)
             {
-                if (i == 0)
+                float dot = Vector3.Dot(curBranch.Direction, curBranch.GetChild(i).Direction);
+                if (dot > closestDirection)
                 {
-                    SCBranch firstChildBranch = curBranch.GetChild(0);
+                    nextBranch = i;
+                    closestDirection = dot;
+                }
+            }
+            for (int i = 0; i < curBranch.ChildCount; i++)
+            {
+                if (i == nextBranch)
+                {
+                    SCBranch firstChildBranch = curBranch.GetChild(i);
                     branchList.branches.Add(firstChildBranch);
                 }
                 else
@@ -62,7 +73,7 @@ public static class SCMeshGenerator
                     BuildBranches(curBranch.GetChild(i), recursionNumber + 1, leafPrefab, parent);
                 }
             }
-            curBranch = curBranch.GetChild(0);
+            curBranch = curBranch.GetChild(nextBranch);
             //
         }
 
@@ -71,6 +82,7 @@ public static class SCMeshGenerator
 
         MeshBuilder meshBuilder = new MeshBuilder();
         Quaternion rotation = Quaternion.identity;
+        int segments = recursionNumber == 0 ? 6 : 3;
         float height = 0.0f;
         for (int j = 0; j < branchList.branches.Count - 1; j++)
         {
@@ -87,7 +99,7 @@ public static class SCMeshGenerator
                 rotation = Quaternion.LookRotation(branchList.branches[j + 1].Position - currentBranch.Position);
             }
             float v = (float)j / branchList.branches.Count * ratio;
-            meshBuilder.BuildRing(currentBranch.Position, rotation, 6, currentBranch.m_thickness, v, j > 0);
+            meshBuilder.BuildRing(currentBranch.Position, rotation, segments, currentBranch.m_thickness, v, j > 0);
 
             if(j > 0 && recursionNumber > 0)
             {
@@ -96,7 +108,7 @@ public static class SCMeshGenerator
 
             if (j == branchList.branches.Count - 1)
             {
-                meshBuilder.BuildCap(currentBranch.Position, rotation, 6, currentBranch.m_thickness);
+                meshBuilder.BuildCap(currentBranch.Position, rotation, segments, currentBranch.m_thickness);
             }
         }
         Mesh segmentMesh = meshBuilder.CreateMesh();

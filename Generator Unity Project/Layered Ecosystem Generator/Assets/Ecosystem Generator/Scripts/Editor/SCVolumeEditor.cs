@@ -243,6 +243,8 @@ public class SCVolumeEditor : Editor
             m_selectionInformation.m_pointSelected = false;
             m_selectionInformation.m_pointIndex = -1;
             m_needsRepaint = true;
+
+            EditorUtility.SetDirty(m_scTree.m_volume);
         }
     }
 
@@ -252,6 +254,8 @@ public class SCVolumeEditor : Editor
         {
             SelectedShape.m_boundingPoints[m_selectionInformation.m_pointIndex] = mousePosition;
             m_needsRepaint = true;
+
+            EditorUtility.SetDirty(m_scTree.m_volume);
         }
     }
 
@@ -354,6 +358,8 @@ public class SCVolumeEditor : Editor
         Undo.RecordObject(m_scTree.m_volume, "Create new VolumeShape");
         m_scTree.m_volume.m_volumeShapes.Add(new SCVolumeShape());
         m_selectionInformation.m_shapeIndex = m_scTree.m_volume.m_volumeShapes.Count - 1;
+
+        EditorUtility.SetDirty(m_scTree.m_volume);
     }
 
     private void CreateNewVolumeShapePoint(Vector3 position)
@@ -367,6 +373,8 @@ public class SCVolumeEditor : Editor
         m_needsRepaint = true;
 
         SelectPointUnderMouse();
+
+        EditorUtility.SetDirty(m_scTree.m_volume);
     }
 
     private void DeletePointUnderMouse()
@@ -386,6 +394,8 @@ public class SCVolumeEditor : Editor
             m_scTree.m_volume.m_volumeShapes.RemoveAt(m_selectionInformation.m_shapeIndex);
             m_selectionInformation.m_shapeIndex = Mathf.Clamp(m_selectionInformation.m_shapeIndex, 0, m_scTree.m_volume.m_volumeShapes.Count - 1);
         }
+
+        EditorUtility.SetDirty(m_scTree.m_volume);
     }
 
     #endregion
@@ -493,6 +503,7 @@ public class SCVolumeEditor : Editor
     {
         if (stateChange == PlayModeStateChange.EnteredPlayMode)
         {
+            EditorUtility.SetDirty(m_scTree.m_volume);
             m_scTree.m_volume.m_isEditable = false;
             Tools.hidden = false;
         }

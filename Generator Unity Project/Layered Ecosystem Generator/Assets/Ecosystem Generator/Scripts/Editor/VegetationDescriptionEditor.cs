@@ -56,7 +56,6 @@ public class VegetationDescriptionEditor : Editor
             RenderSpaceColonisationProperties();
         }
     }
-
     private void RenderLSystemProperties()
     {
         EditorGUILayout.LabelField("L-System", EditorStyles.boldLabel);

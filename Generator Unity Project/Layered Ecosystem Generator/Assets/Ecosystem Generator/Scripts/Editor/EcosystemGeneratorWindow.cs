@@ -22,6 +22,7 @@ public class EcosystemGeneratorWindow : EditorWindow
 
     private Vector2 m_currentScrollPosition;
 
+
     // UI
     private GUIContent m_guiContentAverageAnnualTemp = new GUIContent("Average Annual Temperature", "Controls the average annual temperature of your ecosystem.");
     private GUIContent m_guiContentAverageAnnualRain = new GUIContent("Average Annual Rainfall", "Controls the average annual rainfall of your ecosystem.");
@@ -29,6 +30,7 @@ public class EcosystemGeneratorWindow : EditorWindow
     private GUIContent m_guiContentHeightCheckOffset = new GUIContent("Height Check Offset", "Controls the vertical offset that the generator adds to the height of the Collider attached to the Target GameObject. The generator casts a Ray downwards from this height to find the 3D world position of each sample.");
     private GUIContent m_guiContentEncroachment = new GUIContent("Check For Encroachment", "When enabled, the generator does not place vegetation if the vegetation would encroach on GameObjects in your Scene.");
     private GUIContent m_guiContentTargetGameObject = new GUIContent("Target GameObject", "Specifies the GameObject to generator the ecosystem on.");
+    private GUIContent m_guiContentDrawDebugCylinders = new GUIContent("Draw Sample Radii", "Indicates whether the generator creates debug objects to help you visualise the samples' radii.");
 
     [MenuItem("Window/Ecosystem Generator")]
     private static void Init()
@@ -53,6 +55,14 @@ public class EcosystemGeneratorWindow : EditorWindow
         m_graphGuiStyle = new GUIStyle { alignment = TextAnchor.MiddleCenter };
         m_currentScrollPosition = new Vector2();
         DrawBiomeGraph();
+    }
+
+    private void OnEnable()
+    {
+        if(m_properties)
+        {
+            DrawBiomeGraph();
+        }
     }
 
     private void OnGUI()
@@ -146,6 +156,7 @@ public class EcosystemGeneratorWindow : EditorWindow
         m_properties.m_maximumIncline = EditorGUILayout.Slider(m_guiContentMaximumInclude, m_properties.m_maximumIncline, 0.0f, 90.0f);
         m_properties.m_checkHeightOffset = EditorGUILayout.FloatField(m_guiContentHeightCheckOffset, m_properties.m_checkHeightOffset);
         m_properties.m_checkForEncroachment = EditorGUILayout.Toggle(m_guiContentEncroachment, m_properties.m_checkForEncroachment);
+        m_properties.m_drawDebugObjects = EditorGUILayout.Toggle(m_guiContentDrawDebugCylinders, m_properties.m_drawDebugObjects);
         m_properties.m_targetGameObject = EditorGUILayout.ObjectField(m_guiContentTargetGameObject, m_properties.m_targetGameObject, typeof(GameObject), true) as GameObject;
 }
 
@@ -357,14 +368,21 @@ public class EcosystemGeneratorWindow : EditorWindow
                 veg.transform.parent = m_layerParents[samples[i].m_layer];
             }
 
-            //GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            //obj.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0, samples[i].m_correctedWorldSpacePosition.z);
-            //obj.transform.localScale = new Vector3(samples[i].m_outerRadius * 2, 0.0f, samples[i].m_outerRadius * 2);
-            //obj.transform.parent = m_layerParents[samples[i].m_layer];
-            //GameObject obj2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            //obj2.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0, samples[i].m_correctedWorldSpacePosition.z);
-            //obj2.transform.localScale = new Vector3(samples[i].m_innerRadius * 2, 0.0f, samples[i].m_innerRadius * 2);
-            //obj2.transform.parent = m_layerParents[samples[i].m_layer];
+            if (m_properties.m_drawDebugObjects)
+            {
+                GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                obj.name = "Outer Radius";
+                obj.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0.05f, samples[i].m_correctedWorldSpacePosition.z);
+                obj.transform.localScale = new Vector3(samples[i].m_outerRadius * 2, 0.0f, samples[i].m_outerRadius * 2);
+                obj.transform.parent = m_layerParents[samples[i].m_layer];
+                DestroyImmediate(obj.GetComponent<Collider>());
+                GameObject obj2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                obj2.name = "Inner Radius";
+                obj2.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0.05f, samples[i].m_correctedWorldSpacePosition.z);
+                obj2.transform.localScale = new Vector3(samples[i].m_innerRadius * 2, 0.0f, samples[i].m_innerRadius * 2);
+                obj2.transform.parent = m_layerParents[samples[i].m_layer];
+                DestroyImmediate(obj2.GetComponent<Collider>());
+            }
         }
     }
 }

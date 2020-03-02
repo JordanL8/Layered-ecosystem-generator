@@ -20,6 +20,7 @@ public class EcosystemGeneratorProperties : ScriptableObject
     [HideInInspector] [SerializeField] public float m_maximumIncline = 10.0f;
     [HideInInspector] [SerializeField] public float m_checkHeightOffset = 5.0f;
     [HideInInspector] [SerializeField] public bool m_checkForEncroachment = false;
+    [HideInInspector] [SerializeField] public bool m_drawDebugObjects = false;
     [HideInInspector] [SerializeField] public GameObject m_targetGameObject;
 
     // Window Properties.

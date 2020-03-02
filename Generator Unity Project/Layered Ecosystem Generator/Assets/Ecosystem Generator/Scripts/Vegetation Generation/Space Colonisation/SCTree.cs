@@ -271,7 +271,7 @@ public class SCTree : MonoBehaviour
         OptimiseBranch(m_branches[0]);
         CalculateBranchThickness();
         BuildMeshes();
-        D_DrawLeaves();
+        //D_DrawLeaves();
     }
     
 

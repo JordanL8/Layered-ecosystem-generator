@@ -26,7 +26,8 @@ MonoBehaviour:
   m_averageAnnualRainfall: 47
   m_maximumIncline: 17.7
   m_checkHeightOffset: 5
-  m_checkForEncroachment: 0
+  m_checkForEncroachment: 1
+  m_drawDebugObjects: 0
   m_targetGameObject: {fileID: 0}
   m_hideBiomeSection:
     m_Target: 1
