@@ -352,36 +352,103 @@ public class EcosystemGeneratorWindow : EditorWindow
         return false;
     }
 
-    private void PlaceVegetation(List<PoissonSample> samples)
+    private Dictionary<VegetationDescription, List<GameObject>> GetTreeVariants(List<PoissonSample> samples)
     {
+        Dictionary<VegetationDescription, List<GameObject>> variants = new Dictionary<VegetationDescription, List<GameObject>>();
+
         for (int i = 0; i < samples.Count; i++)
         {
             VegetationLayer sampleLayer = m_currentBiome.m_vegetationLayers[samples[i].m_layer];
             VegetationDescription sampleVegetation = sampleLayer.m_vegetationInLayer[samples[i].m_vegetationType];
-            if(sampleVegetation.m_vegationType == VegetationType.SpaceColonisation)
+            if(variants.ContainsKey(sampleVegetation))
             {
-                GameObject veg = Instantiate(sampleVegetation.m_spaceColonisationTreePrefab);
-                SCTree tree = veg.GetComponent<SCTree>();
-                tree.Generate();
+                if(variants[sampleVegetation].Count < sampleVegetation.m_variants)
+                {
+                    VegetationDescription newEntryVegetation = m_currentBiome.m_vegetationLayers[samples[i].m_layer].m_vegetationInLayer[samples[i].m_vegetationType];
+                    variants[sampleVegetation].Add(CreateVariant(newEntryVegetation));
+                }
+            }
+            if (!variants.ContainsKey(sampleVegetation))
+            {
+                VegetationDescription newEntryVegetation = m_currentBiome.m_vegetationLayers[samples[i].m_layer].m_vegetationInLayer[samples[i].m_vegetationType];
+                List<GameObject> newEntryObjects = new List<GameObject>();
+                newEntryObjects.Add(CreateVariant(newEntryVegetation));
+                variants.Add(sampleVegetation, newEntryObjects);
+            }
+        }
+        return variants;
+    }
+
+    private GameObject CreateVariant(VegetationDescription description)
+    {
+        if (description.m_vegationType == VegetationType.SpaceColonisation)
+        {
+            GameObject newVariant = Instantiate(description.m_spaceColonisationTreePrefab);
+            SCTree tree = newVariant.GetComponent<SCTree>();
+            tree.Generate();
+
+            newVariant.isStatic = true;
+            foreach(Transform child in newVariant.transform)
+            {
+                child.gameObject.isStatic = true;
+            }
+
+            return newVariant;
+        }
+        else if (description.m_vegationType == VegetationType.LSystem)
+        {
+            
+        }
+        return null;
+    }
+
+    private void PlaceVegetation(List<PoissonSample> samples)
+    {
+        Dictionary<VegetationDescription, List<GameObject>> variants = GetTreeVariants(samples);
+
+        for (int i = 0; i < samples.Count; i++)
+        {
+            VegetationLayer sampleLayer = m_currentBiome.m_vegetationLayers[samples[i].m_layer];
+            VegetationDescription sampleVegetation = sampleLayer.m_vegetationInLayer[samples[i].m_vegetationType];
+            if(variants.ContainsKey(sampleVegetation))
+            {
+                GameObject veg = Instantiate(variants[sampleVegetation][Random.Range(0, variants[sampleVegetation].Count)]);
                 veg.transform.position = samples[i].m_correctedWorldSpacePosition;
                 veg.transform.rotation = Quaternion.Euler(0, Random.value * 360, 0);
                 veg.transform.parent = m_layerParents[samples[i].m_layer];
-            }
+                
 
-            if (m_properties.m_drawDebugObjects)
+                if (m_properties.m_drawDebugObjects)
+                {
+                    GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    obj.name = "Outer Radius";
+                    obj.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0.05f, samples[i].m_correctedWorldSpacePosition.z);
+                    obj.transform.localScale = new Vector3(samples[i].m_outerRadius * 2, 0.0f, samples[i].m_outerRadius * 2);
+                    obj.transform.parent = m_layerParents[samples[i].m_layer];
+                    DestroyImmediate(obj.GetComponent<Collider>());
+                    GameObject obj2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    obj2.name = "Inner Radius";
+                    obj2.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0.05f, samples[i].m_correctedWorldSpacePosition.z);
+                    obj2.transform.localScale = new Vector3(samples[i].m_innerRadius * 2, 0.0f, samples[i].m_innerRadius * 2);
+                    obj2.transform.parent = m_layerParents[samples[i].m_layer];
+                    DestroyImmediate(obj2.GetComponent<Collider>());
+                }
+            }
+            else
             {
-                GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                obj.name = "Outer Radius";
-                obj.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0.05f, samples[i].m_correctedWorldSpacePosition.z);
-                obj.transform.localScale = new Vector3(samples[i].m_outerRadius * 2, 0.0f, samples[i].m_outerRadius * 2);
-                obj.transform.parent = m_layerParents[samples[i].m_layer];
-                DestroyImmediate(obj.GetComponent<Collider>());
-                GameObject obj2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                obj2.name = "Inner Radius";
-                obj2.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0.05f, samples[i].m_correctedWorldSpacePosition.z);
-                obj2.transform.localScale = new Vector3(samples[i].m_innerRadius * 2, 0.0f, samples[i].m_innerRadius * 2);
-                obj2.transform.parent = m_layerParents[samples[i].m_layer];
-                DestroyImmediate(obj2.GetComponent<Collider>());
+                Debug.LogError($"There are no vegetation variants available for {sampleVegetation.name}. Open {sampleVegetation.name} and set the Variants property to a value greater than 0.");
+            }
+        }
+        ClearVariants(variants);
+    }
+
+    private void ClearVariants(Dictionary<VegetationDescription, List<GameObject>> variants)
+    {
+        foreach (var entry in variants)
+        {
+            for (int i = entry.Value.Count - 1; i >= 0; i--)
+            {
+                DestroyImmediate(entry.Value[i]);
             }
         }
     }

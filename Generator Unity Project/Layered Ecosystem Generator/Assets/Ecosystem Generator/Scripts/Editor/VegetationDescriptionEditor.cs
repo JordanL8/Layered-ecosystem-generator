@@ -47,6 +47,7 @@ public class VegetationDescriptionEditor : Editor
     {
         EditorGUILayout.LabelField("Vegetation", EditorStyles.boldLabel);
         m_targetDescription.m_vegationType = (VegetationType)EditorGUILayout.EnumPopup("Vegetation Type", m_targetDescription.m_vegationType);
+        m_targetDescription.m_variants = EditorGUILayout.IntSlider("Variants", m_targetDescription.m_variants, 1, 10);
         if(m_targetDescription.m_vegationType == VegetationType.LSystem)
         {
             RenderLSystemProperties();

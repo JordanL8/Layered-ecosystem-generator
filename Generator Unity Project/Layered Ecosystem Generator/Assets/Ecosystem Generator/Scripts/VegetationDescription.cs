@@ -16,6 +16,7 @@ public class VegetationDescription : ScriptableObject
     
     public VegetationType m_vegationType = VegetationType.LSystem;
 
+    public int m_variants = 1;
     // L-System properties
     public LSystemGenerationRuleAsset m_lSystemRulesAsset;
     public Material m_branchMaterial;
