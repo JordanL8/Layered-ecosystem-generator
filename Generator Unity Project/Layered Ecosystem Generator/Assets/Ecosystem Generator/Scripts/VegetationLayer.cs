@@ -5,6 +5,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Vegetation Layer", menuName = "Ecosystem Generator/Vegetation Layer", order = 1)]
 public class VegetationLayer : ScriptableObject
 {
-    public VegetationDescription[] m_vegetationInLayer;
-    public GameObject[] TEMPPREFABS;
+    public List<VegetationDescription> m_vegetationInLayer;
 }

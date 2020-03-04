@@ -90,7 +90,7 @@ public class LayeredPoissonDiscSampler
 
     private PoissonSample GetSample(VegetationLayer layer, int layerNumber)
     {
-        int vegetationIndex = Random.Range(0, layer.m_vegetationInLayer.Length);
+        int vegetationIndex = Random.Range(0, layer.m_vegetationInLayer.Count);
         VegetationDescription currentVegetation = layer.m_vegetationInLayer[vegetationIndex];
 
         PoissonSample newSample = new PoissonSample();

@@ -8,62 +8,75 @@ using UnityEditor.IMGUI.Controls;
 public class VegetationDescriptionEditor : Editor
 {
     private VegetationDescription m_targetDescription;
-
-    private void Awake()
-    {
-        m_targetDescription = (VegetationDescription)target;
-    }
+    
     private void OnEnable()
     {
-        m_targetDescription = (VegetationDescription)target;
+        if (target)
+        {
+            m_targetDescription = (VegetationDescription)target;
+        }
     }
-    
+
+    public static void DisplayInspectorForCustomTarget(VegetationDescription customTarget)
+    {
+        RenderProperties(customTarget);
+    }
 
     public override void OnInspectorGUI()
     {
         //base.OnInspectorGUI();
-        EditorGUI.BeginChangeCheck();
-        RenderPlacementProperties();
-        RenderVegetationProperties();
-        if(EditorGUI.EndChangeCheck())
-        {
-            EditorUtility.SetDirty(m_targetDescription);
-        }   
+        RenderProperties(m_targetDescription);
+        
     }
 
-    private void RenderPlacementProperties()
+    public static void RenderProperties(VegetationDescription customTarget)
+    {
+        if(customTarget == null)
+        {
+            return;
+        }
+        EditorGUI.BeginChangeCheck();
+        RenderPlacementProperties(customTarget);
+        RenderVegetationProperties(customTarget);
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorUtility.SetDirty(customTarget);
+        }
+    }
+
+    private static void RenderPlacementProperties(VegetationDescription customTarget)
     {
         EditorGUILayout.LabelField("Placement Model", EditorStyles.boldLabel);
-        m_targetDescription.m_innerRadius = Mathf.Max(EditorGUILayout.FloatField("Inner Radius", m_targetDescription.m_innerRadius), 0.05f);
-        m_targetDescription.m_outerRadius = Mathf.Max(EditorGUILayout.FloatField("Outer Radius", m_targetDescription.m_outerRadius), 0.05f);
+        customTarget.m_innerRadius = Mathf.Max(EditorGUILayout.FloatField("Inner Radius", customTarget.m_innerRadius), 0.05f);
+        customTarget.m_outerRadius = Mathf.Max(EditorGUILayout.FloatField("Outer Radius", customTarget.m_outerRadius), 0.05f);
     }
 
-    private void RenderVegetationProperties()
+    private static void RenderVegetationProperties(VegetationDescription customTarget)
     {
         EditorGUILayout.LabelField("Vegetation", EditorStyles.boldLabel);
-        m_targetDescription.m_vegationType = (VegetationType)EditorGUILayout.EnumPopup("Vegetation Type", m_targetDescription.m_vegationType);
-        m_targetDescription.m_variants = EditorGUILayout.IntSlider("Variants", m_targetDescription.m_variants, 1, 10);
-        if(m_targetDescription.m_vegationType == VegetationType.LSystem)
+        customTarget.m_vegationType = (VegetationType)EditorGUILayout.EnumPopup("Vegetation Type", customTarget.m_vegationType);
+        customTarget.m_variants = EditorGUILayout.IntSlider("Variants", customTarget.m_variants, 1, 10);
+        if(customTarget.m_vegationType == VegetationType.LSystem)
         {
-            RenderLSystemProperties();
+            RenderLSystemProperties(customTarget);
         }
         else
         {
-            RenderSpaceColonisationProperties();
+            RenderSpaceColonisationProperties(customTarget);
         }
     }
-    private void RenderLSystemProperties()
+    private static void RenderLSystemProperties(VegetationDescription customTarget)
     {
         EditorGUILayout.LabelField("L-System", EditorStyles.boldLabel);
-        m_targetDescription.m_lSystemRulesAsset = EditorGUILayout.ObjectField("Rules Asset", m_targetDescription.m_lSystemRulesAsset, typeof(LSystemGenerationRuleAsset), false) as LSystemGenerationRuleAsset;
-        m_targetDescription.m_branchMaterial = EditorGUILayout.ObjectField("Branch Material", m_targetDescription.m_branchMaterial, typeof(Material), false) as Material;
-        m_targetDescription.m_leafPrefab = EditorGUILayout.ObjectField("Leaf Prefab", m_targetDescription.m_leafPrefab, typeof(GameObject), false) as GameObject;
-        m_targetDescription.m_leafMaterial = EditorGUILayout.ObjectField("Leaf Material", m_targetDescription.m_leafMaterial, typeof(Material), false) as Material;
+        customTarget.m_lSystemRulesAsset = EditorGUILayout.ObjectField("Rules Asset", customTarget.m_lSystemRulesAsset, typeof(LSystemGenerationRuleAsset), false) as LSystemGenerationRuleAsset;
+        customTarget.m_branchMaterial = EditorGUILayout.ObjectField("Branch Material", customTarget.m_branchMaterial, typeof(Material), false) as Material;
+        customTarget.m_leafPrefab = EditorGUILayout.ObjectField("Leaf Prefab", customTarget.m_leafPrefab, typeof(GameObject), false) as GameObject;
+        customTarget.m_leafMaterial = EditorGUILayout.ObjectField("Leaf Material", customTarget.m_leafMaterial, typeof(Material), false) as Material;
     }
 
-    private void RenderSpaceColonisationProperties()
+    private static void RenderSpaceColonisationProperties(VegetationDescription customTarget)
     {
         EditorGUILayout.LabelField("Space Colonisation", EditorStyles.boldLabel);
-        m_targetDescription.m_spaceColonisationTreePrefab = EditorGUILayout.ObjectField("Tree Prefab", m_targetDescription.m_spaceColonisationTreePrefab, typeof(GameObject), false) as GameObject;
+        customTarget.m_spaceColonisationTreePrefab = EditorGUILayout.ObjectField("Tree Prefab", customTarget.m_spaceColonisationTreePrefab, typeof(GameObject), false) as GameObject;
     }
 }
