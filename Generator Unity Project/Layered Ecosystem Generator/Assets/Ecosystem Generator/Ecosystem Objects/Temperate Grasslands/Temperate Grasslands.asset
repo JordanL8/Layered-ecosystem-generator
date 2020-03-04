@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4afc4fd2db86014e8bd5f4b82d6a9d5, type: 3}
+  m_Name: Temperate Grasslands
+  m_EditorClassIdentifier: 
+  m_biomeName: Temperate Grasslands/Desert
+  m_groundLayer: {fileID: 0}
+  m_vegetationLayers:
+  - {fileID: 11400000, guid: d4dba90ef7dca64429a4d6cb4129dbca, type: 2}
+  m_sparcity: 1
+  m_temperatureAndRainfallSamplePoints:
+  - {x: -10, y: 0}
+  - {x: 17, y: 60}
+  - {x: 14, y: 0}
+  m_colorOnGraph: {r: 0.79215693, g: 0.6901961, b: 0.78823537, a: 1}
+  m_hideGraph:
+    m_Target: 1
+    speed: 2
+    m_Value: 1

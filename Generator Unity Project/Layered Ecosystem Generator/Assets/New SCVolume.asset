@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_volumeShapes:
   - m_boundingPoints:
-    - {x: -0.520671, y: -0.043004036, z: 0}
+    - {x: -0.44102144, y: -0.033039093, z: 0}
     - {x: -0.57664657, y: 0.82665014, z: 0}
   - m_boundingPoints:
     - {x: -1.1191266, y: 1.1280274, z: 0}
-    - {x: 0.056246042, y: 1.158165, z: 0}
+    - {x: 0.0139968395, y: 1.0631418, z: 0}
     - {x: 0.4480374, y: 2.0622993, z: 0}
     - {x: 0.7795527, y: 3.5691884, z: 0}
     - {x: 0.930243, y: 5.076078, z: 0}
@@ -34,4 +34,4 @@ MonoBehaviour:
     m_Target: 0
     speed: 2
     m_Value: 0
-  m_isEditable: 0
+  m_isEditable: 1

@@ -379,8 +379,7 @@ public class EcosystemGeneratorWindow : EditorWindow
         {
             GameObject newVariant = Instantiate(description.m_spaceColonisationTreePrefab);
             SCTree tree = newVariant.GetComponent<SCTree>();
-            tree.Generate();
-            tree.BuildMeshes(lodLevels);
+            tree.Generate(lodLevels);
 
             SetStatic(newVariant.transform);
 
@@ -388,7 +387,16 @@ public class EcosystemGeneratorWindow : EditorWindow
         }
         else if (description.m_vegationType == VegetationType.LSystem)
         {
-            
+            GameObject newVariant = new GameObject("L-System Tree");
+            LSystemTree lSystemTree = newVariant.AddComponent<LSystemTree>();
+            lSystemTree.m_rulesAsset = description.m_lSystemRulesAsset;
+            lSystemTree.m_branchMaterial = description.m_branchMaterial;
+            lSystemTree.m_leafPrefab = description.m_leafPrefab;
+            lSystemTree.m_leafMaterial = description.m_leafMaterial;
+            lSystemTree.Generate(lodLevels);
+            SetStatic(lSystemTree.transform);
+
+            return newVariant;
         }
         return null;
     }
@@ -457,18 +465,23 @@ public class EcosystemGeneratorWindow : EditorWindow
     private LOD[] GetLODsForGameObject(GameObject obj)
     {
         List<LOD> lods = new List<LOD>();
-
-        Transform branchParent = obj.transform.GetChild(0);
+        
         float[] vals = { 0.9f, 0.2f, 0.0f };
-        for (int i = 0; i < branchParent.childCount; i++)
+        for (int i = 0; i < obj.transform.childCount; i++)
         {
-            Renderer renderer = branchParent.GetChild(i).GetComponent<Renderer>();
-            if (renderer)
+            Transform lodTransform = obj.transform.GetChild(i);
+            List<Renderer> renderers = new List<Renderer>();
+            for (int j = 0; j < lodTransform.childCount; j++)
             {
-                float screenRelativeTransitionHeight = vals[i];
-                LOD newLod = new LOD(screenRelativeTransitionHeight, new Renderer[] { renderer });
-                lods.Add(newLod);
+                Renderer renderer = lodTransform.GetChild(j).GetComponent<Renderer>();
+                if (renderer)
+                {
+                    renderers.Add(renderer);
+                }
             }
+            float screenRelativeTransitionHeight = vals[i];
+            LOD newLod = new LOD(screenRelativeTransitionHeight, renderers.ToArray());
+            lods.Add(newLod);
         }
         return lods.ToArray();
     }

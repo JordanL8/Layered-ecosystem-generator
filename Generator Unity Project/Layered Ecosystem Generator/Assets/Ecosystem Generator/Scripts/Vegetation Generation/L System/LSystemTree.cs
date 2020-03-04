@@ -50,8 +50,14 @@ public class LSystemTree : MonoBehaviour
         }
     }
 
-    private void Generate()
+    public void Generate(int lodLevel)
     {
+        if(m_sentence == null)
+        {
+            SetInitialReferences();
+        }
+
+
         for (int i = 0; i < m_rulesAsset.m_iterations; i++)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -73,39 +79,48 @@ public class LSystemTree : MonoBehaviour
         List<LSystemBranch> branches = m_rulesAsset.Build(m_sentence);
         m_sentence = "";
 
-        Build(branches);
+        Build(branches, lodLevel);
     }
 
-    private void Build(List<LSystemBranch> branches)
+    private void Build(List<LSystemBranch> branches, int lodLevel)
     {
-        Transform branchParentTransform = new GameObject("Branches").transform;
-        Transform leafParentTransform = new GameObject("Leaves").transform;
-        branchParentTransform.parent = transform;
-        leafParentTransform.parent = transform;
-
-        for (int i = 0; i < branches.Count; i++)
+        for (int l = 0; l <= lodLevel; l++)
         {
-            Mesh segmentMesh = LSystemBranchMeshGenerator.BuildBranch(branches[i]);
-            GameObject obj = new GameObject();
-            obj.AddComponent<MeshRenderer>().sharedMaterial = m_branchMaterial;
-            obj.AddComponent<MeshFilter>().sharedMesh = segmentMesh;
-            obj.transform.parent = branchParentTransform;
+            Transform m_lodTransform = new GameObject($"LOD {l}").transform;
+            m_lodTransform.parent = transform;
+            m_lodTransform.localPosition = Vector3.zero;
 
-            for (int j = 0; j < branches[i].m_leafTransforms.Count; j++)
+            Transform m_branchTransform = new GameObject("Branches").transform;
+            m_branchTransform.parent = m_lodTransform;
+            m_branchTransform.localPosition = Vector3.zero;
+            Transform m_leavesTransform = new GameObject("Leaves").transform;
+            m_leavesTransform.parent = m_lodTransform;
+            m_leavesTransform.localPosition = Vector3.zero;
+
+            for (int i = 0; i < branches.Count; i++)
             {
-                LSystemLeafTransform curLeafTransform = branches[i].m_leafTransforms[j];
-                GameObject newLeaf = Instantiate(m_leafPrefab, curLeafTransform.m_position, Quaternion.identity);
-                newLeaf.transform.up = curLeafTransform.m_transformForward;
-                newLeaf.transform.position += (newLeaf.transform.up * (newLeaf.transform.localScale.x / 3.0f));
-                newLeaf.transform.parent = leafParentTransform;
-                //newLeaf.transform.Rotate(newLeaf.transform.up, Random.value * 360.0f);
+                Mesh segmentMesh = LSystemBranchMeshGenerator.BuildBranch(branches[i], l, 0.0075f);
+                GameObject obj = new GameObject();
+                obj.AddComponent<MeshRenderer>().sharedMaterial = m_branchMaterial;
+                obj.AddComponent<MeshFilter>().sharedMesh = segmentMesh;
+                obj.transform.parent = m_branchTransform;
+
+                for (int j = 0; j < branches[i].m_leafTransforms.Count; j++)
+                {
+                    LSystemLeafTransform curLeafTransform = branches[i].m_leafTransforms[j];
+                    GameObject newLeaf = Instantiate(m_leafPrefab, curLeafTransform.m_position, Quaternion.identity);
+                    newLeaf.transform.up = curLeafTransform.m_transformForward;
+                    newLeaf.transform.position += (newLeaf.transform.up * (newLeaf.transform.localScale.x / 3.0f));
+                    newLeaf.transform.parent = m_leavesTransform;
+                    //newLeaf.transform.Rotate(newLeaf.transform.up, Random.value * 360.0f);
+                }
             }
+
+
+            // Combine Meshes
+            CombineMeshes(m_branchTransform, m_branchMaterial);
+            CombineMeshes(m_leavesTransform, m_leafMaterial);
         }
-
-
-        // Combine Meshes
-        CombineMeshes(branchParentTransform, m_branchMaterial);
-        CombineMeshes(leafParentTransform, m_leafMaterial);
     }
 
     private void CombineMeshes(Transform parent, Material material)
@@ -118,23 +133,14 @@ public class LSystemTree : MonoBehaviour
             combine[i].mesh = meshFilters[i].sharedMesh;
             combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
         }
-        for (int i = 0; i < parent.childCount; i++)
+        for (int i = parent.childCount - 1; i >= 0; i--)
         {
-            Destroy(parent.GetChild(i).gameObject);
+            DestroyImmediate(parent.GetChild(i).gameObject);
         }
         MeshFilter myMeshFilter = parent.gameObject.AddComponent<MeshFilter>();
-        myMeshFilter.mesh = new Mesh();
-        myMeshFilter.mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-        myMeshFilter.mesh.CombineMeshes(combine, true);
+        myMeshFilter.sharedMesh = new Mesh();
+        myMeshFilter.sharedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        myMeshFilter.sharedMesh.CombineMeshes(combine, true);
         parent.gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
-    }
-    
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Generate();
-        }
     }
 }
