@@ -31,6 +31,8 @@ public class EcosystemGeneratorWindow : EditorWindow
     private GUIContent m_guiContentEncroachment = new GUIContent("Check For Encroachment", "When enabled, the generator does not place vegetation if the vegetation would encroach on GameObjects in your Scene.");
     private GUIContent m_guiContentTargetGameObject = new GUIContent("Target GameObject", "Specifies the GameObject to generator the ecosystem on.");
     private GUIContent m_guiContentDrawDebugCylinders = new GUIContent("Draw Sample Radii", "Indicates whether the generator creates debug objects to help you visualise the samples' radii.");
+    private GUIContent m_guiClearHierarchy = new GUIContent("Clear Target Hierarchy", "Indicates whether the generator destroys the hierarchy below the Target GameObject.");
+    private GUIContent m_guiGenerateLODs = new GUIContent("LOD Number", "The number of LODs to create for each tree. Set this to 0 to generate no LODS.");
 
     [MenuItem("Window/Ecosystem Generator")]
     private static void Init()
@@ -158,6 +160,8 @@ public class EcosystemGeneratorWindow : EditorWindow
         m_properties.m_checkForEncroachment = EditorGUILayout.Toggle(m_guiContentEncroachment, m_properties.m_checkForEncroachment);
         m_properties.m_drawDebugObjects = EditorGUILayout.Toggle(m_guiContentDrawDebugCylinders, m_properties.m_drawDebugObjects);
         m_properties.m_targetGameObject = EditorGUILayout.ObjectField(m_guiContentTargetGameObject, m_properties.m_targetGameObject, typeof(GameObject), true) as GameObject;
+        m_properties.m_lodNumber = EditorGUILayout.IntSlider(m_guiGenerateLODs, m_properties.m_lodNumber, 0, 2);
+        m_properties.m_clearHierarchy = EditorGUILayout.Toggle(m_guiClearHierarchy, m_properties.m_clearHierarchy);
 }
 
     private void RenderGraphSection()
@@ -238,25 +242,15 @@ public class EcosystemGeneratorWindow : EditorWindow
 
     public void ClearHierarchy(GameObject targetGameObject)
     {
-        if (m_layerParents == null)
+        if(m_properties.m_clearHierarchy)
         {
-            return;
-        }
-        else if(m_layerParents.Count > 0)
-        {
-            if (m_layerParents[0] && m_layerParents[0].parent != targetGameObject.transform)
+            for (int i = targetGameObject.transform.childCount - 1; i >= 0; i--)
             {
-                m_layerParents.Clear();
+                DestroyImmediate(targetGameObject.transform.GetChild(i).gameObject);
             }
         }
-        for (int i = 0; i < m_layerParents.Count; i++)
-        {
-            if (m_layerParents[i])
-            {
-                DestroyImmediate(m_layerParents[i].gameObject);
-            }
-        }
-        m_layerParents.Clear();
+
+        m_layerParents?.Clear();
     }
 
     public void GenerateEcosystem(Biome biome, GameObject targetGameObject)
@@ -365,33 +359,30 @@ public class EcosystemGeneratorWindow : EditorWindow
                 if(variants[sampleVegetation].Count < sampleVegetation.m_variants)
                 {
                     VegetationDescription newEntryVegetation = m_currentBiome.m_vegetationLayers[samples[i].m_layer].m_vegetationInLayer[samples[i].m_vegetationType];
-                    variants[sampleVegetation].Add(CreateVariant(newEntryVegetation));
+                    variants[sampleVegetation].Add(CreateVariant(newEntryVegetation, m_properties.m_lodNumber));
                 }
             }
             if (!variants.ContainsKey(sampleVegetation))
             {
                 VegetationDescription newEntryVegetation = m_currentBiome.m_vegetationLayers[samples[i].m_layer].m_vegetationInLayer[samples[i].m_vegetationType];
                 List<GameObject> newEntryObjects = new List<GameObject>();
-                newEntryObjects.Add(CreateVariant(newEntryVegetation));
+                newEntryObjects.Add(CreateVariant(newEntryVegetation, m_properties.m_lodNumber));
                 variants.Add(sampleVegetation, newEntryObjects);
             }
         }
         return variants;
     }
 
-    private GameObject CreateVariant(VegetationDescription description)
+    private GameObject CreateVariant(VegetationDescription description, int lodLevels)
     {
         if (description.m_vegationType == VegetationType.SpaceColonisation)
         {
             GameObject newVariant = Instantiate(description.m_spaceColonisationTreePrefab);
             SCTree tree = newVariant.GetComponent<SCTree>();
             tree.Generate();
+            tree.BuildMeshes(lodLevels);
 
-            newVariant.isStatic = true;
-            foreach(Transform child in newVariant.transform)
-            {
-                child.gameObject.isStatic = true;
-            }
+            SetStatic(newVariant.transform);
 
             return newVariant;
         }
@@ -400,6 +391,15 @@ public class EcosystemGeneratorWindow : EditorWindow
             
         }
         return null;
+    }
+
+    private void SetStatic(Transform transform)
+    {
+        transform.gameObject.isStatic = true;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            SetStatic(transform.GetChild(i));
+        }
     }
 
     private void PlaceVegetation(List<PoissonSample> samples)
@@ -412,11 +412,23 @@ public class EcosystemGeneratorWindow : EditorWindow
             VegetationDescription sampleVegetation = sampleLayer.m_vegetationInLayer[samples[i].m_vegetationType];
             if(variants.ContainsKey(sampleVegetation))
             {
-                GameObject veg = Instantiate(variants[sampleVegetation][Random.Range(0, variants[sampleVegetation].Count)]);
+                int variantNumber = Random.Range(0, variants[sampleVegetation].Count);
+                GameObject veg = Instantiate(variants[sampleVegetation][variantNumber]);
                 veg.transform.position = samples[i].m_correctedWorldSpacePosition;
                 veg.transform.rotation = Quaternion.Euler(0, Random.value * 360, 0);
                 veg.transform.parent = m_layerParents[samples[i].m_layer];
-                
+                veg.name = $"{sampleVegetation.name}: Variant {(variantNumber + 1).ToString()}";
+
+                if (m_properties.m_lodNumber > 0)
+                {
+                    SCTree treeComponent = veg.GetComponent<SCTree>();
+                    if(treeComponent) { DestroyImmediate(treeComponent); }
+
+                    LODGroup lodGroup = veg.AddComponent<LODGroup>();
+                    
+                    lodGroup.SetLODs(GetLODsForGameObject(veg));
+                    LODUtility.CalculateLODGroupBoundingBox(lodGroup);
+                }
 
                 if (m_properties.m_drawDebugObjects)
                 {
@@ -440,6 +452,25 @@ public class EcosystemGeneratorWindow : EditorWindow
             }
         }
         ClearVariants(variants);
+    }
+
+    private LOD[] GetLODsForGameObject(GameObject obj)
+    {
+        List<LOD> lods = new List<LOD>();
+
+        Transform branchParent = obj.transform.GetChild(0);
+        float[] vals = { 0.9f, 0.2f, 0.0f };
+        for (int i = 0; i < branchParent.childCount; i++)
+        {
+            Renderer renderer = branchParent.GetChild(i).GetComponent<Renderer>();
+            if (renderer)
+            {
+                float screenRelativeTransitionHeight = vals[i];
+                LOD newLod = new LOD(screenRelativeTransitionHeight, new Renderer[] { renderer });
+                lods.Add(newLod);
+            }
+        }
+        return lods.ToArray();
     }
 
     private void ClearVariants(Dictionary<VegetationDescription, List<GameObject>> variants)

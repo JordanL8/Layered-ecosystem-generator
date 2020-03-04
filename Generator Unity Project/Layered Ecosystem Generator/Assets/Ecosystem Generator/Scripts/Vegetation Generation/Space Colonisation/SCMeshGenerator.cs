@@ -10,12 +10,12 @@ public static class SCMeshGenerator
         public int m_recursionNumber;
     }
 
-    public static void BuildTree(SCBranch root, Transform parent, GameObject leafPrefab)
+    public static void BuildTree(SCBranch root, Transform parent, GameObject leafPrefab, int lodLevel)
     {
-        BuildBranches(root, 0, leafPrefab, parent);
+        BuildBranches(root, 0, leafPrefab, lodLevel, parent);
     }
 
-    private static void BuildBranches(SCBranch branchStart, int recursionNumber, GameObject leafPrefab, Transform parent = null)
+    private static void BuildBranches(SCBranch branchStart, int recursionNumber, GameObject leafPrefab, int lodLevel, Transform parent = null)
     {
         SCMeshGeneratorBranchList branchList = new SCMeshGeneratorBranchList();
         if(branchStart.m_parent != null)
@@ -70,7 +70,7 @@ public static class SCMeshGenerator
                 }
                 else
                 {
-                    BuildBranches(curBranch.GetChild(i), recursionNumber + 1, leafPrefab, parent);
+                    BuildBranches(curBranch.GetChild(i), recursionNumber + 1, leafPrefab, lodLevel, parent);
                 }
             }
             curBranch = curBranch.GetChild(nextBranch);
@@ -82,7 +82,23 @@ public static class SCMeshGenerator
 
         MeshBuilder meshBuilder = new MeshBuilder();
         Quaternion rotation = Quaternion.identity;
-        int segments = recursionNumber == 0 ? 6 : 3;
+        int segments = 0;
+        switch(lodLevel)
+        {
+            case 0:
+            {
+                segments = recursionNumber == 0 ? 6 : 4;
+            }break;
+            case 1:
+            {
+                segments = 3;
+            }break;
+            default:
+            {
+                segments = 2;
+            }break;
+        }
+
         float height = 0.0f;
         for (int j = 0; j < branchList.branches.Count - 1; j++)
         {
@@ -106,7 +122,7 @@ public static class SCMeshGenerator
                 //CreateLeaf(leafPrefab,currentPosition, rotation, currentRadius, 0.5f);
             }
 
-            if (j == branchList.branches.Count - 1)
+            if (j == branchList.branches.Count - 1 && lodLevel < 1)
             {
                 meshBuilder.BuildCap(currentBranch.Position, rotation, segments, currentBranch.m_thickness);
             }

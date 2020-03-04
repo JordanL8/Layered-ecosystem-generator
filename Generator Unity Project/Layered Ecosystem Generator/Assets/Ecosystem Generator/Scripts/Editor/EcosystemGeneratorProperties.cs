@@ -22,6 +22,8 @@ public class EcosystemGeneratorProperties : ScriptableObject
     [HideInInspector] [SerializeField] public bool m_checkForEncroachment = false;
     [HideInInspector] [SerializeField] public bool m_drawDebugObjects = false;
     [HideInInspector] [SerializeField] public GameObject m_targetGameObject;
+    [HideInInspector] [SerializeField] public bool m_clearHierarchy;
+    [HideInInspector] [SerializeField] public int m_lodNumber;
 
     // Window Properties.
     [HideInInspector] [SerializeField] public AnimBool m_hideBiomeSection = new AnimBool(true);

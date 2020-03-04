@@ -270,7 +270,11 @@ public class SCTree : MonoBehaviour
         GrowTree();
         OptimiseBranch(m_branches[0]);
         CalculateBranchThickness();
-        BuildMeshes();
+
+        if (m_addLeaves)
+        {
+            CombineMeshes(m_leafObjectTransform, m_leafMaterial);
+        }
         //D_DrawLeaves();
     }
     
@@ -511,13 +515,15 @@ public class SCTree : MonoBehaviour
         }
     }
 
-    private void BuildMeshes()
+    public void BuildMeshes(int LodLevel)
     {
-        SCMeshGenerator.BuildTree(m_branches[0], m_branchObjectTransform, m_leafPrefab);
-        CombineMeshes(m_branchObjectTransform, m_branchMaterial);
-        if (m_addLeaves)
+        for (int i = 0; i <= LodLevel; i++)
         {
-            CombineMeshes(m_leafObjectTransform, m_leafMaterial);
+            Transform m_lodTransform = new GameObject($"LOD {i} branches").transform;
+            m_lodTransform.parent = m_branchObjectTransform;
+            m_lodTransform.localPosition = Vector3.zero;
+            SCMeshGenerator.BuildTree(m_branches[0], m_lodTransform, m_leafPrefab, i);
+            CombineMeshes(m_lodTransform, m_branchMaterial);
         }
     }
 

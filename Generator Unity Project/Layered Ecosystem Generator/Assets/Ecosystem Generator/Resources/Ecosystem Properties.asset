@@ -29,6 +29,8 @@ MonoBehaviour:
   m_checkForEncroachment: 1
   m_drawDebugObjects: 0
   m_targetGameObject: {fileID: 0}
+  m_clearHierarchy: 1
+  m_lodNumber: 2
   m_hideBiomeSection:
     m_Target: 1
     speed: 2
