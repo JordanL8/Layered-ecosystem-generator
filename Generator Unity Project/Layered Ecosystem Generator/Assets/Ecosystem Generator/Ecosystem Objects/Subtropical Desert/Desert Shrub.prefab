@@ -52,7 +52,7 @@ MonoBehaviour:
   m_leafKillDistance: 0.1
   m_interactionDistance: 0.4
   m_topCanopyWidth: 0
-  m_middleCanopyWidth: 3
+  m_middleCanopyWidth: 2
   m_bottomCanopyWidth: 0
   m_branchMaterial: {fileID: 2100000, guid: 21b72352560c4794ab328dc67e5854c4, type: 2}
   m_leafPrefab: {fileID: 2350789629622180032, guid: 381e5ebfea1369d44a80083795b095a5,

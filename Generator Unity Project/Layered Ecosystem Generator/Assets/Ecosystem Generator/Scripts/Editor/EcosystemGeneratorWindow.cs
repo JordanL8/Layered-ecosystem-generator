@@ -94,7 +94,6 @@ public class EcosystemGeneratorWindow : EditorWindow
         }
         if (EditorGUILayout.BeginFadeGroup(m_properties.m_hideBiomeSection.faded))
         {
-            EditorGUI.indentLevel++;
             if (m_properties.m_biomes == null)
             {
                 m_properties.m_biomes = new List<Biome>();
@@ -131,7 +130,6 @@ public class EcosystemGeneratorWindow : EditorWindow
                 }
             }
             EditorGUILayout.EndHorizontal();
-            EditorGUI.indentLevel--;
         }
         EditorGUILayout.EndFadeGroup();
     }
@@ -267,7 +265,7 @@ public class EcosystemGeneratorWindow : EditorWindow
         if (m_layerParents == null) { m_layerParents = new List<Transform>(); }
         ClearHierarchy(targetGameObject);
 
-        for (int i = 0; i < biome.m_vegetationLayers.Length; i++)
+        for (int i = 0; i < biome.m_vegetationLayers.Count; i++)
         {
             m_sampler.SampleForLayer(biome.m_vegetationLayers[i], i);
             m_layerParents.Add(new GameObject($"Layer: {biome.m_vegetationLayers[i].name}").transform);

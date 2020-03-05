@@ -16,12 +16,7 @@ public class VegetationDescriptionEditor : Editor
             m_targetDescription = (VegetationDescription)target;
         }
     }
-
-    public static void DisplayInspectorForCustomTarget(VegetationDescription customTarget)
-    {
-        RenderProperties(customTarget);
-    }
-
+    
     public override void OnInspectorGUI()
     {
         //base.OnInspectorGUI();
@@ -29,12 +24,13 @@ public class VegetationDescriptionEditor : Editor
         
     }
 
-    public static void RenderProperties(VegetationDescription customTarget)
+    public void RenderProperties(VegetationDescription customTarget)
     {
         if(customTarget == null)
         {
             return;
         }
+        EditorGUILayout.LabelField(m_targetDescription.name, new GUIStyle() { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold });
         EditorGUI.BeginChangeCheck();
         RenderPlacementProperties(customTarget);
         RenderVegetationProperties(customTarget);
@@ -44,14 +40,14 @@ public class VegetationDescriptionEditor : Editor
         }
     }
 
-    private static void RenderPlacementProperties(VegetationDescription customTarget)
+    private void RenderPlacementProperties(VegetationDescription customTarget)
     {
         EditorGUILayout.LabelField("Placement Model", EditorStyles.boldLabel);
         customTarget.m_innerRadius = Mathf.Max(EditorGUILayout.FloatField("Inner Radius", customTarget.m_innerRadius), 0.05f);
         customTarget.m_outerRadius = Mathf.Max(EditorGUILayout.FloatField("Outer Radius", customTarget.m_outerRadius), 0.05f);
     }
 
-    private static void RenderVegetationProperties(VegetationDescription customTarget)
+    private void RenderVegetationProperties(VegetationDescription customTarget)
     {
         EditorGUILayout.LabelField("Vegetation", EditorStyles.boldLabel);
         customTarget.m_vegationType = (VegetationType)EditorGUILayout.EnumPopup("Vegetation Type", customTarget.m_vegationType);
@@ -65,7 +61,7 @@ public class VegetationDescriptionEditor : Editor
             RenderSpaceColonisationProperties(customTarget);
         }
     }
-    private static void RenderLSystemProperties(VegetationDescription customTarget)
+    private void RenderLSystemProperties(VegetationDescription customTarget)
     {
         EditorGUILayout.LabelField("L-System", EditorStyles.boldLabel);
         customTarget.m_lSystemRulesAsset = EditorGUILayout.ObjectField("Rules Asset", customTarget.m_lSystemRulesAsset, typeof(LSystemGenerationRuleAsset), false) as LSystemGenerationRuleAsset;
@@ -74,7 +70,7 @@ public class VegetationDescriptionEditor : Editor
         customTarget.m_leafMaterial = EditorGUILayout.ObjectField("Leaf Material", customTarget.m_leafMaterial, typeof(Material), false) as Material;
     }
 
-    private static void RenderSpaceColonisationProperties(VegetationDescription customTarget)
+    private void RenderSpaceColonisationProperties(VegetationDescription customTarget)
     {
         EditorGUILayout.LabelField("Space Colonisation", EditorStyles.boldLabel);
         customTarget.m_spaceColonisationTreePrefab = EditorGUILayout.ObjectField("Tree Prefab", customTarget.m_spaceColonisationTreePrefab, typeof(GameObject), false) as GameObject;
