@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
+using UnityEditor.SceneManagement;
+
 
 // Code based on the following tutorial series by Sebastian Lague: https://www.youtube.com/watch?v=bPO7_JNWNmI
 
@@ -36,13 +39,13 @@ public class SCVolumeEditor : Editor
     {
         SetInitialReferences();
         Undo.undoRedoPerformed += OnUndoRedoPerformed;
-        EditorApplication.playModeStateChanged += DisableEditor;
+        PrefabStage.prefabStageClosing += DisableEditor;
     }
 
     private void OnDisable()
     {
         Undo.undoRedoPerformed -= OnUndoRedoPerformed;
-        EditorApplication.playModeStateChanged -= DisableEditor;
+        PrefabStage.prefabStageClosing -= DisableEditor;
     }
 
     private void SetInitialReferences()
@@ -65,14 +68,35 @@ public class SCVolumeEditor : Editor
         }
         else
         {
-            if (GUILayout.Button(m_scTree.m_volume.m_isEditable ? "Stop Editing" : "Edit"))
+            if (PrefabStageUtility.GetCurrentPrefabStage() == null)
             {
-                ToggleEditor();
+                if (GUILayout.Button("Edit"))
+                {
+                    EnableEditor();
+                }
+                if(GUILayout.Button("Generate"))
+                {
+                    DestroyTreeChildren();
+                    (target as SCTree).Generate(0);
+                }
+                if(GUILayout.Button("Destroy Tree"))
+                {
+                    DestroyTreeChildren();
+                }
             }
-            if (GUILayout.Button(m_scTree.m_volume.m_showVolumeShapeList.value ? "Hide Volume Shape List" : "Show Volume Shape List"))
+            else
             {
-                m_scTree.m_volume.m_showVolumeShapeList.value = !m_scTree.m_volume.m_showVolumeShapeList.value;
+                if (GUILayout.Button("Stop Editing"))
+                {
+                    CloseEditor();
+                }
+                if (GUILayout.Button(m_scTree.m_volume.m_showVolumeShapeList.value ? "Hide Volume Shape List" : "Show Volume Shape List"))
+                {
+                    m_scTree.m_volume.m_showVolumeShapeList.value = !m_scTree.m_volume.m_showVolumeShapeList.value;
+                }
             }
+
+            
             if(EditorGUILayout.BeginFadeGroup(m_scTree.m_volume.m_showVolumeShapeList.faded))
             {
                 for (int i = 0; i < m_scTree.m_volume.m_volumeShapes.Count; i++)
@@ -134,7 +158,7 @@ public class SCVolumeEditor : Editor
         }
         else
         {
-            if (m_scTree.m_volume.m_isEditable)
+            if (m_scTree.m_volume.m_isEditable && Tools.current != Tool.View)
             {
                 HandleInput(guiEvent);
             }
@@ -489,23 +513,37 @@ public class SCVolumeEditor : Editor
         m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(m_scTree.transform.position + Vector3.up * 5.0f);
         if (!m_scTree.m_volume.m_isEditable)
         {
-            ToggleEditor();
+            EnableEditor();
         }
     }
 
-    private void ToggleEditor()
+    private void EnableEditor()
     {
-        m_scTree.m_volume.m_isEditable = !m_scTree.m_volume.m_isEditable;
-        Tools.hidden = m_scTree.m_volume.m_isEditable;
+        m_scTree.m_volume.m_isEditable = true;
+        AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath(PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(target), typeof(GameObject)));
+        Tools.hidden = true;
     }
 
-    private void DisableEditor(PlayModeStateChange stateChange)
+    private void CloseEditor()
     {
-        if (stateChange == PlayModeStateChange.EnteredPlayMode)
+        StageUtility.GoToMainStage();
+    }
+
+    private void DisableEditor(PrefabStage closingPrefabStage)
+    {
+        m_scTree.m_volume.m_isEditable = false;
+        m_scTree.m_volume.m_showVolumeShapeList.value = false;
+        Tools.hidden = false;
+        EditorUtility.SetDirty(m_scTree.m_volume);
+    }
+
+
+    private void DestroyTreeChildren()
+    {
+        Transform targetTransform = (target as SCTree).transform;
+        for (int i = targetTransform.childCount - 1; i >= 0; i--)
         {
-            EditorUtility.SetDirty(m_scTree.m_volume);
-            m_scTree.m_volume.m_isEditable = false;
-            Tools.hidden = false;
+            DestroyImmediate(targetTransform.GetChild(i).gameObject);
         }
     }
 }

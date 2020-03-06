@@ -49,10 +49,8 @@ public class SCTree : MonoBehaviour
     private List<SCLeaf> m_leaves = new List<SCLeaf>();
     private List<SCBranch> m_branches = new List<SCBranch>();
 
-   
-    
-    
-    
+    private List<Vector3> m_leafPositions = new List<Vector3>();
+    private List<Vector3> m_leafOrientations = new List<Vector3>();
 
     public void Generate(int lodLevel)
     {
@@ -61,6 +59,8 @@ public class SCTree : MonoBehaviour
             Debug.LogError("SCTree has no SCVolume attached. Can not generate a tree.");
             return;
         }
+        m_leaves = new List<SCLeaf>();
+        m_branches = new List<SCBranch>();
 
         m_sqrLeafKillDistance = m_leafKillDistance * m_leafKillDistance;
         m_sqrInteractionDistance = m_interactionDistance * m_interactionDistance;
@@ -85,27 +85,13 @@ public class SCTree : MonoBehaviour
         {
             m_leaves = m_volume.GetLeavesList(transform, m_leafDensity, m_bottomCanopyWidth, m_middleCanopyWidth, m_topCanopyWidth);
         }
-        //for (int i = 0; i < 100; i++)
-        //{
-        //    SCLeaf leaf = new SCLeaf(transform.position + Random.insideUnitSphere * 2.0f + Vector3.up * 10.0f);
-        //    m_leaves.Add(leaf);
-        //}
-
-        //for (int i = 0; i < 100; i++)
-        //{
-        //    SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, -2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
-        //    m_leaves.Add(leaf);
-        //}
-
-        //for (int i = 0; i < 100; i++)
-        //{
-        //    SCLeaf leaf = new SCLeaf(transform.position + new Vector3(0, 0, 2.0f) + Random.insideUnitSphere * 2.0f + Vector3.up * 7.5f);
-        //    m_leaves.Add(leaf);
-        //}
     }
 
     private void InitialiseTree()
     {
+        m_leafPositions = new List<Vector3>();
+        m_leafOrientations = new List<Vector3>();
+
         SCVolumeShape trunkShape = m_volume.m_volumeShapes[0];
         SCBranch root = new SCBranch(null, trunkShape.m_boundingPoints[0], Vector3.up, m_branchEndThickness);
         m_branches.Add(root);
@@ -222,11 +208,13 @@ public class SCTree : MonoBehaviour
         m_leaves.RemoveAt(index);
         if (m_addLeaves)
         {
-            GameObject newLeaf = Instantiate(m_leafPrefab);
             Vector3 leafUp = leaf.Position - branch.Position;
-            //newLeaf.transform.localScale = Vector3.one * Vector3.Distance(leaf.Position, branch.Position);
-            newLeaf.transform.position = branch.Position + (leafUp.normalized * newLeaf.transform.localScale.x / 2.0f);
-            newLeaf.transform.up = leafUp;
+            m_leafPositions.Add(branch.Position + (leafUp.normalized * m_leafPrefab.transform.localScale.x / 2.0f));
+            m_leafOrientations.Add(leafUp);
+
+
+            //newLeaf.transform.position = branch.Position + (leafUp.normalized * newLeaf.transform.localScale.x / 2.0f);
+            //newLeaf.transform.up = leafUp;
             //newLeaf.transform.parent = transform;
         }
     }
@@ -332,6 +320,20 @@ public class SCTree : MonoBehaviour
             
             SCMeshGenerator.BuildTree(m_branches[0], m_branchTransform, m_leafPrefab, i);
             CombineMeshes(m_branchTransform, m_branchMaterial);
+
+            InstantiateLeaves(m_leavesTransform);
+            CombineMeshes(m_leavesTransform, m_leafMaterial);
+        }
+    }
+
+    private void InstantiateLeaves(Transform parent)
+    {
+        for (int i = 0; i < m_leafPositions.Count; i++)
+        {
+            GameObject newLeaf = Instantiate(m_leafPrefab);
+            newLeaf.transform.parent = parent;
+            newLeaf.transform.position = m_leafPositions[i];
+            newLeaf.transform.up = m_leafOrientations[i];
         }
     }
 
