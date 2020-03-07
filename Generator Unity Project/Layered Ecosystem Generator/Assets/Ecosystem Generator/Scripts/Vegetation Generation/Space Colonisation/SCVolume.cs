@@ -40,18 +40,22 @@ public class SCVolume : ScriptableObject
             // Populate shape with leaves
             float area = (maxPosition.x - minPosition.x) * (maxPosition.y - minPosition.y);
             int leafNumber = Mathf.RoundToInt(density * area);
+            float height = maxPosition.y - minPosition.y;
+            float width = maxPosition.x - minPosition.x;
             for (int j = 0; j < leafNumber; j++)
             {
                 Vector3 position = new Vector3(Random.Range(minPosition.x, maxPosition.x), Random.Range(minPosition.y, maxPosition.y), 0.0f);
                 if (IsInVolume(position, curShape.m_boundingPoints))
                 {
                     // TODO, set the width smarter.
-                    //float width = maxPosition.x - minPosition.x;
-                    float height = maxPosition.y - minPosition.y;
-                    float normalisedHeight = (position.y - minPosition.y) / height;
-                    float width = Lerp3(bottomCanopyWidth, middleCanopyWidth, topCanopyWidth, normalisedHeight);
-                    //float normalisedDiff = (0 - 1) / (maxPosition.x - centreX) * (compareValue - centreX) + centreX;
-                    position.z += Random.Range(-width / 2, width / 2); //* Mathf.Pow(normalisedDiff, 2);
+
+                    float normalisedYPos = (position.y - minPosition.y) / height;
+                    float maxWidth = SmoothLerp3(bottomCanopyWidth * width, middleCanopyWidth * width, topCanopyWidth * width, normalisedYPos);
+
+                    float normalisedXPos = (position.x - minPosition.x) / width;
+                    float finalWidth = SmoothLerp3(maxWidth / 10, maxWidth, maxWidth / 10, normalisedXPos);
+
+                    position.z += Random.Range(-finalWidth / 2, finalWidth / 2);
                     
                     SCLeaf leaf = new SCLeaf(position);
                     leavesList.Add(leaf);
@@ -97,7 +101,8 @@ public class SCVolume : ScriptableObject
         return inside;
     }
 
-    private float Lerp3(float a, float b, float c, float t)
+   
+    private float SmoothLerp3(float a, float b, float c, float t)
     {
       
         if (t <= 0.5f)

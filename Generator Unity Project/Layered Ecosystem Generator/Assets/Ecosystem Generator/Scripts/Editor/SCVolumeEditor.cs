@@ -511,6 +511,8 @@ public class SCVolumeEditor : Editor
         m_scTree.m_volume.m_volumeShapes.Add(new SCVolumeShape());
         m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(m_scTree.transform.position);
         m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(m_scTree.transform.position + Vector3.up * 5.0f);
+        EditorUtility.SetDirty(m_scTree.m_volume);
+
         if (!m_scTree.m_volume.m_isEditable)
         {
             EnableEditor();
@@ -536,7 +538,6 @@ public class SCVolumeEditor : Editor
         Tools.hidden = false;
         EditorUtility.SetDirty(m_scTree.m_volume);
     }
-
 
     private void DestroyTreeChildren()
     {

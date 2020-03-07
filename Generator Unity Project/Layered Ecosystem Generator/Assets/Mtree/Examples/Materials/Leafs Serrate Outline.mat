@@ -184,7 +184,7 @@ Material:
     - _transmission: 3
     m_Colors:
     - _ASEOutlineColor: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.91744417, g: 1, b: 0.83823526, a: 1}
+    - _Color: {r: 1, g: 0.94699246, b: 0.8392157, a: 1}
     - _ColorVariation: {r: 1, g: 0.7981892, b: 0.6556604, a: 1}
     - _CustomLightColor: {r: 0.6704477, g: 1, b: 0, a: 1}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}

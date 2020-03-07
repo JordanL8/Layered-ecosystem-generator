@@ -3,40 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class SCLeaf
-{
-    private Vector3 m_position;
-    public Vector3 Position
-    {
-        get { return m_position; }
-    }
-
-    public SCLeaf(Vector3 position)
-    {
-        m_position = position;
-    }
-}
 
 public class SCTree : MonoBehaviour
 {
     [Header("Branches")]
-    public float m_branchLength;
+    public float m_branchLength = 0.3f;
     public float m_branchEndThickness = 0.01f;
     public float m_branchConnectionPower = 2.0f;
-    public int m_maxGrowthIterations;
+    public int m_maxGrowthIterations = 80;
+    [Range(0.8f,1.0f)]
+    public float m_optimsationAngle = 0.98f;
 
     [Header("Leaves")]
     public bool m_addLeaves = true;
-    public float m_leafDensity = 10.0f;
-    public float m_leafKillDistance;
+    public float m_leafDensity = 20.0f;
+    public float m_leafKillDistance = 0.4f;
     private float m_sqrLeafKillDistance;
 
-    public float m_interactionDistance;
+    public float m_interactionDistance = 0.8f;
     private float m_sqrInteractionDistance;
 
-    public float m_topCanopyWidth;
-    public float m_middleCanopyWidth;
-    public float m_bottomCanopyWidth;
+    [Range(0,1)]
+    public float m_topCanopyWidth = 0.1f;
+    [Range(0, 1)]
+    public float m_middleCanopyWidth = 1.0f;
+    [Range(0, 1)]
+    public float m_bottomCanopyWidth = 0.1f;
 
     [Header("Rendering")]
     public Material m_branchMaterial;
@@ -70,10 +62,6 @@ public class SCTree : MonoBehaviour
         OptimiseBranch(m_branches[0]);
         CalculateBranchThickness();
 
-        //if (m_addLeaves)
-        //{
-        //    CombineMeshes(m_leafObjectTransform, m_leafMaterial);
-        //}
         //D_DrawLeaves();
         BuildMeshes(lodLevel);
     }
@@ -104,42 +92,14 @@ public class SCTree : MonoBehaviour
             int connectingBranchNumber = Mathf.Max(Mathf.FloorToInt(distance / m_branchLength), 1);
             for (int j = 0; j < connectingBranchNumber; j++)
             {
-                Vector3 nextDirection = (nextPoint - currentBranch.Position).normalized;
-                SCBranch nextBranch = new SCBranch(currentBranch, currentBranch.Position + nextDirection * m_branchLength, nextDirection, m_branchEndThickness);
+                Vector3 nextDirection = i + 1 < trunkShape.m_boundingPoints.Count ? ((trunkShape.m_boundingPoints[i+1] - currentBranch.Position).normalized * 0.5f + (nextPoint - currentBranch.Position).normalized).normalized : (nextPoint - currentBranch.Position).normalized;
+                bool canGrow = (j == connectingBranchNumber - 1); //|| (i == trunkShape.m_boundingPoints.Count - 1);
+                SCBranch nextBranch = new SCBranch(currentBranch, currentBranch.Position + nextDirection * m_branchLength, nextDirection, m_branchEndThickness, canGrow);
                 currentBranch.AddChild(nextBranch);
                 m_branches.Add(nextBranch);
                 currentBranch = nextBranch;
             }
         }
-
-
-        //SCBranch root = new SCBranch(null, transform.position, Vector3.up);
-        //m_branches.Add(root);
-        //SCBranch currentBranch = root;
-        //int d_I = 0;
-        //bool isInRange = false;
-
-        //while (!isInRange && d_I < 1000)
-        //{
-        //    for (int i = 0; i < m_leaves.Count; i++)
-        //    {
-        //        if (Vector3.SqrMagnitude(m_leaves[i].Position - currentBranch.Position) < m_sqrInteractionDistance)
-        //        {
-        //            isInRange = true;
-        //        }
-        //    }
-
-        //    if (!isInRange)
-        //    {
-        //        SCBranch nextBranch = currentBranch.Next(m_branchLength);
-        //        if (nextBranch != null)
-        //        {
-        //            m_branches.Add(nextBranch);
-        //            currentBranch = nextBranch;
-        //        }
-        //    }
-        //    d_I++;
-        //}
     }
 
     private void GrowTree()
@@ -189,7 +149,7 @@ public class SCTree : MonoBehaviour
         for (int i = m_branches.Count - 1; i >= 0; i--)
         {
             SCBranch curBranch = m_branches[i];
-            if(curBranch.m_count > 0)
+            if(curBranch.m_count > 0 && curBranch.m_canGrow)
             {
                 SCBranch newBranch = curBranch.Next(m_branchLength);
                 if (newBranch != null)
@@ -230,7 +190,7 @@ public class SCTree : MonoBehaviour
             if (childCount == 1)
             {
                 SCBranch childBranch = curBranch.GetChild(0);
-                if (Vector3.Dot(curBranch.Direction, childBranch.Direction) > 0.98f)
+                if (Vector3.Dot(curBranch.Direction, childBranch.Direction) > m_optimsationAngle)
                 {
                     if (curBranch.m_parent != null)
                     {
@@ -362,6 +322,7 @@ public class SCTree : MonoBehaviour
         myMeshFilter.sharedMesh = new Mesh();
         myMeshFilter.sharedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         myMeshFilter.sharedMesh.CombineMeshes(combine, true);
+        myMeshFilter.sharedMesh.RecalculateNormals();
         parent.gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
     }
 

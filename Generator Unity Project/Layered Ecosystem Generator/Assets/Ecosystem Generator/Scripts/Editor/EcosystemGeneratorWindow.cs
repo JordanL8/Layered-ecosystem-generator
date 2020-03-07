@@ -464,7 +464,7 @@ public class EcosystemGeneratorWindow : EditorWindow
     {
         List<LOD> lods = new List<LOD>();
         
-        float[] vals = { 0.9f, 0.2f, 0.0f };
+        float[] vals = { 0.7f, 0.2f, 0.0f };
         for (int i = 0; i < obj.transform.childCount; i++)
         {
             Transform lodTransform = obj.transform.GetChild(i);

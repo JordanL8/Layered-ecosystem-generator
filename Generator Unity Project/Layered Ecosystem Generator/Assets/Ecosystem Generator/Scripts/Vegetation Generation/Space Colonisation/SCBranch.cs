@@ -34,15 +34,16 @@ public class SCBranch
         get { return m_children.Count; }
     }
 
-    public bool m_grownToParent = false;
+    public bool m_canGrow = true;
 
-    public SCBranch(SCBranch parent, Vector3 position, Vector3 direction, float thickness)
+    public SCBranch(SCBranch parent, Vector3 position, Vector3 direction, float thickness, bool canGrow = true)
     {
         m_parent = parent;
         m_position = position;
         m_direction = direction;
         m_weldDirection = direction;
         m_thickness = thickness;
+        m_canGrow = canGrow;
         m_children = new List<SCBranch>();
     }
 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Standard
   m_EditorClassIdentifier: 
   m_innerRadius: 0.5
-  m_outerRadius: 1.75
+  m_outerRadius: 2
   m_vegationType: 1
   m_variants: 3
   m_lSystemRulesAsset: {fileID: 0}

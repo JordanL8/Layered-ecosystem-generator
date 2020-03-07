@@ -104,7 +104,7 @@ public static class SCMeshGenerator
         {
             height += Vector3.Magnitude(branchList.branches[j].Position - branchList.branches[j + 1].Position);
         }
-        float circumference = branchList.branches[0].m_thickness * 2 * Mathf.PI;
+        float circumference = (branchList.branches[0].m_thickness + branchList.branches[branchList.branches.Count-1].m_thickness) / 2 * 2 * Mathf.PI;
         float ratio = height / circumference;
 
         for (int j = 0; j < branchList.branches.Count; j++)
@@ -112,7 +112,16 @@ public static class SCMeshGenerator
             SCBranch currentBranch = branchList.branches[j];
             if (j + 1 < branchList.branches.Count)
             {
-                rotation = Quaternion.LookRotation(branchList.branches[j + 1].Position - currentBranch.Position);
+                if (rotation == Quaternion.identity)
+                {
+                    rotation = Quaternion.LookRotation(branchList.branches[j + 1].Position - currentBranch.Position);
+                }
+                else
+                {
+                    Quaternion lastRotation = rotation;
+                    Quaternion nextRotation = j + 2 < branchList.branches.Count ? Quaternion.LookRotation(branchList.branches[j + 2].Position - currentBranch.Position) : Quaternion.LookRotation(branchList.branches[j + 1].Position - currentBranch.Position);
+                    rotation = Quaternion.Lerp(lastRotation, nextRotation, 0.5f);
+                }
             }
             float v = (float)j / branchList.branches.Count * ratio;
             meshBuilder.BuildRing(currentBranch.Position, rotation, segments, currentBranch.m_thickness, v, j > 0);
