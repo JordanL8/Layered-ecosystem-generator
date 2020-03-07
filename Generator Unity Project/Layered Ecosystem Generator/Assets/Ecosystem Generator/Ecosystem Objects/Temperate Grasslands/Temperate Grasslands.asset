@@ -15,14 +15,19 @@ MonoBehaviour:
   m_biomeName: Temperate Grasslands/Desert
   m_groundLayer: {fileID: 0}
   m_vegetationLayers:
+  - {fileID: 11400000, guid: a0defd75fef032242bf9f2c7d60863de, type: 2}
   - {fileID: 11400000, guid: d4dba90ef7dca64429a4d6cb4129dbca, type: 2}
   m_sparcity: 1
   m_temperatureAndRainfallSamplePoints:
   - {x: -10, y: 0}
   - {x: 17, y: 60}
   - {x: 14, y: 0}
-  m_colorOnGraph: {r: 0.79215693, g: 0.6901961, b: 0.78823537, a: 1}
-  m_hideGraph:
-    m_Target: 1
+  m_colorOnGraph: {r: 0.79215693, g: 0.6901961, b: 0.7882353, a: 1}
+  m_hideSamplePoints:
+    m_Target: 0
     speed: 2
-    m_Value: 1
+    m_Value: 0
+  m_hideGraph:
+    m_Target: 0
+    speed: 2
+    m_Value: 0

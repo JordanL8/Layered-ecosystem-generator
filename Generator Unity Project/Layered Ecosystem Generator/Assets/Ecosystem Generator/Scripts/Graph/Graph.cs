@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 
 public class Graph
@@ -63,7 +64,7 @@ public class Graph
         DrawCrossBox(correctedX - width, correctedY - size, (width * 2) + 1, (size * 2) + 1, color);
     }
 
-    public void DrawPolygon(Vector2Int[] vertices, Color color)
+    public void DrawPolygon(List<Vector2Int> vertices, Color color)
     {
         GraphBoundingBox polygonBoundingBox = new GraphBoundingBox(vertices);
 
@@ -84,11 +85,11 @@ public class Graph
         m_graphTexture.Apply();
     }
 
-    public bool IsInPolygon(int y, int x, Vector2Int[] vertices)   // X and Y is passed in flipped for this function.
+    public bool IsInPolygon(int y, int x, List<Vector2Int> vertices)   // X and Y is passed in flipped for this function.
     {
         int i, j = 0;
         bool result = false;
-        for (i = 0, j = vertices.Length - 1; i < vertices.Length; j = i++)
+        for (i = 0, j = vertices.Count - 1; i < vertices.Count; j = i++)
         {
             int curX = GetCorrectedXValue(vertices[i].x);
             int compX = GetCorrectedXValue(vertices[j].x);

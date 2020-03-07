@@ -87,15 +87,15 @@ public static class SCMeshGenerator
         {
             case 0:
             {
-                segments = recursionNumber == 0 ? 6 : 4;
+                segments = recursionNumber < 2 ? 6 : 4;
             }break;
             case 1:
             {
-                segments = 3;
+                segments = recursionNumber == 0 ? 4 : 3;
             }break;
             default:
             {
-                segments = 2;
+                segments = 3;
             }break;
         }
 

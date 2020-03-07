@@ -13,12 +13,12 @@ public class GraphBoundingBox
     public int MaxX => m_Max.x;
     public int MaxY => m_Max.y;
 
-    public GraphBoundingBox(Vector2Int[] vertices)
+    public GraphBoundingBox(List<Vector2Int> vertices)
     {
-        if (vertices.Length == 0) { return; }
+        if (vertices.Count == 0) { return; }
 
         m_Min = m_Max = vertices[0];
-        for (int curVertex = 1; curVertex < vertices.Length; ++curVertex)
+        for (int curVertex = 1; curVertex < vertices.Count; ++curVertex)
         {
             Extend(vertices[curVertex]);
         }

@@ -15,11 +15,12 @@ public class Biome : ScriptableObject
     public float m_sparcity = 1.0f;
 
     [Header("Graph")]
-    public Vector2Int[] m_temperatureAndRainfallSamplePoints;
+    public List<Vector2Int> m_temperatureAndRainfallSamplePoints;
     public Color m_colorOnGraph = Color.white;
 
 
 
+    [HideInInspector] [SerializeField] public AnimBool m_hideSamplePoints = new AnimBool(true);
     [HideInInspector] [SerializeField] public AnimBool m_hideGraph = new AnimBool(true);
 }
 

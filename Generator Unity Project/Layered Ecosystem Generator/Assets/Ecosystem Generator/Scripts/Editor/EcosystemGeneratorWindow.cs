@@ -24,8 +24,8 @@ public class EcosystemGeneratorWindow : EditorWindow
 
 
     // UI
-    private GUIContent m_guiContentAverageAnnualTemp = new GUIContent("Average Annual Temperature", "Controls the average annual temperature of your ecosystem.");
-    private GUIContent m_guiContentAverageAnnualRain = new GUIContent("Average Annual Rainfall", "Controls the average annual rainfall of your ecosystem.");
+    private GUIContent m_guiContentAverageAnnualTemp = new GUIContent("Average Temperature", "Controls the average annual temperature of your ecosystem.");
+    private GUIContent m_guiContentAverageAnnualRain = new GUIContent("Average Rainfall", "Controls the average annual rainfall of your ecosystem.");
     private GUIContent m_guiContentMaximumInclude = new GUIContent("Maximum Incline", "Controls the maximum incline to place vegetation on. If the angle from the ground's normal to Vector3.up is greater than this value, the generator does not place vegetation on that ground.");
     private GUIContent m_guiContentHeightCheckOffset = new GUIContent("Height Check Offset", "Controls the vertical offset that the generator adds to the height of the Collider attached to the Target GameObject. The generator casts a Ray downwards from this height to find the 3D world position of each sample.");
     private GUIContent m_guiContentEncroachment = new GUIContent("Check For Encroachment", "When enabled, the generator does not place vegetation if the vegetation would encroach on GameObjects in your Scene.");
@@ -72,12 +72,13 @@ public class EcosystemGeneratorWindow : EditorWindow
         if(m_properties == null) { return; }
         EditorGUI.BeginChangeCheck();
         // TODO: Fix vertical scroll view appearing over the UI.
-        m_currentScrollPosition = GUILayout.BeginScrollView(m_currentScrollPosition, false, false, GUIStyle.none, GUI.skin.verticalScrollbar);
+        
+        m_currentScrollPosition = EditorGUILayout.BeginScrollView(m_currentScrollPosition,false, false, GUIStyle.none, GUIStyle.none, GUIStyle.none);
         RenderBiomeSection();
         RenderEcosystemPropertiesSection();
         RenderGenerationPropertiesSection();
-        RenderGraphSection();  
-        GUILayout.EndScrollView();
+        RenderGraphSection();
+        EditorGUILayout.EndScrollView();
         if (EditorGUI.EndChangeCheck())
         {
             EditorUtility.SetDirty(m_properties);
@@ -88,12 +89,10 @@ public class EcosystemGeneratorWindow : EditorWindow
     {
         EditorGUILayout.Space(20.0f);
         EditorGUILayout.LabelField("Biomes", EditorStyles.boldLabel);
-        if(GUILayout.Button(m_properties.m_hideBiomeSection.target ? "Hide Biomes" : "Show Biomes"))
+        m_properties.m_hideBiomeSection.target = EditorGUILayout.BeginFoldoutHeaderGroup(m_properties.m_hideBiomeSection.target, "Biome List");
+        if (m_properties.m_hideBiomeSection.target)
         {
-            m_properties.m_hideBiomeSection.target = !m_properties.m_hideBiomeSection.target;
-        }
-        if (EditorGUILayout.BeginFadeGroup(m_properties.m_hideBiomeSection.faded))
-        {
+            EditorGUI.indentLevel++;
             if (m_properties.m_biomes == null)
             {
                 m_properties.m_biomes = new List<Biome>();
@@ -102,7 +101,12 @@ public class EcosystemGeneratorWindow : EditorWindow
             {
                 EditorGUILayout.BeginHorizontal();
                 m_properties.m_biomes[i] = (Biome)EditorGUILayout.ObjectField(m_properties.m_biomes[i], typeof(Biome), false, GUILayout.MinWidth(60f));
-                if (GUILayout.Button("Remove", GUILayout.MaxWidth(75.0f)))
+                if (GUILayout.Button("Select"))
+                {
+                    AssetDatabase.OpenAsset(m_properties.m_biomes[i]);
+                    EditorApplication.ExecuteMenuItem("Window/General/Inspector");
+                }
+                if (GUILayout.Button("Remove"))
                 {
                     m_properties.m_biomes.RemoveAt(i);
                     this.Repaint();
@@ -130,8 +134,9 @@ public class EcosystemGeneratorWindow : EditorWindow
                 }
             }
             EditorGUILayout.EndHorizontal();
+            EditorGUI.indentLevel--;
         }
-        EditorGUILayout.EndFadeGroup();
+        EditorGUILayout.EndFoldoutHeaderGroup();
     }
 
     private void RenderEcosystemPropertiesSection()
@@ -440,13 +445,13 @@ public class EcosystemGeneratorWindow : EditorWindow
                 {
                     GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     obj.name = "Outer Radius";
-                    obj.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0.05f, samples[i].m_correctedWorldSpacePosition.z);
+                    obj.transform.position = samples[i].m_correctedWorldSpacePosition + new Vector3(0, 0.05f, 0);
                     obj.transform.localScale = new Vector3(samples[i].m_outerRadius * 2, 0.0f, samples[i].m_outerRadius * 2);
                     obj.transform.parent = m_layerParents[samples[i].m_layer];
                     DestroyImmediate(obj.GetComponent<Collider>());
                     GameObject obj2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     obj2.name = "Inner Radius";
-                    obj2.transform.position = new Vector3(samples[i].m_correctedWorldSpacePosition.x, 0.05f, samples[i].m_correctedWorldSpacePosition.z);
+                    obj2.transform.position = samples[i].m_correctedWorldSpacePosition + new Vector3(0, 0.1f, 0);
                     obj2.transform.localScale = new Vector3(samples[i].m_innerRadius * 2, 0.0f, samples[i].m_innerRadius * 2);
                     obj2.transform.parent = m_layerParents[samples[i].m_layer];
                     DestroyImmediate(obj2.GetComponent<Collider>());

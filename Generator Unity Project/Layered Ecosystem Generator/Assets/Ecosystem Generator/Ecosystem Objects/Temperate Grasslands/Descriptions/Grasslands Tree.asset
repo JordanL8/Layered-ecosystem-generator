@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Grasslands Tree
   m_EditorClassIdentifier: 
   m_innerRadius: 0.5
-  m_outerRadius: 4
+  m_outerRadius: 5
   m_vegationType: 1
   m_variants: 1
   m_lSystemRulesAsset: {fileID: 11400000, guid: 6e9f3de41036d884e838e3ceeb38db29,
@@ -22,4 +22,5 @@ MonoBehaviour:
   m_leafPrefab: {fileID: 2350789629622180032, guid: 381e5ebfea1369d44a80083795b095a5,
     type: 3}
   m_leafMaterial: {fileID: 2100000, guid: f8bf01b5e33614c44af8a0533bc27be5, type: 2}
-  m_spaceColonisationTreePrefab: {fileID: 0}
+  m_spaceColonisationTreePrefab: {fileID: 7959157853722284731, guid: a2c1d98acba7e5c43a67a2375448aa7a,
+    type: 3}

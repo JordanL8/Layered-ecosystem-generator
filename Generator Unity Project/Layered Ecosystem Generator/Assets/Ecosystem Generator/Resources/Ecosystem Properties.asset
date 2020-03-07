@@ -22,11 +22,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ad6d9c8026ffbe643a86b8e160ea5a96, type: 2}
   - {fileID: 11400000, guid: 469508c44a23b3649ad2363014188c6b, type: 2}
   - {fileID: 11400000, guid: 343833bd62ea1c440a6e6cfa21eb85c0, type: 2}
-  m_averageAnnualTemperature: 1
-  m_averageAnnualRainfall: 95
+  m_averageAnnualTemperature: 11
+  m_averageAnnualRainfall: 28
   m_maximumIncline: 17.7
   m_checkHeightOffset: 5
-  m_checkForEncroachment: 1
+  m_checkForEncroachment: 0
   m_drawDebugObjects: 0
   m_targetGameObject: {fileID: 0}
   m_clearHierarchy: 1
@@ -34,7 +34,7 @@ MonoBehaviour:
   m_hideBiomeSection:
     m_Target: 1
     speed: 2
-    m_Value: 1
+    m_Value: 0.01519829
   m_hideGraphSection:
     m_Target: 1
     speed: 2

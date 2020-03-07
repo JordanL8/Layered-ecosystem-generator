@@ -25,10 +25,16 @@ public class BiomeEditor : Editor
     public override void OnInspectorGUI()
     {
         //base.OnInspectorGUI();
-        
+
+        EditorGUI.BeginChangeCheck();
         RenderGeneralProperties();
         RenderGenerationProperties();
         RenderSelectedLayer();
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorUtility.SetDirty(m_targetBiome);
+        }
+
 
         EditorGUI.BeginChangeCheck();
         RenderGraphProperties();
@@ -65,16 +71,16 @@ public class BiomeEditor : Editor
 
     private void RenderGenerationProperties()
     {
+        EditorGUILayout.Space(20.0f);
         EditorGUILayout.LabelField("Generation", EditorStyles.boldLabel);
+        m_targetBiome.m_sparcity = Mathf.Max(0, EditorGUILayout.FloatField("Vegetation Sparcity", m_targetBiome.m_sparcity));
         m_targetBiome.m_groundLayer = EditorGUILayout.ObjectField("Ground Layer", m_targetBiome.m_groundLayer, typeof(GroundLayer), false) as GroundLayer;
 
         if (m_selectedLayerEditor != null)
         {
             return;
         }
-
-        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-        EditorGUILayout.LabelField("Layers In Biome", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Layers In Biome");
         for (int i = 0; i < m_targetBiome.m_vegetationLayers.Count; i++)
         {
             VegetationLayer currentLayer = m_targetBiome.m_vegetationLayers[i];
@@ -93,11 +99,11 @@ public class BiomeEditor : Editor
         }
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Add Layer"))
+        if (GUILayout.Button("Add"))
         {
             m_targetBiome.m_vegetationLayers.Add(null);
         }
-        if (m_targetBiome.m_vegetationLayers.Count > 0 && GUILayout.Button("Remove Layer"))
+        if (m_targetBiome.m_vegetationLayers.Count > 0 && GUILayout.Button("Remove Last"))
         {
             int lastIndex = m_targetBiome.m_vegetationLayers.Count - 1;
             RemoveLayerFromList(lastIndex);
@@ -127,11 +133,56 @@ public class BiomeEditor : Editor
 
     private void RenderGraphProperties()
     {
-        EditorGUILayout.Space(20);
+        EditorGUILayout.Space(20.0f);
+        EditorGUILayout.LabelField("Graph", EditorStyles.boldLabel);
+
+        m_targetBiome.m_colorOnGraph = EditorGUILayout.ColorField("Colour On Graph", m_targetBiome.m_colorOnGraph);
+        
+
+        float windowWidth = GUILayoutUtility.GetLastRect().width;
+        m_targetBiome.m_hideSamplePoints.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_targetBiome.m_hideSamplePoints.value, "Sample Points");
+        if(m_targetBiome.m_hideSamplePoints.value)
+        {
+            EditorGUI.indentLevel++;
+            float elementWidth = windowWidth / 5;
+
+            EditorGUIUtility.fieldWidth = elementWidth;
+            for (int i = 0; i < m_targetBiome.m_temperatureAndRainfallSamplePoints.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUIUtility.labelWidth = elementWidth / 20;
+                EditorGUILayout.LabelField((i + 1).ToString());
+                EditorGUIUtility.labelWidth = elementWidth;
+                int x = EditorGUILayout.IntSlider("Temperature", m_targetBiome.m_temperatureAndRainfallSamplePoints[i].x, -15, 30);
+                int y = EditorGUILayout.IntSlider("Rainfall", m_targetBiome.m_temperatureAndRainfallSamplePoints[i].y, 0, 450);
+                m_targetBiome.m_temperatureAndRainfallSamplePoints[i] = new Vector2Int(x, y);
+                if (GUILayout.Button("Remove"))
+                {
+                    RemoveSamplePointFromList(i);
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+            EditorGUIUtility.fieldWidth = 0;
+            EditorGUIUtility.labelWidth = 0;
+            EditorGUI.indentLevel--;
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add"))
+            {
+                m_targetBiome.m_temperatureAndRainfallSamplePoints.Add(new Vector2Int());
+            }
+            if (GUILayout.Button("Remove Last"))
+            {
+                RemoveSamplePointFromList(m_targetBiome.m_temperatureAndRainfallSamplePoints.Count - 1);
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndFoldoutHeaderGroup();
     }
 
     private void RenderGraphVisualisation()
     {
+        EditorGUILayout.Space(20.0f);
         if (GUILayout.Button(m_targetBiome.m_hideGraph.target ? "Hide Graph" : "Show Graph"))
         {
             m_targetBiome.m_hideGraph.target = !m_targetBiome.m_hideGraph.target;
@@ -145,6 +196,13 @@ public class BiomeEditor : Editor
             }
         }
         EditorGUILayout.EndFadeGroup();
+    }
+
+
+
+    private void RemoveSamplePointFromList(int index)
+    {
+        m_targetBiome.m_temperatureAndRainfallSamplePoints.RemoveAt(index);
     }
 
     private void RemoveLayerFromList(int index)

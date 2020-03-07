@@ -493,8 +493,7 @@ public class SCVolumeEditor : Editor
     private void CreateAndAssignNewSCVolume()
     {
         SCVolume newVolume = ScriptableObject.CreateInstance<SCVolume>();
-
-        string saveDirectory = EditorUtility.SaveFilePanel("Save New SCVolume Asset", Application.dataPath, "New SCVolume", "asset");
+        string saveDirectory = EditorUtility.SaveFilePanel("Save New SCVolume Asset", AssetDatabase.GetAssetPath(Selection.activeObject), "New SCVolume", "asset");
         if (saveDirectory == "")
         {
             return;

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Temperate Grasslands - Base Layer
   m_EditorClassIdentifier: 
   m_vegetationInLayer:
-  - {fileID: 11400000, guid: ed92348d3b28b5941b0a51574ba1cdfb, type: 2}
+  - {fileID: 11400000, guid: c3eba9e3e890f17469f4e839cc8bc8fa, type: 2}
