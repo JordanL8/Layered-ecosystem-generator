@@ -13,6 +13,8 @@ public class VegetationDescription : ScriptableObject
 {
     public float m_innerRadius = 0.5f;
     public float m_outerRadius = 5.0f;
+
+    public float m_sparcity = 1.0f;
     
     public VegetationType m_vegationType = VegetationType.LSystem;
 

@@ -45,6 +45,7 @@ public class VegetationDescriptionEditor : Editor
         EditorGUILayout.LabelField("Placement Model", EditorStyles.boldLabel);
         customTarget.m_innerRadius = Mathf.Max(EditorGUILayout.FloatField("Inner Radius", customTarget.m_innerRadius), 0.05f);
         customTarget.m_outerRadius = Mathf.Max(EditorGUILayout.FloatField("Outer Radius", customTarget.m_outerRadius), 0.05f);
+        customTarget.m_sparcity = Mathf.Max(EditorGUILayout.FloatField("Sparcity", customTarget.m_sparcity), 0.05f);
     }
 
     private void RenderVegetationProperties(VegetationDescription customTarget)

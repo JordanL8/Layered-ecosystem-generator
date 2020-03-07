@@ -94,8 +94,8 @@ public class LayeredPoissonDiscSampler
         VegetationDescription currentVegetation = layer.m_vegetationInLayer[vegetationIndex];
 
         PoissonSample newSample = new PoissonSample();
-        newSample.m_innerRadius = currentVegetation.m_innerRadius * m_sparcity;
-        newSample.m_outerRadius = currentVegetation.m_outerRadius * m_sparcity;
+        newSample.m_innerRadius = currentVegetation.m_innerRadius * currentVegetation.m_sparcity * m_sparcity;
+        newSample.m_outerRadius = currentVegetation.m_outerRadius * currentVegetation.m_sparcity * m_sparcity;
         newSample.m_layer = layerNumber;
         newSample.m_vegetationType = vegetationIndex;
         return newSample;
