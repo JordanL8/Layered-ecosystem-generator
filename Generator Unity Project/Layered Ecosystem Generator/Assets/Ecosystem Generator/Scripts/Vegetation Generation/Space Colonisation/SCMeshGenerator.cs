@@ -10,12 +10,12 @@ public static class SCMeshGenerator
         public int m_recursionNumber;
     }
 
-    public static void BuildTree(SCBranch root, Transform parent, GameObject leafPrefab, int lodLevel)
+    public static void BuildTree(SCBranch root, Transform parent, GameObject leafPrefab, int lodLevel, int overrideSegments = -1)
     {
-        BuildBranches(root, 0, leafPrefab, lodLevel, parent);
+        BuildBranches(root, 0, leafPrefab, lodLevel, overrideSegments, parent);
     }
 
-    private static void BuildBranches(SCBranch branchStart, int recursionNumber, GameObject leafPrefab, int lodLevel, Transform parent = null)
+    private static void BuildBranches(SCBranch branchStart, int recursionNumber, GameObject leafPrefab, int lodLevel, int overrideSegments = -1, Transform parent = null)
     {
         SCMeshGeneratorBranchList branchList = new SCMeshGeneratorBranchList();
         if(branchStart.m_parent != null)
@@ -70,7 +70,7 @@ public static class SCMeshGenerator
                 }
                 else
                 {
-                    BuildBranches(curBranch.GetChild(i), recursionNumber + 1, leafPrefab, lodLevel, parent);
+                    BuildBranches(curBranch.GetChild(i), recursionNumber + 1, leafPrefab, lodLevel, overrideSegments, parent);
                 }
             }
             curBranch = curBranch.GetChild(nextBranch);
@@ -82,21 +82,27 @@ public static class SCMeshGenerator
 
         MeshBuilder meshBuilder = new MeshBuilder();
         Quaternion rotation = Quaternion.identity;
-        int segments = 0;
-        switch(lodLevel)
+        int segments = overrideSegments;
+        if (segments < 3)
         {
-            case 0:
+            switch (lodLevel)
             {
-                segments = recursionNumber < 2 ? 6 : 4;
-            }break;
-            case 1:
-            {
-                segments = recursionNumber == 0 ? 4 : 3;
-            }break;
-            default:
-            {
-                segments = 3;
-            }break;
+                case 0:
+                {
+                    segments = recursionNumber < 2 ? 6 : 4;
+                }
+                break;
+                case 1:
+                {
+                    segments = recursionNumber == 0 ? 4 : 3;
+                }
+                break;
+                default:
+                {
+                    segments = 3;
+                }
+                break;
+            }
         }
 
         float height = 0.0f;

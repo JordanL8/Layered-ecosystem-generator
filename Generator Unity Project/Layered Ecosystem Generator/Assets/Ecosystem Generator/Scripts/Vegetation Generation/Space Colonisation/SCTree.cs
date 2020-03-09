@@ -13,6 +13,9 @@ public class SCTree : MonoBehaviour
     public int m_maxGrowthIterations = 80;
     [Range(0.8f,1.0f)]
     public float m_optimsationAngle = 0.98f;
+    public bool m_overrideRotationSegments = false;
+    [Min(3)]
+    public int m_overrideRotationSegmentNum = 8;
 
     [Header("Leaves")]
     public bool m_addLeaves = true;
@@ -63,7 +66,7 @@ public class SCTree : MonoBehaviour
         CalculateBranchThickness();
 
         //D_DrawLeaves();
-        BuildMeshes(lodLevel);
+        BuildMeshes(lodLevel, m_overrideRotationSegments, m_overrideRotationSegmentNum);
     }
     
 
@@ -90,9 +93,12 @@ public class SCTree : MonoBehaviour
             Vector3 nextPoint = trunkShape.m_boundingPoints[i];
             float distance = Vector3.Distance(currentBranch.Position, nextPoint);
             int connectingBranchNumber = Mathf.Max(Mathf.FloorToInt(distance / m_branchLength), 1);
+            
             for (int j = 0; j < connectingBranchNumber; j++)
             {
-                Vector3 nextDirection = i + 1 < trunkShape.m_boundingPoints.Count ? ((trunkShape.m_boundingPoints[i+1] - currentBranch.Position).normalized * 0.5f + (nextPoint - currentBranch.Position).normalized).normalized : (nextPoint - currentBranch.Position).normalized;
+                //Vector3 nextDirection = i + 1 < trunkShape.m_boundingPoints.Count ? Vector3.Lerp((nextPoint - currentBranch.Position).normalized, (trunkShape.m_boundingPoints[i + 1] - nextPoint).normalized, (float)j / (float)(connectingBranchNumber - 1)).normalized : (nextPoint - currentBranch.Position).normalized;
+                Vector3 nextDirection = i + 1 < trunkShape.m_boundingPoints.Count ? ((trunkShape.m_boundingPoints[i + 1] - currentBranch.Position).normalized * 0.5f + (nextPoint - currentBranch.Position).normalized).normalized : (nextPoint - currentBranch.Position).normalized;
+
                 bool canGrow = (j == connectingBranchNumber - 1); //|| (i == trunkShape.m_boundingPoints.Count - 1);
                 SCBranch nextBranch = new SCBranch(currentBranch, currentBranch.Position + nextDirection * m_branchLength, nextDirection, m_branchEndThickness, canGrow);
                 currentBranch.AddChild(nextBranch);
@@ -263,11 +269,11 @@ public class SCTree : MonoBehaviour
         }
     }
 
-    public void BuildMeshes(int LodLevel)
+    public void BuildMeshes(int LodLevel, bool overrideRotationSegments = false, int overrideRotationSegmentsNum = 8)
     {
-        for (int i = 0; i <= LodLevel; i++)
+        if (overrideRotationSegments)
         {
-            Transform m_lodTransform = new GameObject($"LOD {i}").transform;
+            Transform m_lodTransform = new GameObject($"Tree").transform;
             m_lodTransform.parent = transform;
             m_lodTransform.localPosition = Vector3.zero;
 
@@ -277,12 +283,34 @@ public class SCTree : MonoBehaviour
             Transform m_leavesTransform = new GameObject("Leaves").transform;
             m_leavesTransform.parent = m_lodTransform;
             m_leavesTransform.localPosition = Vector3.zero;
-            
-            SCMeshGenerator.BuildTree(m_branches[0], m_branchTransform, m_leafPrefab, i);
+
+            SCMeshGenerator.BuildTree(m_branches[0], m_branchTransform, m_leafPrefab, 0, overrideRotationSegmentsNum);
             CombineMeshes(m_branchTransform, m_branchMaterial);
 
             InstantiateLeaves(m_leavesTransform);
             CombineMeshes(m_leavesTransform, m_leafMaterial);
+        }
+        else
+        {
+            for (int i = 0; i <= LodLevel; i++)
+            {
+                Transform m_lodTransform = new GameObject($"LOD {i}").transform;
+                m_lodTransform.parent = transform;
+                m_lodTransform.localPosition = Vector3.zero;
+
+                Transform m_branchTransform = new GameObject("Branches").transform;
+                m_branchTransform.parent = m_lodTransform;
+                m_branchTransform.localPosition = Vector3.zero;
+                Transform m_leavesTransform = new GameObject("Leaves").transform;
+                m_leavesTransform.parent = m_lodTransform;
+                m_leavesTransform.localPosition = Vector3.zero;
+
+                SCMeshGenerator.BuildTree(m_branches[0], m_branchTransform, m_leafPrefab, i);
+                CombineMeshes(m_branchTransform, m_branchMaterial);
+
+                InstantiateLeaves(m_leavesTransform);
+                CombineMeshes(m_leavesTransform, m_leafMaterial);
+            }
         }
     }
 

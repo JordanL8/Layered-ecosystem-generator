@@ -154,7 +154,10 @@ public class SCVolumeEditor : Editor
         }
         else if (guiEvent.type == EventType.Layout)
         {
-            HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+            if (m_scTree.m_volume.m_isEditable)
+            {
+                HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+            }
         }
         else
         {
@@ -508,8 +511,8 @@ public class SCVolumeEditor : Editor
 
         m_scTree.m_volume = newVolume;
         m_scTree.m_volume.m_volumeShapes.Add(new SCVolumeShape());
-        m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(m_scTree.transform.position);
-        m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(m_scTree.transform.position + Vector3.up * 5.0f);
+        m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(Vector3.zero);
+        m_scTree.m_volume.m_volumeShapes[0].m_boundingPoints.Add(Vector3.zero + Vector3.up * 1.0f);
         EditorUtility.SetDirty(m_scTree.m_volume);
 
         if (!m_scTree.m_volume.m_isEditable)

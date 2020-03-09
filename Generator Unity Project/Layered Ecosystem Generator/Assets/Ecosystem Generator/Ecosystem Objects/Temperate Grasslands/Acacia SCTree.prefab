@@ -47,7 +47,9 @@ MonoBehaviour:
   m_branchEndThickness: 0.02
   m_branchConnectionPower: 2
   m_maxGrowthIterations: 80
-  m_optimsationAngle: 0.98
+  m_optimsationAngle: 0.9992
+  m_overrideRotationSegments: 1
+  m_overrideRotationSegmentNum: 8
   m_addLeaves: 1
   m_leafDensity: 60
   m_leafKillDistance: 0.3
