@@ -28,6 +28,7 @@ public class EcosystemGeneratorWindow : EditorWindow
     private GUIContent m_guiContentAverageAnnualRain = new GUIContent("Average Rainfall", "Controls the average annual rainfall of your ecosystem.");
     private GUIContent m_guiContentMaximumInclude = new GUIContent("Maximum Incline", "Controls the maximum incline to place vegetation on. If the angle from the ground's normal to Vector3.up is greater than this value, the generator does not place vegetation on that ground.");
     private GUIContent m_guiContentHeightCheckOffset = new GUIContent("Height Check Offset", "Controls the vertical offset that the generator adds to the height of the Collider attached to the Target GameObject. The generator casts a Ray downwards from this height to find the 3D world position of each sample.");
+    private GUIContent m_guiContentSinkOffset = new GUIContent("Sink Offset", "Controls the depth that vegetation sinks into the ground.");
     private GUIContent m_guiContentEncroachment = new GUIContent("Check For Encroachment", "When enabled, the generator does not place vegetation if the vegetation would encroach on GameObjects in your Scene.");
     private GUIContent m_guiContentTargetGameObject = new GUIContent("Target GameObject", "Specifies the GameObject to generator the ecosystem on.");
     private GUIContent m_guiContentDrawDebugCylinders = new GUIContent("Draw Sample Radii", "Indicates whether the generator creates debug objects to help you visualise the samples' radii.");
@@ -160,6 +161,7 @@ public class EcosystemGeneratorWindow : EditorWindow
         EditorGUILayout.LabelField("Placement Properties", EditorStyles.boldLabel);
         m_properties.m_maximumIncline = EditorGUILayout.Slider(m_guiContentMaximumInclude, m_properties.m_maximumIncline, 0.0f, 90.0f);
         m_properties.m_checkHeightOffset = EditorGUILayout.FloatField(m_guiContentHeightCheckOffset, m_properties.m_checkHeightOffset);
+        m_properties.m_vegetationSinkOffset = EditorGUILayout.FloatField(m_guiContentSinkOffset, m_properties.m_vegetationSinkOffset);
         m_properties.m_checkForEncroachment = EditorGUILayout.Toggle(m_guiContentEncroachment, m_properties.m_checkForEncroachment);
         m_properties.m_drawDebugObjects = EditorGUILayout.Toggle(m_guiContentDrawDebugCylinders, m_properties.m_drawDebugObjects);
         m_properties.m_targetGameObject = EditorGUILayout.ObjectField(m_guiContentTargetGameObject, m_properties.m_targetGameObject, typeof(GameObject), true) as GameObject;
@@ -382,6 +384,7 @@ public class EcosystemGeneratorWindow : EditorWindow
         {
             GameObject newVariant = Instantiate(description.m_spaceColonisationTreePrefab);
             SCTree tree = newVariant.GetComponent<SCTree>();
+            tree.m_overrideRotationSegments = false;
             tree.Generate(lodLevels);
 
             SetStatic(newVariant.transform);
@@ -425,7 +428,7 @@ public class EcosystemGeneratorWindow : EditorWindow
             {
                 int variantNumber = Random.Range(0, variants[sampleVegetation].Count);
                 GameObject veg = Instantiate(variants[sampleVegetation][variantNumber]);
-                veg.transform.position = samples[i].m_correctedWorldSpacePosition;
+                veg.transform.position = samples[i].m_correctedWorldSpacePosition + new Vector3(0, -m_properties.m_vegetationSinkOffset, 0);
                 veg.transform.rotation = Quaternion.Euler(0, Random.value * 360, 0);
                 veg.transform.parent = m_layerParents[samples[i].m_layer];
                 veg.name = $"{sampleVegetation.name}: Variant {(variantNumber + 1).ToString()}";
@@ -468,9 +471,9 @@ public class EcosystemGeneratorWindow : EditorWindow
     private LOD[] GetLODsForGameObject(GameObject obj)
     {
         List<LOD> lods = new List<LOD>();
-        
-        float[] vals = { 0.7f, 0.2f, 0.0f };
-        for (int i = 0; i < obj.transform.childCount; i++)
+        int lodCount = obj.transform.childCount;
+        float[] vals = lodCount == 3 ? new float[]{ 0.7f, 0.2f, 0.0f } : new float[] { 0.7f, 0.0f };
+        for (int i = 0; i < lodCount; i++)
         {
             Transform lodTransform = obj.transform.GetChild(i);
             List<Renderer> renderers = new List<Renderer>();
