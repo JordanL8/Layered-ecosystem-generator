@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1370e64b06fbe6e44b846608ce940a8c, type: 3}
+  m_Name: Boreal Tree Volume
+  m_EditorClassIdentifier: 
+  m_volumeShapes:
+  - m_boundingPoints:
+    - {x: 0, y: 0, z: 0}
+    - {x: -0.041644692, y: 1.9759521, z: 0}
+    - {x: -0.041644692, y: 2.6455936, z: 0}
+    - {x: -0.041644692, y: 3.466444, z: 0}
+    - {x: -0.08484793, y: 4.5465107, z: 0}
+    - {x: -0.06324637, y: 5.3241587, z: 0}
+    - {x: 0.0015571117, y: 6.0370026, z: 0}
+    - {x: -0.020043135, y: 6.9010563, z: 0}
+    - {x: 0.0015571117, y: 8.045927, z: 0}
+  - m_boundingPoints:
+    - {x: 1.9888798, y: 1.6951346, z: 0}
+    - {x: -2.0289674, y: 1.6951346, z: 0}
+    - {x: -1.6833456, y: 3.5096467, z: 0}
+    - {x: -1.4025288, y: 5.453767, z: 0}
+    - {x: -1.013705, y: 7.203475, z: 0}
+    - {x: -0.55011654, y: 8.317651, z: 0}
+    - {x: -0.020043135, y: 9.406811, z: 0}
+    - {x: 0.5415906, y: 8.3699465, z: 0}
+    - {x: 0.97361743, y: 7.1170692, z: 0}
+    - {x: 1.2976376, y: 5.3889627, z: 0}
+    - {x: 1.6216577, y: 3.380039, z: 0}
+  m_showVolumeShapeList:
+    m_Target: 0
+    speed: 2
+    m_Value: 0
+  m_isEditable: 0

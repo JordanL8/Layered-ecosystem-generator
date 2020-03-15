@@ -63,11 +63,11 @@ public class VegetationLayerEditor : Editor
         }
 
         EditorGUILayout.BeginHorizontal();
-        if(GUILayout.Button("Add Layer"))
+        if(GUILayout.Button("Add Description"))
         {
             m_targetLayer.m_vegetationInLayer.Add(null);
         }
-        if(m_targetLayer.m_vegetationInLayer.Count > 0 && GUILayout.Button("Remove Layer"))
+        if(m_targetLayer.m_vegetationInLayer.Count > 0 && GUILayout.Button("Remove Description"))
         {
             int lastIndex = m_targetLayer.m_vegetationInLayer.Count - 1;
             RemoveDescriptionFromList(lastIndex);

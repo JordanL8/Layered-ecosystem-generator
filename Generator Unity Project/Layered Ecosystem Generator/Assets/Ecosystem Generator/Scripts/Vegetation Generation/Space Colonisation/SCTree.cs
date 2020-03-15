@@ -351,6 +351,7 @@ public class SCTree : MonoBehaviour
         myMeshFilter.sharedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         myMeshFilter.sharedMesh.CombineMeshes(combine, true);
         myMeshFilter.sharedMesh.RecalculateNormals();
+        myMeshFilter.sharedMesh.RecalculateTangents();
         parent.gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
     }
 

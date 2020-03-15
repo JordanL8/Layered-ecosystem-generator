@@ -28,6 +28,10 @@ MonoBehaviour:
   - {x: 18, y: 240}
   - {x: 7, y: 200}
   m_colorOnGraph: {r: 0.003921569, g: 0.18823531, b: 0.0627451, a: 1}
+  m_hideSamplePoints:
+    m_Target: 1
+    speed: 2
+    m_Value: 1
   m_hideGraph:
     m_Target: 1
     speed: 2

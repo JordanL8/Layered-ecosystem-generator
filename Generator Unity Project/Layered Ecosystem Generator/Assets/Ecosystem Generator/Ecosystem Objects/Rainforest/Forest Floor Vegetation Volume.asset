@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1370e64b06fbe6e44b846608ce940a8c, type: 3}
+  m_Name: Forest Floor Vegetation Volume
+  m_EditorClassIdentifier: 
+  m_volumeShapes:
+  - m_boundingPoints:
+    - {x: 0, y: 0, z: 0}
+  - m_boundingPoints:
+    - {x: -0.5884875, y: 0.23901981, z: 0}
+    - {x: -1.1349938, y: 0.579596, z: 0}
+    - {x: -0.78649724, y: 0.936013, z: 0}
+    - {x: -0.034061074, y: 1.1023412, z: 0}
+    - {x: 0.82133967, y: 1.0231372, z: 0}
+    - {x: 1.122314, y: 0.60335743, z: 0}
+    - {x: 0.5045244, y: 0.24694021, z: 0}
+  m_showVolumeShapeList:
+    m_Target: 0
+    speed: 2
+    m_Value: 0
+  m_isEditable: 0

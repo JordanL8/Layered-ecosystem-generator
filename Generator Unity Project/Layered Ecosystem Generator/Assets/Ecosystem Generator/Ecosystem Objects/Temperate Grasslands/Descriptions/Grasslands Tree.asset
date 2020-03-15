@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_innerRadius: 0.5
   m_outerRadius: 5
+  m_sparcity: 4
   m_vegationType: 1
   m_variants: 1
   m_lSystemRulesAsset: {fileID: 11400000, guid: 6e9f3de41036d884e838e3ceeb38db29,

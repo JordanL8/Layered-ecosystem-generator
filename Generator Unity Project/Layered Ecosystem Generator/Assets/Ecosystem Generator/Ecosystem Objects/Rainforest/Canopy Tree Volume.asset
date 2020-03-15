@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1370e64b06fbe6e44b846608ce940a8c, type: 3}
+  m_Name: Canopy Tree Volume
+  m_EditorClassIdentifier: 
+  m_volumeShapes:
+  - m_boundingPoints:
+    - {x: 0, y: 0, z: 0}
+    - {x: -0.017625093, y: 4.592853, z: 0}
+    - {x: -1.0665041, y: 6.445873, z: 0}
+  - m_boundingPoints:
+    - {x: 0.44124377, y: 5.255677, z: 0}
+    - {x: -0.12242144, y: 5.9915733, z: 0}
+    - {x: -0.5945592, y: 7.0051966, z: 0}
+    - {x: -1.6783664, y: 6.568177, z: 0}
+    - {x: -2.6922512, y: 6.7779474, z: 0}
+    - {x: -3.5138474, y: 7.651985, z: 0}
+    - {x: -3.0069053, y: 8.718312, z: 0}
+    - {x: -1.3811679, y: 9.400216, z: 0}
+    - {x: -0.12251377, y: 9.5575485, z: 0}
+    - {x: 1.4857676, y: 9.33029, z: 0}
+    - {x: 2.6044211, y: 8.473581, z: 0}
+    - {x: 3.7931137, y: 7.8267927, z: 0}
+    - {x: 3.3036523, y: 6.3059664, z: 0}
+    - {x: 2.2198439, y: 5.6416974, z: 0}
+    - {x: 1.3023983, y: 5.067788, z: 0}
+  m_showVolumeShapeList:
+    m_Target: 0
+    speed: 2
+    m_Value: 0
+  m_isEditable: 0
