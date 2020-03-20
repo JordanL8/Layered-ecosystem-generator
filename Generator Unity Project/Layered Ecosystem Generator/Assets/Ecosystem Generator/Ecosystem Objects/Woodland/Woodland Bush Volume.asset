@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1370e64b06fbe6e44b846608ce940a8c, type: 3}
+  m_Name: Woodland Bush Volume
+  m_EditorClassIdentifier: 
+  m_volumeShapes:
+  - m_boundingPoints:
+    - {x: 0, y: 0, z: 0}
+    - {x: -0.019932896, y: 0.48443502, z: 0}
+    - {x: -0.027512163, y: 0.8937156, z: 0}
+  - m_boundingPoints:
+    - {x: 0.017963469, y: 0.29495305, z: 0}
+    - {x: -0.4671102, y: 0.28737378, z: 0}
+    - {x: -1.0658727, y: 0.3555872, z: 0}
+    - {x: -1.0658727, y: 0.939191, z: 0}
+    - {x: -0.33068305, y: 1.3712099, z: 0}
+    - {x: 0.283238, y: 1.3484716, z: 0}
+    - {x: 1.010848, y: 1.0528803, z: 0}
+    - {x: 1.010848, y: 0.3555872, z: 0}
+    - {x: 0.49545765, y: 0.30253235, z: 0}
+  m_showVolumeShapeList:
+    m_Target: 0
+    speed: 2
+    m_Value: 0
+  m_isEditable: 0

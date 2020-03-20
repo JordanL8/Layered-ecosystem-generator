@@ -369,7 +369,6 @@ public class EcosystemGeneratorWindow : EditorWindow
             }
             if (!variants.ContainsKey(sampleVegetation))
             {
-                Debug.Log(sampleVegetation);
                 VegetationDescription newEntryVegetation = m_currentBiome.m_vegetationLayers[samples[i].m_layer].m_vegetationInLayer[samples[i].m_vegetationType];
                 List<GameObject> newEntryObjects = new List<GameObject>();
                 newEntryObjects.Add(CreateVariant(newEntryVegetation, m_properties.m_lodNumber));

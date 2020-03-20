@@ -16,7 +16,7 @@ MonoBehaviour:
   m_groundLayer: {fileID: 0}
   m_vegetationLayers:
   - {fileID: 11400000, guid: ec1c89a477bb63b4e9339d90edf9a7be, type: 2}
-  m_sparcity: 5
+  m_sparcity: 1
   m_temperatureAndRainfallSamplePoints:
   - {x: 14, y: 0}
   - {x: 17, y: 60}

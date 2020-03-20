@@ -54,5 +54,5 @@ MonoBehaviour:
   m_showVolumeShapeList:
     m_Target: 0
     speed: 2
-    m_Value: 0
+    m_Value: 1
   m_isEditable: 0

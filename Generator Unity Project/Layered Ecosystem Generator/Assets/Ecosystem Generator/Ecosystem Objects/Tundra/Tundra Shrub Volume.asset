@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1370e64b06fbe6e44b846608ce940a8c, type: 3}
+  m_Name: Tundra Shrub Volume
+  m_EditorClassIdentifier: 
+  m_volumeShapes:
+  - m_boundingPoints:
+    - {x: 0, y: 0, z: 0}
+    - {x: -0.0072208643, y: 0.35637033, z: 0}
+  - m_boundingPoints:
+    - {x: -0.99493986, y: 0.84366417, z: 0}
+    - {x: -0.3759703, y: 0.43538827, z: 0}
+    - {x: 0.348359, y: 0.40904897, z: 0}
+    - {x: 0.9147155, y: 0.84366417, z: 0}
+    - {x: 1.36242, y: 1.462619, z: 0}
+    - {x: 1.7575978, y: 1.9762871, z: 0}
+    - {x: 1.5731338, y: 2.6610544, z: 0}
+    - {x: 0.24304366, y: 3.3723109, z: 0}
+    - {x: -0.2574178, y: 3.3723109, z: 0}
+    - {x: -1.5348976, y: 2.6742244, z: 0}
+    - {x: -1.7061223, y: 2.0553076, z: 0}
+    - {x: -1.3505228, y: 1.4231097, z: 0}
+  m_showVolumeShapeList:
+    m_Target: 0
+    speed: 2
+    m_Value: 0
+  m_isEditable: 0

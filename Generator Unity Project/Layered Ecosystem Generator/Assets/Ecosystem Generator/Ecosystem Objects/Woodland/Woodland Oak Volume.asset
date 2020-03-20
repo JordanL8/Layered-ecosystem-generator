@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1370e64b06fbe6e44b846608ce940a8c, type: 3}
+  m_Name: Woodland Oak Volume
+  m_EditorClassIdentifier: 
+  m_volumeShapes:
+  - m_boundingPoints:
+    - {x: 0, y: 0, z: 0}
+    - {x: -0.047148228, y: 2.9692407, z: 0}
+    - {x: -0.00035834312, y: 6.0210366, z: 0}
+    - {x: -1.0131882, y: 8.0842085, z: 0}
+  - m_boundingPoints:
+    - {x: -1.3989232, y: 4.8343434, z: 0}
+    - {x: -3.7680287, y: 5.9715137, z: 0}
+    - {x: -5.0269933, y: 9.059525, z: 0}
+    - {x: -3.0013351, y: 12.848259, z: 0}
+    - {x: 0.1496898, y: 14.76138, z: 0}
+    - {x: 2.8130574, y: 12.810746, z: 0}
+    - {x: 4.013447, y: 9.022014, z: 0}
+    - {x: 3.6235785, y: 5.908337, z: 0}
+    - {x: 1.0649455, y: 4.739579, z: 0}
+  m_showVolumeShapeList:
+    m_Target: 0
+    speed: 2
+    m_Value: 0
+  m_isEditable: 0

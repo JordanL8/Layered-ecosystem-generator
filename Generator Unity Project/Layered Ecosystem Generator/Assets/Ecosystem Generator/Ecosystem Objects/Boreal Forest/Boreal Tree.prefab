@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5635465882645704192}
   - component: {fileID: 5635465882645704255}
   m_Layer: 0
-  m_Name: Generic Tree 2
+  m_Name: Boreal Tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_branchLength: 0.1
-  m_branchEndThickness: 0.02
-  m_branchConnectionPower: 2
+  m_branchEndThickness: 0.015
+  m_branchConnectionPower: 2.02
   m_maxGrowthIterations: 80
   m_optimsationAngle: 0.9992
   m_overrideRotationSegments: 1

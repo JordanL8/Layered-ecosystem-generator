@@ -44,6 +44,10 @@ public class VegetationLayerEditor : Editor
             return;
         }
         EditorGUILayout.LabelField("Vegetation In Layer", EditorStyles.boldLabel);
+        if(m_targetLayer.m_vegetationInLayer == null)
+        {
+            m_targetLayer.m_vegetationInLayer = new List<VegetationDescription>();
+        }
         for (int i = 0; i < m_targetLayer.m_vegetationInLayer.Count; i++)
         {
             VegetationDescription currentDescription = m_targetLayer.m_vegetationInLayer[i];
