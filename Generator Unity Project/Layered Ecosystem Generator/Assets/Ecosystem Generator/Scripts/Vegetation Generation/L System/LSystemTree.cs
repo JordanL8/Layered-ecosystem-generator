@@ -24,7 +24,7 @@ public class LSystemTree : MonoBehaviour
     private void Start()
     {
         SetInitialReferences();
-        //Generate();
+        Generate(0);
     }
 
     private void SetInitialReferences()

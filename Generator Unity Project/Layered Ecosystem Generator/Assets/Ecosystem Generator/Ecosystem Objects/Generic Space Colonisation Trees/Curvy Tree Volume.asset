@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1370e64b06fbe6e44b846608ce940a8c, type: 3}
+  m_Name: Curvy Tree Volume
+  m_EditorClassIdentifier: 
+  m_volumeShapes:
+  - m_boundingPoints:
+    - {x: 0, y: 0, z: 0}
+    - {x: 0, y: 1, z: 0}
+  - m_boundingPoints:
+    - {x: -0.30440283, y: 1.649947, z: 0}
+    - {x: 0.067822695, y: 1.4638348, z: 0}
+    - {x: 0.41936803, y: 1.6292678, z: 0}
+    - {x: 0.39868784, y: 1.960134, z: 0}
+    - {x: -0.26304388, y: 3.3042786, z: 0}
+    - {x: -0.34576035, y: 3.9246526, z: 0}
+    - {x: 0.026463747, y: 5.3308353, z: 0}
+    - {x: 1.060421, y: 6.5509048, z: 0}
+    - {x: 1.6187577, y: 7.0885653, z: 0}
+    - {x: 2.6113572, y: 6.1166453, z: 0}
+    - {x: 3.02494, y: 6.48887, z: 0}
+    - {x: 1.970303, y: 7.646902, z: 0}
+    - {x: 2.4459248, y: 8.060483, z: 0}
+    - {x: 1.7428327, y: 8.577461, z: 0}
+    - {x: 0.33665133, y: 7.088563, z: 0}
+    - {x: -0.07693267, y: 6.5095487, z: 0}
+    - {x: -2.1034894, y: 7.7502975, z: 0}
+    - {x: -2.434356, y: 7.191961, z: 0}
+    - {x: -0.4905157, y: 6.033929, z: 0}
+    - {x: -0.84206104, y: 5.351517, z: 0}
+    - {x: -1.1522479, y: 3.966011, z: 0}
+    - {x: -0.88341904, y: 3.014771, z: 0}
+  m_showVolumeShapeList:
+    m_Target: 0
+    speed: 2
+    m_Value: 0
+  m_isEditable: 0

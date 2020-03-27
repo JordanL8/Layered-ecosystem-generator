@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5cb31df5bd22b747a4fb65913bf8d19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_branchLength: 0.1
+  m_branchLength: 0.05
   m_branchEndThickness: 0.02
   m_branchConnectionPower: 2
   m_maxGrowthIterations: 80
@@ -52,8 +52,8 @@ MonoBehaviour:
   m_overrideRotationSegmentNum: 8
   m_addLeaves: 1
   m_leafDensity: 80
-  m_leafKillDistance: 0.4
-  m_interactionDistance: 0.8
+  m_leafKillDistance: 0.1
+  m_interactionDistance: 0.4
   m_topCanopyWidth: 0.5
   m_middleCanopyWidth: 0.5
   m_bottomCanopyWidth: 0.5
